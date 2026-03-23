@@ -40,5 +40,10 @@ class ProdutoModel
         }
 
         return null;
+        
     }
+    public function listar() 
+{ 
+return $this->lerDados(); 
+}
 }
