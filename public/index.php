@@ -5,7 +5,7 @@ require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 require_once __DIR__ . '/../app/Models/ProdutoModel.php';
 
 $model = new ProdutoModel();
-$controller = new ProdutoController($model);
+$controller = new ProdutoController();
 
 $acao = $_GET['acao'] ?? 'listar';
 
