@@ -1,4 +1,4 @@
 ﻿# Eng.Software-Controle-de-Estoque
 
 Alunos: 
-João Pedro Rodrigues Bequiman, Iagor Lourenco
+João Pedro Rodrigues Bequiman, Iagor Lourenco, Giordano Bruno
