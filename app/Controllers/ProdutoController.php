@@ -35,6 +35,29 @@ class ProdutoController
         header('Location: index.php?acao=listar');
         exit;
     }
+        public function mostrarEditar()
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+        if (!$produto) {
+    echo "Produto não encontrado.";
+    return;
+}
+    include __DIR__ . '/../Views/produtos/editar.php';
+    }
+        public function atualizar()
+    {
+        $id = $_POST['id'] ?? 0;
+        $dados = [
+        'nome' => $_POST['nome'] ?? '',
+        'codigo' => $_POST['codigo'] ?? '',
+        'quantidade' => $_POST['quantidade'] ?? 0,
+        'preco' => $_POST['preco'] ?? 0
+        ];
+        $this->model->atualizar($id, $dados);
+        header('Location: index.php?acao=listar');
+        exit;
+    }
 
     
 
