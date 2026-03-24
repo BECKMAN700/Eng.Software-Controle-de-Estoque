@@ -36,6 +36,12 @@ class ProdutoController
         exit;
     }
 
-    
+    public function excluir()
+    {
+        $id = $_GET['id'] ?? 0;
+        $this->model->excluir($id);
+        header('Location: index.php?acao=listar');
+        exit;
+    }
 
 }

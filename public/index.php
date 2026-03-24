@@ -19,6 +19,10 @@ switch ($acao) {
             $controller->salvar();
         }
         break;
+    
+    case 'excluir':
+        $controller->excluir();
+        break;
 
     default:
         echo "Ação inválida.";
