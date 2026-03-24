@@ -1,18 +1,23 @@
 <?php
-// Arquivo: public/index.php
 
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
-require_once __DIR__ . '/../app/Models/ProdutoModel.php';
 
-$model = new ProdutoModel();
 $controller = new ProdutoController();
-
 $acao = $_GET['acao'] ?? 'listar';
 
 switch ($acao) {
 
     case 'listar':
         $controller->listar();
+        
+    case 'criar':
+        $controller->mostrarCriar();
+        break;
+
+    case 'salvar':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->salvar();
+        }
         break;
 
     default:

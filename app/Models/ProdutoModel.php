@@ -46,4 +46,27 @@ class ProdutoModel
 { 
 return $this->lerDados(); 
 }
+
+    public function criar($dados)
+    {
+        $produtos = $this->lerDados();
+
+        $novoId = 1;
+        if (!empty($produtos)) {
+            $ids = array_column($produtos, 'id');
+            $novoId = max($ids) + 1;
+        }
+
+        $novoProduto = [
+            'id' => $novoId,
+            'nome' => $dados['nome'],
+            'codigo' => $dados['codigo'],
+            'quantidade' => (int) $dados['quantidade'],
+            'preco' => (float) $dados['preco']
+        ];
+
+        $produtos[] = $novoProduto;
+        $this->salvarDados($produtos);
+    }
+
 }
