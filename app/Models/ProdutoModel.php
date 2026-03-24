@@ -40,7 +40,12 @@ class ProdutoModel
         }
 
         return null;
+        
     }
+    public function listar() 
+{ 
+return $this->lerDados(); 
+}
 
     public function criar($dados)
     {

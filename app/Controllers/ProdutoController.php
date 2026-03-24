@@ -11,6 +11,12 @@ class ProdutoController
         $this->model = new ProdutoModel();
     }
 
+    public function listar()
+    {
+        $produtos = $this->model->listar(); 
+        include __DIR__ .'/../Views/produtos/listar.php';
+    }
+
     public function mostrarCriar()
     {
         include __DIR__ . '/../Views/produtos/criar.php';

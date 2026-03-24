@@ -3,10 +3,13 @@
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 
 $controller = new ProdutoController();
-$acao = $_GET['acao'] ?? '';
+$acao = $_GET['acao'] ?? 'listar';
 
 switch ($acao) {
 
+    case 'listar':
+        $controller->listar();
+        
     case 'criar':
         $controller->mostrarCriar();
         break;
@@ -20,4 +23,4 @@ switch ($acao) {
     default:
         echo "Ação inválida.";
         break;
-}
+} 
