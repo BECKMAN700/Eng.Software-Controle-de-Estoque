@@ -84,5 +84,14 @@ return $this->lerDados();
         $this->salvarDados($produtos);
     }
 
+    public function excluir($id)
+    {
+        $produtos = $this->lerDados();
+        $produtos = array_filter($produtos, function ($produto) use
+        ($id) {
+        return $produto['id'] != $id;
+        });
+        $this->salvarDados(array_values($produtos));
+    }
 
 }
