@@ -91,4 +91,29 @@ class ProdutoModel
     return false; 
 } 
 
+    public function atualizar($id, $dados)
+    {
+        $produtos = $this->lerDados();
+        foreach ($produtos as &$produto) {
+        if ($produto['id'] == $id) {
+        $produto['nome'] = $dados['nome'];
+        $produto['codigo'] = $dados['codigo'];
+        $produto['quantidade'] = (int) $dados['quantidade'];
+        $produto['preco'] = (float) $dados['preco'];
+        break;
+        }
+        }
+        $this->salvarDados($produtos);
+    }
+
+    public function excluir($id)
+    {
+        $produtos = $this->lerDados();
+        $produtos = array_filter($produtos, function ($produto) use
+        ($id) {
+        return $produto['id'] != $id;
+        });
+        $this->salvarDados(array_values($produtos));
+    }
+
 }

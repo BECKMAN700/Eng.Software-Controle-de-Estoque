@@ -13,8 +13,8 @@ class ProdutoController
 
     public function listar()
     {
-        $produtos = $this->model->listar(); 
-        include __DIR__ .'/../Views/produtos/listar.php';
+        $produtos = $this->model->listar();
+        include __DIR__ . '/../Views/produtos/listar.php';
     }
 
     public function mostrarCriar()
@@ -35,33 +35,72 @@ class ProdutoController
         header('Location: index.php?acao=listar');
         exit;
     }
-    public function mostrarMovimentar() 
-    { 
-    $id = $_GET['id'] ?? 0; 
-    $produto = $this->model->buscarPorId($id); 
- 
-    if (!$produto) { 
-        echo "Produto não encontrado."; 
-        return; 
-    } 
 
-    include __DIR__ . '/../Views/produtos/movimentar.php'; 
+    public function mostrarEditar()
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        include __DIR__ . '/../Views/produtos/editar.php';
     }
-     
-    public function movimentar() 
-    { 
-        $id = $_POST['id'] ?? 0; 
-        $tipo = $_POST['tipo'] ?? ''; 
-        $quantidade = $_POST['quantidade'] ?? 0; 
-    
-        $sucesso = $this->model->movimentar($id, $tipo, $quantidade); 
-    
-        if (!$sucesso) { 
-            echo "Não foi possível realizar a movimentação."; 
-            return; 
-        } 
-    
-        header('Location: index.php?acao=listar'); 
-        exit; 
-    } 
+
+    public function atualizar()
+    {
+        $id = $_POST['id'] ?? 0;
+
+        $dados = [
+            'nome' => $_POST['nome'] ?? '',
+            'codigo' => $_POST['codigo'] ?? '',
+            'quantidade' => $_POST['quantidade'] ?? 0,
+            'preco' => $_POST['preco'] ?? 0
+        ];
+
+        $this->model->atualizar($id, $dados);
+        header('Location: index.php?acao=listar');
+        exit;
+    }
+
+    public function excluir()
+    {
+        $id = $_GET['id'] ?? 0;
+        $this->model->excluir($id);
+
+        header('Location: index.php?acao=listar');
+        exit;
+    }
+
+    public function mostrarMovimentar()
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        include __DIR__ . '/../Views/produtos/movimentar.php';
+    }
+
+    public function movimentar()
+    {
+        $id = $_POST['id'] ?? 0;
+        $tipo = $_POST['tipo'] ?? '';
+        $quantidade = $_POST['quantidade'] ?? 0;
+
+        $sucesso = $this->model->movimentar($id, $tipo, $quantidade);
+
+        if (!$sucesso) {
+            echo "Não foi possível realizar a movimentação.";
+            return;
+        }
+
+        header('Location: index.php?acao=listar');
+        exit;
+    }
 }
