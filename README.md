@@ -63,13 +63,21 @@ git checkout develop
 
 ```
 /app
+
 /controllers
+
 /models
+
 /views
+
 /data
+
 /produtos.json
+
 /index.php
+
 /readme.md
+
 ```
 
 ---
