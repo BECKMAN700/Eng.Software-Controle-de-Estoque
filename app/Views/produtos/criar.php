@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Produto</title>
+</head>
+<body>
+    <h1>Cadastrar Produto</h1>
+
+    <form action="index.php?acao=salvar" method="POST">
+        <p>
+            <label>Nome:</label><br>
+            <input type="text" name="nome" required>
+        </p>
+
+        <p>
+            <label>Código:</label><br>
+            <input type="text" name="codigo" required>
+        </p>
+
+        <p>
+            <label>Quantidade:</label><br>
+            <input type="number" name="quantidade" min="0" required>
+        </p>
+
+        <p>
+            <label>Preço:</label><br>
+            <input type="number" name="preco" step="0.01" min="0" required>
+        </p>
+
+        <button type="submit">Salvar</button>
+        <a href="index.php?acao=listar">Voltar</a>
+    </form>
+</body>
+</html>
