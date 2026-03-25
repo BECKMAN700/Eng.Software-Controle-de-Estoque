@@ -23,10 +23,12 @@ class ProdutoModel
 
     private function salvarDados($produtos)
     {
-        file_put_contents(
-            $this->caminhoArquivo,
-            json_encode($produtos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-        );
+        file_put_contents($this->caminhoArquivo, json_encode($produtos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function listar()
+    {
+        return $this->lerDados();
     }
 
     public function buscarPorId($id)
@@ -40,11 +42,6 @@ class ProdutoModel
         }
 
         return null;
-        
-    }
-    public function listar() 
-    { 
-        return $this->lerDados(); 
     }
 
     public function criar($dados)
@@ -68,52 +65,55 @@ class ProdutoModel
         $produtos[] = $novoProduto;
         $this->salvarDados($produtos);
     }
-    public function movimentar($id, $tipo, $quantidade) 
-    { 
-    $produtos = $this->lerDados(); 
- 
-    foreach ($produtos as &$produto) { 
-        if ($produto['id'] == $id) { 
-            if ($tipo === 'entrada') { 
-                $produto['quantidade'] += (int) $quantidade; 
-            } elseif ($tipo === 'saida') { 
-                if ($produto['quantidade'] < (int) $quantidade) { 
-                    return false; 
-                } 
-                $produto['quantidade'] -= (int) $quantidade; 
-            } 
- 
-            $this->salvarDados($produtos); 
-            return true; 
-        } 
-    } 
- 
-    return false; 
-} 
 
     public function atualizar($id, $dados)
     {
         $produtos = $this->lerDados();
+
         foreach ($produtos as &$produto) {
-        if ($produto['id'] == $id) {
-        $produto['nome'] = $dados['nome'];
-        $produto['codigo'] = $dados['codigo'];
-        $produto['quantidade'] = (int) $dados['quantidade'];
-        $produto['preco'] = (float) $dados['preco'];
-        break;
+            if ($produto['id'] == $id) {
+                $produto['nome'] = $dados['nome'];
+                $produto['codigo'] = $dados['codigo'];
+                $produto['quantidade'] = (int) $dados['quantidade'];
+                $produto['preco'] = (float) $dados['preco'];
+                break;
+            }
         }
-        }
+
         $this->salvarDados($produtos);
     }
 
     public function excluir($id)
     {
         $produtos = $this->lerDados();
-        $produtos = array_filter($produtos, function ($produto) use
-        ($id) {
-        return $produto['id'] != $id;
+
+        $produtos = array_filter($produtos, function ($produto) use ($id) {
+            return $produto['id'] != $id;
         });
+
         $this->salvarDados(array_values($produtos));
     }
 
+    public function movimentar($id, $tipo, $quantidade)
+    {
+        $produtos = $this->lerDados();
+
+        foreach ($produtos as &$produto) {
+            if ($produto['id'] == $id) {
+                if ($tipo === 'entrada') {
+                    $produto['quantidade'] += (int) $quantidade;
+                } elseif ($tipo === 'saida') {
+                    if ($produto['quantidade'] < (int) $quantidade) {
+                        return false;
+                    }
+                    $produto['quantidade'] -= (int) $quantidade;
+                }
+
+                $this->salvarDados($produtos);
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
