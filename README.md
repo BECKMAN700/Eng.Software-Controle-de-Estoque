@@ -49,10 +49,15 @@ git clone https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque
 # Acesse a pasta
 cd Eng.Software-Controle-de-Estoque
 
-# Execute o projeto (ajustar conforme tecnologia)
-```
+# entrar na main
+git checkout main
 
----
+# Execute o projeto (ajustar conforme tecnologia)
+php -S localhost:8000 -t public
+
+# Acessar o link
+git checkout develop
+
 
 ## 📁 Estrutura do Projeto
 
@@ -79,8 +84,7 @@ Este projeto pode ser utilizado para fins acadêmicos.
 
 Documentação e apresentações oficiais:
 
-* 🎥 Vídeo Comercial — vídeo 
----
+* 🎥 Vídeo do trabalho — https://drive.google.com/file/d/1c-Vv7s7j8tHVtl3zLq6i92OrunELLJ1o/view?usp=sharing
 
 ## 📌 Observações
 
@@ -94,8 +98,8 @@ Projeto acadêmico colaborativo — UFT (2026/1)
 
 ### 👥 Equipe
 
-* João Pedro Rodrigues Bequiman
-* Matheus Sulino Da Silva Costa
-* Murillo Fernandes
-* Iagor Lourenco
-* Giordano Bruno
+* João Pedro Rodrigues Bequiman - feature/cadastro-produto
+* Matheus Sulino Da Silva Costa - feature/editar-produto
+* Murillo Fernandes - feature/listagem-produtos
+* Iagor Lourenco - feature/excluir-produto
+* Giordano Bruno - feature/movimentacao-estoque
