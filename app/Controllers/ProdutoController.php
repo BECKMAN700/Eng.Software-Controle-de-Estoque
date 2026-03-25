@@ -35,7 +35,33 @@ class ProdutoController
         header('Location: index.php?acao=listar');
         exit;
     }
+    public function mostrarMovimentar() 
+    { 
+    $id = $_GET['id'] ?? 0; 
+    $produto = $this->model->buscarPorId($id); 
+ 
+    if (!$produto) { 
+        echo "Produto não encontrado."; 
+        return; 
+    } 
 
+    include __DIR__ . '/../Views/produtos/movimentar.php'; 
+    }
+     
+    public function movimentar() 
+    { 
+        $id = $_POST['id'] ?? 0; 
+        $tipo = $_POST['tipo'] ?? ''; 
+        $quantidade = $_POST['quantidade'] ?? 0; 
     
-
+        $sucesso = $this->model->movimentar($id, $tipo, $quantidade); 
+    
+        if (!$sucesso) { 
+            echo "Não foi possível realizar a movimentação."; 
+            return; 
+        } 
+    
+        header('Location: index.php?acao=listar'); 
+        exit; 
+    } 
 }

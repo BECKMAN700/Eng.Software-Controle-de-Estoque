@@ -43,9 +43,9 @@ class ProdutoModel
         
     }
     public function listar() 
-{ 
-return $this->lerDados(); 
-}
+    { 
+        return $this->lerDados(); 
+    }
 
     public function criar($dados)
     {
@@ -68,5 +68,27 @@ return $this->lerDados();
         $produtos[] = $novoProduto;
         $this->salvarDados($produtos);
     }
+    public function movimentar($id, $tipo, $quantidade) 
+    { 
+    $produtos = $this->lerDados(); 
+ 
+    foreach ($produtos as &$produto) { 
+        if ($produto['id'] == $id) { 
+            if ($tipo === 'entrada') { 
+                $produto['quantidade'] += (int) $quantidade; 
+            } elseif ($tipo === 'saida') { 
+                if ($produto['quantidade'] < (int) $quantidade) { 
+                    return false; 
+                } 
+                $produto['quantidade'] -= (int) $quantidade; 
+            } 
+ 
+            $this->salvarDados($produtos); 
+            return true; 
+        } 
+    } 
+ 
+    return false; 
+} 
 
 }

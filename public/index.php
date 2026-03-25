@@ -19,7 +19,14 @@ switch ($acao) {
             $controller->salvar();
         }
         break;
-
+    case 'movimentar': 
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
+            $controller->movimentar(); 
+        } else { 
+            $controller->mostrarMovimentar(); 
+        } 
+        break; 
+        
     default:
         echo "Ação inválida.";
         break;
