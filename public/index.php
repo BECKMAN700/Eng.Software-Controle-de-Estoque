@@ -19,6 +19,17 @@ switch ($acao) {
             $controller->salvar();
         }
         break;
+     
+    case 'editar':
+        $controller->mostrarEditar();
+        break;
+
+    case 'atualizar':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->atualizar();
+        }
+        break;
+    
 
     default:
         echo "Ação inválida.";

@@ -69,4 +69,20 @@ return $this->lerDados();
         $this->salvarDados($produtos);
     }
 
+    public function atualizar($id, $dados)
+    {
+        $produtos = $this->lerDados();
+        foreach ($produtos as &$produto) {
+        if ($produto['id'] == $id) {
+        $produto['nome'] = $dados['nome'];
+        $produto['codigo'] = $dados['codigo'];
+        $produto['quantidade'] = (int) $dados['quantidade'];
+        $produto['preco'] = (float) $dados['preco'];
+        break;
+        }
+        }
+        $this->salvarDados($produtos);
+    }
+
+
 }
