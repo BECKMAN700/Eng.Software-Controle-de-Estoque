@@ -1,1 +1,13 @@
-[]
+[
+    {
+        "id": 1,
+        "nome": "Desodorante",
+        "codigo": "7777777",
+        "categoria": "limpeza",
+        "unidade": "gm",
+        "descricao": "wfwrfsdwsv",
+        "status": "ativo",
+        "quantidade": 200,
+        "preco": 21
+    }
+]

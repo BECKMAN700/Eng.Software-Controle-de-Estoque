@@ -58,6 +58,10 @@ class ProdutoModel
             'id' => $novoId,
             'nome' => $dados['nome'],
             'codigo' => $dados['codigo'],
+            'categoria' => $dados['categoria'],
+            'unidade' => $dados['unidade'],
+            'descricao' => $dados['descricao'],
+            'status' => $dados['status'],
             'quantidade' => (int) $dados['quantidade'],
             'preco' => (float) $dados['preco']
         ];
@@ -76,6 +80,10 @@ class ProdutoModel
                 $produto['codigo'] = $dados['codigo'];
                 $produto['quantidade'] = (int) $dados['quantidade'];
                 $produto['preco'] = (float) $dados['preco'];
+                $produto['categoria'] = $dados['categoria'];
+                $produto['unidade'] = $dados['unidade'];
+                $produto['descricao'] = $dados['descricao'];
+                $produto['status'] = $dados['status'];
                 break;
             }
         }
