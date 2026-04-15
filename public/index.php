@@ -61,4 +61,13 @@ switch ($acao) {
     default:
         echo "Ação inválida.";
         break;
+        
+    case 'entrada':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->registrarEntrada();
+        } else {
+            $controller->mostrarEntrada();
+        }
+        break; 
 }
+    
