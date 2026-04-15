@@ -118,11 +118,6 @@
                     <th>Status</th>
                     <th>Quantidade</th>
                     <th>Preço</th>
-                    <th>Quantidade</th>
-                    <th>Preço</th>
-                    <th>Categoria</th>
-                    <th>Unidade</th>
-                    <th>Status</th>
                     <th>Ações</th>
                 </tr>
             </thead>

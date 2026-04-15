@@ -249,7 +249,7 @@ class ProdutoModel
                     'motivo' => $motivo,
                     'quantidade' => $quantidade,
                     'observacao' => trim($observacao),
-                    'data_hora' => date('Y-m-d H:i:s')
+                    'data_hora' => date('Y-m-d H:i:s'),
                     'data_hora' => (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
                 ];
 

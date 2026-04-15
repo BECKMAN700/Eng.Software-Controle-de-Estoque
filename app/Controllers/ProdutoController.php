@@ -118,8 +118,6 @@ class ProdutoController
         include __DIR__ . '/../Views/produtos/saida.php';
     }
 
-    public function registrarSaida()
-    {
     public function mostrarDetalhesSaida()
     {
         $id = $_GET['id'] ?? 0;
