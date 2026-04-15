@@ -58,16 +58,15 @@ switch ($acao) {
         $controller->mostrarHistoricoMovimentacoes();
         break;
 
-    default:
-        echo "Ação inválida.";
-        break;
-        
     case 'entrada':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller->registrarEntrada();
         } else {
             $controller->mostrarEntrada();
         }
-        break; 
+        break;
+
+    default:
+        echo "Ação inválida.";
+        break;
 }
-    
