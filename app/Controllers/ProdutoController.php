@@ -25,10 +25,14 @@ class ProdutoController
     public function salvar()
     {
         $dados = [
-            'nome' => $_POST['nome'] ?? '',
-            'codigo' => $_POST['codigo'] ?? '',
-            'quantidade' => $_POST['quantidade'] ?? 0,
-            'preco' => $_POST['preco'] ?? 0
+            'nome' => trim($_POST['nome'] ?? ''),
+            'codigo' => trim($_POST['codigo'] ?? ''),
+            'categoria' => trim($_POST['categoria'] ?? ''),
+            'unidade' => trim($_POST['unidade'] ?? ''),
+            'descricao' => trim($_POST['descricao'] ?? ''),
+            'status' => trim($_POST['status'] ?? 'ativo'),
+            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'preco' => (float) ($_POST['preco'] ?? 0)
         ];
 
         $this->model->criar($dados);
@@ -54,10 +58,14 @@ class ProdutoController
         $id = $_POST['id'] ?? 0;
 
         $dados = [
-            'nome' => $_POST['nome'] ?? '',
-            'codigo' => $_POST['codigo'] ?? '',
-            'quantidade' => $_POST['quantidade'] ?? 0,
-            'preco' => $_POST['preco'] ?? 0
+            'nome' => trim($_POST['nome'] ?? ''),
+            'codigo' => trim($_POST['codigo'] ?? ''),
+            'categoria' => trim($_POST['categoria'] ?? ''),
+            'unidade' => trim($_POST['unidade'] ?? ''),
+            'descricao' => trim($_POST['descricao'] ?? ''),
+            'status' => trim($_POST['status'] ?? 'ativo'),
+            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'preco' => (float) ($_POST['preco'] ?? 0)
         ];
 
         $this->model->atualizar($id, $dados);

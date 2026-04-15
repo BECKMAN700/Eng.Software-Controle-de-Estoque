@@ -23,6 +23,9 @@
                     <th>Quantidade</th>
                     <th>Preço</th>
                     <th>Ações</th>
+                    <th>Categoria</th>
+                    <th>Unidade</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +36,9 @@
                         <td><?= htmlspecialchars($produto['codigo']) ?></td>
                         <td><?= $produto['quantidade'] ?></td>
                         <td>R$ <?= number_format($produto['preco'], 2, ',', '.') ?></td>
+                        <td><?= htmlspecialchars($produto['categoria'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($produto['unidade'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($produto['status'] ?? '') ?></td>
                         <td>
                             <a href="index.php?acao=editar&id=<?= $produto['id'] ?>">Editar</a> |
                             <a href="index.php?acao=excluir&id=<?= $produto['id'] ?>" onclick="return confirm('Deseja excluir este produto?')">Excluir</a> |

@@ -29,6 +29,29 @@
             <label>Preço:</label><br>
             <input type="number" name="preco" step="0.01" min="0" value="<?= $produto['preco'] ?>" required>
         </p>
+        <p>
+            <label>Categoria:</label><br>
+            <input type="text" name="categoria" value="<?= htmlspecialchars($produto['categoria'] ?? '') ?>" required>
+        </p>
+
+        <p>
+            <label>Unidade:</label><br>
+            <input type="text" name="unidade" value="<?= htmlspecialchars($produto['unidade'] ?? '') ?>" required>
+        </p>
+
+        <p>
+            <label>Descrição:</label><br>
+            <textarea name="descricao" rows="4" cols="40" required><?= htmlspecialchars($produto['descricao'] ?? '') ?></textarea>
+        </p>
+
+        <p>
+            <label>Status:</label><br>
+            <select name="status" required>
+                <option value="ativo" <?= (($produto['status'] ?? '') === 'ativo') ? 'selected' : '' ?>>Ativo</option>
+                <option value="inativo" <?= (($produto['status'] ?? '') === 'inativo') ? 'selected' : '' ?>>Inativo</option>
+                <option value="descontinuado" <?= (($produto['status'] ?? '') === 'descontinuado') ? 'selected' : '' ?>>Descontinuado</option>
+            </select>
+        </p>
 
         <button type="submit">Atualizar</button>
         <a href="index.php?acao=listar">Voltar</a>

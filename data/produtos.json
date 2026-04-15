@@ -1,10 +1,13 @@
 [
     {
         "id": 1,
-        "nome": "teste",
-        "codigo": "teste",
-        "quantidade": 5,
-        "preco": 20,
-        "historico_movimentacoes": []
+        "nome": "Desodorante",
+        "codigo": "7777777",
+        "categoria": "limpeza",
+        "unidade": "gm",
+        "descricao": "wfwrfsdwsv",
+        "status": "ativo",
+        "quantidade": 200,
+        "preco": 21
     }
 ]
