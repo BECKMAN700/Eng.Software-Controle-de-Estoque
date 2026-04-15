@@ -189,4 +189,35 @@ class ProdutoController
 
         include __DIR__ . '/../Views/produtos/historico_movimentacoes.php';
     }
+
+    public function mostrarEntrada()
+        {
+            $id = $_GET['id'] ?? 0;
+            $produto = $this->model->buscarPorId($id);
+
+            if (!$produto) {
+                echo "Produto não encontrado.";
+                return;
+            }
+
+            include __DIR__ . '/../Views/produtos/entrada.php';
+        }
+
+    public function registrarEntrada()
+        {
+            $id = $_POST['id'] ?? 0;
+            $motivo = $_POST['motivo'] ?? '';
+            $quantidade = $_POST['quantidade'] ?? 0;
+            $observacao = $_POST['observacao'] ?? '';
+
+            $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao);
+
+            if (!$sucesso) {
+                echo "Não foi possível registrar a entrada de estoque.";
+                return;
+            }
+
+            header('Location: index.php?acao=listar');
+            exit;
+        }
 }

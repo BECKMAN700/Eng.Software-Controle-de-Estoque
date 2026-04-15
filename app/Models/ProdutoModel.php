@@ -234,6 +234,41 @@ class ProdutoModel
         return false;
     }
 
+    public function registrarEntrada($id, $motivo, $quantidade, $observacao = '')
+    {
+        $motivosValidos = ['compra', 'devolucao', 'transferencia'];
+        $quantidade = (int) $quantidade;
+
+        if ($quantidade <= 0 || !in_array($motivo, $motivosValidos, true)) {
+            return false;
+        }
+
+        $produtos = $this->lerDados();
+
+        foreach ($produtos as &$produto) {
+            if ($produto['id'] == $id) {
+                $produto['quantidade'] += $quantidade;
+
+                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
+                    $produto['historico_movimentacoes'] = [];
+                }
+
+                $produto['historico_movimentacoes'][] = [
+                    'tipo' => 'entrada',
+                    'motivo' => $motivo,
+                    'quantidade' => $quantidade,
+                    'observacao' => trim($observacao),
+                    'data_hora' => (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
+                ];
+
+                $this->salvarDados($produtos);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function registrarSaida($id, $motivo, $quantidade, $observacao = '')
     {
         $motivosValidos = ['venda', 'consumo_interno', 'perda', 'avaria'];

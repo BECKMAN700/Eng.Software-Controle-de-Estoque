@@ -138,6 +138,7 @@
                             <a href="index.php?acao=movimentar&id=<?= $produto['id'] ?>">Movimentar</a>
                             <a href="index.php?acao=saida&id=<?= $produto['id'] ?>">Registrar saída</a>
                             <a href="index.php?acao=historico_movimentacoes&id=<?= $produto['id'] ?>">Histórico de movimentações</a>
+                            <a href="index.php?acao=entrada&id=<?= $produto['id'] ?>">Registrar entrada</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
