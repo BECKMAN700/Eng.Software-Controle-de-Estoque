@@ -106,6 +106,7 @@ class ProdutoController
 
     public function mostrarSaida()
     {
+        // Exibe uma tela própria para registrar saída de estoque com o motivo da baixa.
         $id = $_GET['id'] ?? 0;
         $produto = $this->model->buscarPorId($id);
 
@@ -119,6 +120,29 @@ class ProdutoController
 
     public function registrarSaida()
     {
+    public function mostrarDetalhesSaida()
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        $historicoSaidas = array_values(array_filter(
+            $produto['historico_movimentacoes'] ?? [],
+            function ($movimentacao) {
+                return ($movimentacao['tipo'] ?? '') === 'saida';
+            }
+        ));
+
+        include __DIR__ . '/../Views/produtos/detalhes_saida.php';
+    }
+
+    public function registrarSaida()
+    {
+        // Recebe os dados da saída e envia para o model validar e persistir a baixa.
         $id = $_POST['id'] ?? 0;
         $motivo = $_POST['motivo'] ?? '';
         $quantidade = $_POST['quantidade'] ?? 0;

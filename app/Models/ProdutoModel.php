@@ -159,6 +159,10 @@ class ProdutoModel
             if ($produto['id'] == $id) {
                 $produto['nome'] = $dados['nome'];
                 $produto['codigo'] = $dados['codigo'];
+                $produto['quantidade'] = (int) $dados['quantidade'];
+                $produto['preco'] = (float) $dados['preco'];
+
+
                 $produto['categoria'] = $dados['categoria'];
                 $produto['unidade'] = $dados['unidade'];
                 $produto['descricao'] = $dados['descricao'];
@@ -171,6 +175,11 @@ class ProdutoModel
                 }
 
                 break;
+                break;                
+                // Mantém campos extras já gravados no JSON, como o histórico de saídas.
+                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
+                    $produto['historico_movimentacoes'] = [];
+                }
             }
         }
 
@@ -213,6 +222,7 @@ class ProdutoModel
 
     public function registrarSaida($id, $motivo, $quantidade, $observacao = '')
     {
+        // Valida o motivo da saída e grava uma baixa explícita no histórico do produto.
         $motivosValidos = ['venda', 'consumo_interno', 'perda', 'avaria'];
         $quantidade = (int) $quantidade;
 
@@ -240,6 +250,7 @@ class ProdutoModel
                     'quantidade' => $quantidade,
                     'observacao' => trim($observacao),
                     'data_hora' => date('Y-m-d H:i:s')
+                    'data_hora' => (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
                 ];
 
                 $this->salvarDados($produtos);

@@ -118,6 +118,11 @@
                     <th>Status</th>
                     <th>Quantidade</th>
                     <th>Preço</th>
+                    <th>Quantidade</th>
+                    <th>Preço</th>
+                    <th>Categoria</th>
+                    <th>Unidade</th>
+                    <th>Status</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -137,6 +142,7 @@
                             <a href="index.php?acao=excluir&id=<?= $produto['id'] ?>" onclick="return confirm('Deseja excluir este produto?')">Excluir</a>
                             <a href="index.php?acao=movimentar&id=<?= $produto['id'] ?>">Movimentar</a>
                             <a href="index.php?acao=saida&id=<?= $produto['id'] ?>">Registrar saída</a>
+                            <a href="index.php?acao=detalhes_saida&id=<?= $produto['id'] ?>">Detalhes da saída</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
