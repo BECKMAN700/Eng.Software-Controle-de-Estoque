@@ -13,7 +13,16 @@ class ProdutoController
 
     public function listar()
     {
-        $produtos = $this->model->listar();
+        $busca = trim($_GET['busca'] ?? '');
+        $categoria = trim($_GET['categoria'] ?? '');
+        $unidade = trim($_GET['unidade'] ?? '');
+        $status = trim($_GET['status'] ?? '');
+
+        $produtos = $this->model->listarFiltrados($busca, $categoria, $unidade, $status);
+        $categorias = $this->model->listarCategorias();
+        $unidades = $this->model->listarUnidades();
+        $statusOptions = ['ativo', 'inativo', 'descontinuado'];
+
         include __DIR__ . '/../Views/produtos/listar.php';
     }
 
@@ -25,10 +34,14 @@ class ProdutoController
     public function salvar()
     {
         $dados = [
-            'nome' => $_POST['nome'] ?? '',
-            'codigo' => $_POST['codigo'] ?? '',
-            'quantidade' => $_POST['quantidade'] ?? 0,
-            'preco' => $_POST['preco'] ?? 0
+            'nome' => trim($_POST['nome'] ?? ''),
+            'codigo' => trim($_POST['codigo'] ?? ''),
+            'categoria' => trim($_POST['categoria'] ?? ''),
+            'unidade' => trim($_POST['unidade'] ?? ''),
+            'descricao' => trim($_POST['descricao'] ?? ''),
+            'status' => trim($_POST['status'] ?? 'ativo'),
+            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'preco' => (float) ($_POST['preco'] ?? 0)
         ];
 
         $this->model->criar($dados);
@@ -54,10 +67,14 @@ class ProdutoController
         $id = $_POST['id'] ?? 0;
 
         $dados = [
-            'nome' => $_POST['nome'] ?? '',
-            'codigo' => $_POST['codigo'] ?? '',
-            'quantidade' => $_POST['quantidade'] ?? 0,
-            'preco' => $_POST['preco'] ?? 0
+            'nome' => trim($_POST['nome'] ?? ''),
+            'codigo' => trim($_POST['codigo'] ?? ''),
+            'categoria' => trim($_POST['categoria'] ?? ''),
+            'unidade' => trim($_POST['unidade'] ?? ''),
+            'descricao' => trim($_POST['descricao'] ?? ''),
+            'status' => trim($_POST['status'] ?? 'ativo'),
+            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'preco' => (float) ($_POST['preco'] ?? 0)
         ];
 
         $this->model->atualizar($id, $dados);
@@ -87,13 +104,67 @@ class ProdutoController
         include __DIR__ . '/../Views/produtos/movimentar.php';
     }
 
+    public function mostrarSaida()
+    {
+        // Exibe uma tela própria para registrar saída de estoque com o motivo da baixa.
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        include __DIR__ . '/../Views/produtos/saida.php';
+    }
+
+    public function mostrarDetalhesSaida()
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        $historicoSaidas = array_values(array_filter(
+            $produto['historico_movimentacoes'] ?? [],
+            function ($movimentacao) {
+                return ($movimentacao['tipo'] ?? '') === 'saida';
+            }
+        ));
+
+        include __DIR__ . '/../Views/produtos/detalhes_saida.php';
+    }
+
+    public function registrarSaida()
+    {
+        // Recebe os dados da saída e envia para o model validar e persistir a baixa.
+        $id = $_POST['id'] ?? 0;
+        $motivo = $_POST['motivo'] ?? '';
+        $quantidade = $_POST['quantidade'] ?? 0;
+        $observacao = $_POST['observacao'] ?? '';
+
+        $sucesso = $this->model->registrarSaida($id, $motivo, $quantidade, $observacao);
+
+        if (!$sucesso) {
+            echo "Não foi possível registrar a saída de estoque.";
+            return;
+        }
+
+        header('Location: index.php?acao=listar');
+        exit;
+    }
+
     public function movimentar()
     {
         $id = $_POST['id'] ?? 0;
         $tipo = $_POST['tipo'] ?? '';
         $quantidade = $_POST['quantidade'] ?? 0;
+        $observacao = $_POST['observacao'] ?? '';
 
-        $sucesso = $this->model->movimentar($id, $tipo, $quantidade);
+        $sucesso = $this->model->movimentar($id, $tipo, $quantidade, $observacao);
 
         if (!$sucesso) {
             echo "Não foi possível realizar a movimentação.";
@@ -102,5 +173,20 @@ class ProdutoController
 
         header('Location: index.php?acao=listar');
         exit;
+    }
+
+    public function mostrarHistoricoMovimentacoes()
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        $historico = $this->model->buscarHistoricoPorProduto($id);
+
+        include __DIR__ . '/../Views/produtos/historico_movimentacoes.php';
     }
 }

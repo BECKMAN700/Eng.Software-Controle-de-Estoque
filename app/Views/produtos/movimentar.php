@@ -20,6 +20,10 @@
                 <option value="saida">Saída</option>
             </select>
         </p>
+        <p>
+            <label>Observação:</label><br>
+            <textarea name="observacao" rows="4" cols="40"></textarea>
+        </p>
 
         <p>
             <label>Quantidade:</label><br>
