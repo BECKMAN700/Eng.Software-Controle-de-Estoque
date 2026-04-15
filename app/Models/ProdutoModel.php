@@ -63,7 +63,8 @@ class ProdutoModel
             'descricao' => $dados['descricao'],
             'status' => $dados['status'],
             'quantidade' => (int) $dados['quantidade'],
-            'preco' => (float) $dados['preco']
+            'preco' => (float) $dados['preco'],
+            'historico_movimentacoes' => []
         ];
 
         $produtos[] = $novoProduto;
@@ -80,11 +81,17 @@ class ProdutoModel
                 $produto['codigo'] = $dados['codigo'];
                 $produto['quantidade'] = (int) $dados['quantidade'];
                 $produto['preco'] = (float) $dados['preco'];
+
+
                 $produto['categoria'] = $dados['categoria'];
                 $produto['unidade'] = $dados['unidade'];
                 $produto['descricao'] = $dados['descricao'];
                 $produto['status'] = $dados['status'];
-                break;
+                break;                
+                // Mantém campos extras já gravados no JSON, como o histórico de saídas.
+                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
+                    $produto['historico_movimentacoes'] = [];
+                }
             }
         }
 
@@ -116,6 +123,46 @@ class ProdutoModel
                     }
                     $produto['quantidade'] -= (int) $quantidade;
                 }
+
+                $this->salvarDados($produtos);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function registrarSaida($id, $motivo, $quantidade, $observacao = '')
+    {
+        // Valida o motivo da saída e grava uma baixa explícita no histórico do produto.
+        $motivosValidos = ['venda', 'consumo_interno', 'perda', 'avaria'];
+        $quantidade = (int) $quantidade;
+
+        if ($quantidade <= 0 || !in_array($motivo, $motivosValidos, true)) {
+            return false;
+        }
+
+        $produtos = $this->lerDados();
+
+        foreach ($produtos as &$produto) {
+            if ($produto['id'] == $id) {
+                if ((int) $produto['quantidade'] < $quantidade) {
+                    return false;
+                }
+
+                $produto['quantidade'] -= $quantidade;
+
+                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
+                    $produto['historico_movimentacoes'] = [];
+                }
+
+                $produto['historico_movimentacoes'][] = [
+                    'tipo' => 'saida',
+                    'motivo' => $motivo,
+                    'quantidade' => $quantidade,
+                    'observacao' => trim($observacao),
+                    'data_hora' => date('Y-m-d H:i:s')
+                ];
 
                 $this->salvarDados($produtos);
                 return true;

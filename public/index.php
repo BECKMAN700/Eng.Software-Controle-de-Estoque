@@ -42,6 +42,14 @@ switch ($acao) {
         }
         break;
 
+    case 'saida':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->registrarSaida();
+        } else {
+            $controller->mostrarSaida();
+        }
+        break;
+
     default:
         echo "Ação inválida.";
         break;
