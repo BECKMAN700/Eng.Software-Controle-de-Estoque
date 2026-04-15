@@ -87,6 +87,39 @@ class ProdutoController
         include __DIR__ . '/../Views/produtos/movimentar.php';
     }
 
+    public function mostrarSaida()
+    {
+        // Exibe uma tela própria para registrar saída de estoque com o motivo da baixa.
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        include __DIR__ . '/../Views/produtos/saida.php';
+    }
+
+    public function registrarSaida()
+    {
+        // Recebe os dados da saída e envia para o model validar e persistir a baixa.
+        $id = $_POST['id'] ?? 0;
+        $motivo = $_POST['motivo'] ?? '';
+        $quantidade = $_POST['quantidade'] ?? 0;
+        $observacao = $_POST['observacao'] ?? '';
+
+        $sucesso = $this->model->registrarSaida($id, $motivo, $quantidade, $observacao);
+
+        if (!$sucesso) {
+            echo "Não foi possível registrar a saída de estoque.";
+            return;
+        }
+
+        header('Location: index.php?acao=listar');
+        exit;
+    }
+
     public function movimentar()
     {
         $id = $_POST['id'] ?? 0;

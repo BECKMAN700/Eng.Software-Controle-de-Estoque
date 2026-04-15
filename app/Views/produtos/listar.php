@@ -37,6 +37,8 @@
                             <a href="index.php?acao=editar&id=<?= $produto['id'] ?>">Editar</a> |
                             <a href="index.php?acao=excluir&id=<?= $produto['id'] ?>" onclick="return confirm('Deseja excluir este produto?')">Excluir</a> |
                             <a href="index.php?acao=movimentar&id=<?= $produto['id'] ?>">Movimentar</a>
+                            |
+                            <a href="index.php?acao=saida&id=<?= $produto['id'] ?>">Registrar saída</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
