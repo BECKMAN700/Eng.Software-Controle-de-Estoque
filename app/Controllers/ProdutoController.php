@@ -13,7 +13,16 @@ class ProdutoController
 
     public function listar()
     {
-        $produtos = $this->model->listar();
+        $busca = trim($_GET['busca'] ?? '');
+        $categoria = trim($_GET['categoria'] ?? '');
+        $unidade = trim($_GET['unidade'] ?? '');
+        $status = trim($_GET['status'] ?? '');
+
+        $produtos = $this->model->listarFiltrados($busca, $categoria, $unidade, $status);
+        $categorias = $this->model->listarCategorias();
+        $unidades = $this->model->listarUnidades();
+        $statusOptions = ['ativo', 'inativo', 'descontinuado'];
+
         include __DIR__ . '/../Views/produtos/listar.php';
     }
 
@@ -109,6 +118,8 @@ class ProdutoController
         include __DIR__ . '/../Views/produtos/saida.php';
     }
 
+    public function registrarSaida()
+    {
     public function mostrarDetalhesSaida()
     {
         $id = $_GET['id'] ?? 0;

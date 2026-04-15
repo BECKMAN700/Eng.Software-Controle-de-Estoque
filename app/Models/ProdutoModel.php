@@ -23,12 +23,92 @@ class ProdutoModel
 
     private function salvarDados($produtos)
     {
-        file_put_contents($this->caminhoArquivo, json_encode($produtos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        file_put_contents(
+            $this->caminhoArquivo,
+            json_encode($produtos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+        );
+    }
+
+    private function normalizarTexto($valor)
+    {
+        return strtolower(trim((string) $valor));
+    }
+
+    private function contemTexto($texto, $busca)
+    {
+        return strpos($texto, $busca) !== false;
     }
 
     public function listar()
     {
         return $this->lerDados();
+    }
+
+    public function listarFiltrados($busca = '', $categoria = '', $unidade = '', $status = '')
+    {
+        $produtos = $this->lerDados();
+
+        $busca = $this->normalizarTexto($busca);
+        $categoria = $this->normalizarTexto($categoria);
+        $unidade = $this->normalizarTexto($unidade);
+        $status = $this->normalizarTexto($status);
+
+        $filtrados = array_filter($produtos, function ($produto) use ($busca, $categoria, $unidade, $status) {
+            $nome = $this->normalizarTexto($produto['nome'] ?? '');
+            $codigo = $this->normalizarTexto($produto['codigo'] ?? '');
+            $produtoCategoria = $this->normalizarTexto($produto['categoria'] ?? '');
+            $produtoUnidade = $this->normalizarTexto($produto['unidade'] ?? '');
+            $produtoStatus = $this->normalizarTexto($produto['status'] ?? '');
+
+            $passaBusca = true;
+            if ($busca !== '') {
+                $passaBusca = $this->contemTexto($nome, $busca) || $this->contemTexto($codigo, $busca);
+            }
+
+            $passaCategoria = ($categoria === '' || $produtoCategoria === $categoria);
+            $passaUnidade = ($unidade === '' || $produtoUnidade === $unidade);
+            $passaStatus = ($status === '' || $produtoStatus === $status);
+
+            return $passaBusca && $passaCategoria && $passaUnidade && $passaStatus;
+        });
+
+        return array_values($filtrados);
+    }
+
+    public function listarCategorias()
+    {
+        $produtos = $this->lerDados();
+        $categorias = [];
+
+        foreach ($produtos as $produto) {
+            $categoria = trim($produto['categoria'] ?? '');
+            if ($categoria !== '') {
+                $categorias[] = $categoria;
+            }
+        }
+
+        $categorias = array_values(array_unique($categorias));
+        natcasesort($categorias);
+
+        return array_values($categorias);
+    }
+
+    public function listarUnidades()
+    {
+        $produtos = $this->lerDados();
+        $unidades = [];
+
+        foreach ($produtos as $produto) {
+            $unidade = trim($produto['unidade'] ?? '');
+            if ($unidade !== '') {
+                $unidades[] = $unidade;
+            }
+        }
+
+        $unidades = array_values(array_unique($unidades));
+        natcasesort($unidades);
+
+        return array_values($unidades);
     }
 
     public function buscarPorId($id)
@@ -87,6 +167,14 @@ class ProdutoModel
                 $produto['unidade'] = $dados['unidade'];
                 $produto['descricao'] = $dados['descricao'];
                 $produto['status'] = $dados['status'];
+                $produto['quantidade'] = (int) $dados['quantidade'];
+                $produto['preco'] = (float) $dados['preco'];
+
+                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
+                    $produto['historico_movimentacoes'] = [];
+                }
+
+                break;
                 break;                
                 // Mantém campos extras já gravados no JSON, como o histórico de saídas.
                 if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
@@ -161,6 +249,7 @@ class ProdutoModel
                     'motivo' => $motivo,
                     'quantidade' => $quantidade,
                     'observacao' => trim($observacao),
+                    'data_hora' => date('Y-m-d H:i:s')
                     'data_hora' => (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
                 ];
 
