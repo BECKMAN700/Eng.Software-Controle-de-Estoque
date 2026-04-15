@@ -27,6 +27,29 @@
             <label>Preço:</label><br>
             <input type="number" name="preco" step="0.01" min="0" required>
         </p>
+        <p>
+            <label>Categoria:</label><br>
+            <input type="text" name="categoria" required>
+        </p>
+
+        <p>
+            <label>Unidade:</label><br>
+            <input type="text" name="unidade" required>
+        </p>
+
+        <p>
+            <label>Descrição:</label><br>
+            <textarea name="descricao" rows="4" cols="40" required></textarea>
+        </p>
+
+        <p>
+            <label>Status:</label><br>
+            <select name="status" required>
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+                <option value="descontinuado">Descontinuado</option>
+            </select>
+        </p>
 
         <button type="submit">Salvar</button>
         <a href="index.php?acao=listar">Voltar</a>
