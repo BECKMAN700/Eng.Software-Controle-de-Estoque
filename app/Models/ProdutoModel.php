@@ -58,6 +58,10 @@ class ProdutoModel
             'id' => $novoId,
             'nome' => $dados['nome'],
             'codigo' => $dados['codigo'],
+            'categoria' => $dados['categoria'],
+            'unidade' => $dados['unidade'],
+            'descricao' => $dados['descricao'],
+            'status' => $dados['status'],
             'quantidade' => (int) $dados['quantidade'],
             'preco' => (float) $dados['preco'],
             'historico_movimentacoes' => []
@@ -78,11 +82,16 @@ class ProdutoModel
                 $produto['quantidade'] = (int) $dados['quantidade'];
                 $produto['preco'] = (float) $dados['preco'];
 
+
+                $produto['categoria'] = $dados['categoria'];
+                $produto['unidade'] = $dados['unidade'];
+                $produto['descricao'] = $dados['descricao'];
+                $produto['status'] = $dados['status'];
+                break;                
                 // Mantém campos extras já gravados no JSON, como o histórico de saídas.
                 if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
                     $produto['historico_movimentacoes'] = [];
                 }
-                break;
             }
         }
 
