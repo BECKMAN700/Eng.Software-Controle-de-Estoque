@@ -162,8 +162,9 @@ class ProdutoController
         $id = $_POST['id'] ?? 0;
         $tipo = $_POST['tipo'] ?? '';
         $quantidade = $_POST['quantidade'] ?? 0;
+        $observacao = $_POST['observacao'] ?? '';
 
-        $sucesso = $this->model->movimentar($id, $tipo, $quantidade);
+        $sucesso = $this->model->movimentar($id, $tipo, $quantidade, $observacao);
 
         if (!$sucesso) {
             echo "Não foi possível realizar a movimentação.";
@@ -172,5 +173,20 @@ class ProdutoController
 
         header('Location: index.php?acao=listar');
         exit;
+    }
+
+    public function mostrarHistoricoMovimentacoes()
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        $historico = $this->model->buscarHistoricoPorProduto($id);
+
+        include __DIR__ . '/../Views/produtos/historico_movimentacoes.php';
     }
 }

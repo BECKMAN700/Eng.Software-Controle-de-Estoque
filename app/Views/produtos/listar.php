@@ -137,7 +137,7 @@
                             <a href="index.php?acao=excluir&id=<?= $produto['id'] ?>" onclick="return confirm('Deseja excluir este produto?')">Excluir</a>
                             <a href="index.php?acao=movimentar&id=<?= $produto['id'] ?>">Movimentar</a>
                             <a href="index.php?acao=saida&id=<?= $produto['id'] ?>">Registrar saída</a>
-                            <a href="index.php?acao=detalhes_saida&id=<?= $produto['id'] ?>">Detalhes da saída</a>
+                            <a href="index.php?acao=historico_movimentacoes&id=<?= $produto['id'] ?>">Histórico de movimentações</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
