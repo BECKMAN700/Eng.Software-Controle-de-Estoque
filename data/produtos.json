@@ -9,5 +9,17 @@
         "status": "ativo",
         "quantidade": 200,
         "preco": 21
+    },
+    {
+        "id": 2,
+        "nome": "sabao",
+        "codigo": "99999",
+        "categoria": "alimento",
+        "unidade": "kg",
+        "descricao": "wfwdgswdg",
+        "status": "ativo",
+        "quantidade": 12,
+        "preco": 79,
+        "historico_movimentacoes": []
     }
 ]

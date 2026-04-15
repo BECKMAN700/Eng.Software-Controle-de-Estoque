@@ -13,7 +13,16 @@ class ProdutoController
 
     public function listar()
     {
-        $produtos = $this->model->listar();
+        $busca = trim($_GET['busca'] ?? '');
+        $categoria = trim($_GET['categoria'] ?? '');
+        $unidade = trim($_GET['unidade'] ?? '');
+        $status = trim($_GET['status'] ?? '');
+
+        $produtos = $this->model->listarFiltrados($busca, $categoria, $unidade, $status);
+        $categorias = $this->model->listarCategorias();
+        $unidades = $this->model->listarUnidades();
+        $statusOptions = ['ativo', 'inativo', 'descontinuado'];
+
         include __DIR__ . '/../Views/produtos/listar.php';
     }
 
@@ -93,6 +102,37 @@ class ProdutoController
         }
 
         include __DIR__ . '/../Views/produtos/movimentar.php';
+    }
+
+    public function mostrarSaida()
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        include __DIR__ . '/../Views/produtos/saida.php';
+    }
+
+    public function registrarSaida()
+    {
+        $id = $_POST['id'] ?? 0;
+        $motivo = $_POST['motivo'] ?? '';
+        $quantidade = $_POST['quantidade'] ?? 0;
+        $observacao = $_POST['observacao'] ?? '';
+
+        $sucesso = $this->model->registrarSaida($id, $motivo, $quantidade, $observacao);
+
+        if (!$sucesso) {
+            echo "Não foi possível registrar a saída de estoque.";
+            return;
+        }
+
+        header('Location: index.php?acao=listar');
+        exit;
     }
 
     public function movimentar()
