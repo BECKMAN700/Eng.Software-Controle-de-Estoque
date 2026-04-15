@@ -22,10 +22,10 @@
                     <th>Código</th>
                     <th>Quantidade</th>
                     <th>Preço</th>
-                    <th>Ações</th>
                     <th>Categoria</th>
                     <th>Unidade</th>
                     <th>Status</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,6 +45,8 @@
                             <a href="index.php?acao=movimentar&id=<?= $produto['id'] ?>">Movimentar</a>
                             |
                             <a href="index.php?acao=saida&id=<?= $produto['id'] ?>">Registrar saída</a>
+                            |
+                            <a href="index.php?acao=detalhes_saida&id=<?= $produto['id'] ?>">Detalhes da saída</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

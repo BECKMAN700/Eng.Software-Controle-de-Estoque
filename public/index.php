@@ -50,6 +50,10 @@ switch ($acao) {
         }
         break;
 
+    case 'detalhes_saida':
+        $controller->mostrarDetalhesSaida();
+        break;
+
     default:
         echo "Ação inválida.";
         break;

@@ -1,1 +1,54 @@
-[]
+[
+    {
+        "id": 1,
+        "nome": "teste",
+        "codigo": "123",
+        "categoria": "sim",
+        "unidade": "45",
+        "descricao": "wetrygfd",
+        "status": "ativo",
+        "quantidade": 18,
+        "preco": 12,
+        "historico_movimentacoes": [
+            {
+                "tipo": "saida",
+                "motivo": "venda",
+                "quantidade": 12,
+                "observacao": "fsdfsdf",
+                "data_hora": "2026-04-15 01:01:36"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "nome": "teste2",
+        "codigo": "12",
+        "categoria": "teste2",
+        "unidade": "litro",
+        "descricao": "xfbcvzdvx",
+        "status": "ativo",
+        "quantidade": 37,
+        "preco": 34,
+        "historico_movimentacoes": [
+            {
+                "tipo": "saida",
+                "motivo": "venda",
+                "quantidade": 13,
+                "observacao": "esdafdfd",
+                "data_hora": "2026-04-15 01:01:49"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "nome": "yuffgg",
+        "codigo": "34",
+        "categoria": "tg",
+        "unidade": "lutrro",
+        "descricao": "dffds",
+        "status": "inativo",
+        "quantidade": 45,
+        "preco": 12,
+        "historico_movimentacoes": []
+    }
+]

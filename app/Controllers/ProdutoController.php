@@ -109,6 +109,26 @@ class ProdutoController
         include __DIR__ . '/../Views/produtos/saida.php';
     }
 
+    public function mostrarDetalhesSaida()
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
+
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
+        }
+
+        $historicoSaidas = array_values(array_filter(
+            $produto['historico_movimentacoes'] ?? [],
+            function ($movimentacao) {
+                return ($movimentacao['tipo'] ?? '') === 'saida';
+            }
+        ));
+
+        include __DIR__ . '/../Views/produtos/detalhes_saida.php';
+    }
+
     public function registrarSaida()
     {
         // Recebe os dados da saída e envia para o model validar e persistir a baixa.
