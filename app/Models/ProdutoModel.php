@@ -159,10 +159,6 @@ class ProdutoModel
             if ($produto['id'] == $id) {
                 $produto['nome'] = $dados['nome'];
                 $produto['codigo'] = $dados['codigo'];
-                $produto['quantidade'] = (int) $dados['quantidade'];
-                $produto['preco'] = (float) $dados['preco'];
-
-
                 $produto['categoria'] = $dados['categoria'];
                 $produto['unidade'] = $dados['unidade'];
                 $produto['descricao'] = $dados['descricao'];
@@ -175,11 +171,6 @@ class ProdutoModel
                 }
 
                 break;
-                break;                
-                // Mantém campos extras já gravados no JSON, como o histórico de saídas.
-                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
-                    $produto['historico_movimentacoes'] = [];
-                }
             }
         }
 
@@ -197,20 +188,43 @@ class ProdutoModel
         $this->salvarDados(array_values($produtos));
     }
 
-    public function movimentar($id, $tipo, $quantidade)
+    public function movimentar($id, $tipo, $quantidade, $observacao = '')
     {
         $produtos = $this->lerDados();
-
+        
         foreach ($produtos as &$produto) {
             if ($produto['id'] == $id) {
+                $quantidade = (int) $quantidade;
+
+                if ($quantidade <= 0) {
+                    return false;
+                }
+
+                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
+                    $produto['historico_movimentacoes'] = [];
+                }
+
                 if ($tipo === 'entrada') {
-                    $produto['quantidade'] += (int) $quantidade;
+                    $produto['quantidade'] += $quantidade;
+                    $motivo = 'entrada_manual';
                 } elseif ($tipo === 'saida') {
-                    if ($produto['quantidade'] < (int) $quantidade) {
+                    if ((int) $produto['quantidade'] < $quantidade) {
                         return false;
                     }
-                    $produto['quantidade'] -= (int) $quantidade;
+
+                    $produto['quantidade'] -= $quantidade;
+                    $motivo = 'saida_manual';
+                } else {
+                    return false;
                 }
+
+                $produto['historico_movimentacoes'][] = [
+                    'tipo' => $tipo,
+                    'motivo' => $motivo,
+                    'quantidade' => $quantidade,
+                    'observacao' => trim($observacao),
+                    'data_hora' => (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
+                ];
 
                 $this->salvarDados($produtos);
                 return true;
@@ -222,7 +236,6 @@ class ProdutoModel
 
     public function registrarSaida($id, $motivo, $quantidade, $observacao = '')
     {
-        // Valida o motivo da saída e grava uma baixa explícita no histórico do produto.
         $motivosValidos = ['venda', 'consumo_interno', 'perda', 'avaria'];
         $quantidade = (int) $quantidade;
 
@@ -249,7 +262,6 @@ class ProdutoModel
                     'motivo' => $motivo,
                     'quantidade' => $quantidade,
                     'observacao' => trim($observacao),
-                    'data_hora' => date('Y-m-d H:i:s'),
                     'data_hora' => (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
                 ];
 
@@ -259,5 +271,22 @@ class ProdutoModel
         }
 
         return false;
+    }
+
+    public function buscarHistoricoPorProduto($id)
+    {
+        $produto = $this->buscarPorId($id);
+
+        if (!$produto) {
+            return [];
+        }
+
+        $historico = $produto['historico_movimentacoes'] ?? [];
+
+        usort($historico, function ($a, $b) {
+            return strtotime($b['data_hora'] ?? '') <=> strtotime($a['data_hora'] ?? '');
+        });
+
+        return $historico;
     }
 }

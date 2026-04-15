@@ -54,6 +54,10 @@ switch ($acao) {
         $controller->mostrarDetalhesSaida();
         break;
 
+    case 'historico_movimentacoes':
+        $controller->mostrarHistoricoMovimentacoes();
+        break;
+
     default:
         echo "Ação inválida.";
         break;
