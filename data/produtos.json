@@ -7,7 +7,44 @@
         "unidade": "gm",
         "descricao": "wfwrfsdwsv",
         "status": "ativo",
-        "quantidade": 200,
-        "preco": 21
+        "quantidade": 135,
+        "preco": 21,
+        "historico_movimentacoes": [
+            {
+                "tipo": "saida",
+                "motivo": "venda",
+                "quantidade": 10,
+                "observacao": "",
+                "data_hora": "2026-04-15 04:36:12"
+            },
+            {
+                "tipo": "saida",
+                "motivo": "venda",
+                "quantidade": 190,
+                "observacao": "",
+                "data_hora": "2026-04-15 04:44:13"
+            },
+            {
+                "tipo": "saida",
+                "motivo": "venda",
+                "quantidade": 10,
+                "observacao": "",
+                "data_hora": "2026-04-15 04:46:34"
+            },
+            {
+                "tipo": "saida",
+                "motivo": "venda",
+                "quantidade": 5,
+                "observacao": "",
+                "data_hora": "2026-04-15 04:48:58"
+            },
+            {
+                "tipo": "saida",
+                "motivo": "venda",
+                "quantidade": 50,
+                "observacao": "",
+                "data_hora": "2026-04-15 04:59:30"
+            }
+        ]
     }
 ]
