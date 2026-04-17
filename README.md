@@ -64,6 +64,7 @@ O principal objetivo do projeto é:
 
 ## 📁 Estrutura do Projeto
 
+```bash
 Eng.Software-Controle-de-Estoque/
 ├── app/
 │   ├── Controllers/
@@ -77,6 +78,7 @@ Eng.Software-Controle-de-Estoque/
 │   ├── index.php
 │   └── teste_conexao.php
 └── README.md
+```
 
 ---
 
@@ -84,66 +86,89 @@ Eng.Software-Controle-de-Estoque/
 
 O sistema utiliza o banco de dados:
 
+```text
 controle_estoque
+```
 
 Com as tabelas principais:
 
-produtos
-movimentacoes
+- `produtos`
+- `movimentacoes`
 
 O script de criação do banco e das tabelas está em:
 
+```bash
 database/schema.sql
+```
 
 ---
 
 ## 🚀 Como Executar o Projeto
 
-1. Clonar o repositório
+### 1. Clonar o repositório
+
+```bash
 git clone https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque.git
+```
 
-2. Acessar a pasta do projeto
+### 2. Acessar a pasta do projeto
+
+```bash
 cd Eng.Software-Controle-de-Estoque
+```
 
-3. Colocar o projeto no XAMPP
+### 3. Colocar o projeto no XAMPP
 
 Copie a pasta do projeto para o diretório:
 
+```text
 C:\xampp\htdocs\
+```
 
 Ficando assim:
 
+```text
 C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
+```
 
-4. Iniciar o XAMPP
+### 4. Iniciar o XAMPP
 
-Abra o XAMPP Control Panel e inicie os módulos:
+Abra o **XAMPP Control Panel** e inicie os módulos:
 
-Apache
-MySQL
+- Apache
+- MySQL
 
-5. Criar o banco de dados
+### 5. Criar o banco de dados
 
 Abra no navegador:
 
+```text
 http://localhost/phpmyadmin
+```
 
 Crie um banco chamado:
 
+```text
 controle_estoque
+```
 
 Depois execute o script do arquivo:
 
+```bash
 database/schema.sql
+```
 
-6. Configurar a conexão com o banco
+### 6. Configurar a conexão com o banco
 
 Verifique o arquivo:
 
+```bash
 config/Database.php
+```
 
 Exemplo de configuração:
 
+```php
 <?php
 
 class Database
@@ -171,36 +196,41 @@ class Database
         }
     }
 }
-7. Acessar o sistema
+```
+
+### 7. Acessar o sistema
 
 No navegador, acesse:
 
+```text
 http://localhost/Eng.Software-Controle-de-Estoque/public/
+```
+
+---
+
+## 📌 Observações
+
+- O sistema foi migrado de **JSON para MySQL**
+- Para funcionamento correto, é necessário que o **Apache** e o **MySQL** estejam ativos no XAMPP
+- O banco de dados deve ser criado corretamente antes de executar o projeto
+- O projeto foi desenvolvido com fins acadêmicos para a disciplina de **Engenharia de Software**
+
+---
+
+## 👨‍💻 Contato & Créditos
+
+Projeto acadêmico colaborativo — **UFT (2026/1)**
+
+### 👥 Equipe
+
+- João Pedro Rodrigues Bequiman — `feature/cadastro-produto`
+- Matheus Sulino Da Silva Costa — `feature/editar-produto`
+- Murillo Fernandes — `feature/listagem-produtos`
+- Iagor Lourenco — `feature/excluir-produto`
+- Giordano Bruno — `feature/movimentacao-estoque`
 
 ---
 
 ## 📄 Licença
 
 Este projeto pode ser utilizado para fins acadêmicos.
-
----
-
-
-## 📌 Observações
-O sistema foi migrado de JSON para MySQL
-Para funcionamento correto, é necessário que o Apache e o MySQL estejam ativos no XAMPP
-O banco de dados deve ser criado corretamente antes de executar o projeto
-O projeto foi desenvolvido com fins acadêmicos para a disciplina de Engenharia de Software
----
-
-## 👨‍💻 Contato & Créditos
-
-Projeto acadêmico colaborativo — UFT (2026/1)
-
-### 👥 Equipe
-
-* João Pedro Rodrigues Bequiman - feature/cadastro-produto
-* Matheus Sulino Da Silva Costa - feature/editar-produto
-* Murillo Fernandes - feature/listagem-produtos
-* Iagor Lourenco - feature/excluir-produto
-* Giordano Bruno - feature/movimentacao-estoque
