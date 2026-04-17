@@ -1,14 +1,16 @@
 # 📦 Controle de Estoque
 
-Sistema desenvolvido para gerenciamento eficiente de estoque, permitindo o controle de produtos, entradas, saídas e organização de itens de forma prática e intuitiva.
+Sistema web desenvolvido para o gerenciamento eficiente de estoque, permitindo o controle de produtos, entradas, saídas e histórico de movimentações de forma prática e organizada.
 
 ---
 
 ## 📌 Sobre o Projeto
 
-O **Controle de Estoque** é uma aplicação voltada para auxiliar empresas, comércios ou usuários individuais no gerenciamento de produtos armazenados.
+O **Controle de Estoque** é uma aplicação desenvolvida com **PHP nativo**, **HTML**, **CSS** e **MySQL**, seguindo o padrão de arquitetura **MVC**.
 
-O sistema permite acompanhar o fluxo de mercadorias, evitando perdas, excesso de produtos ou falta de itens essenciais.
+O sistema foi criado com o objetivo de auxiliar no gerenciamento de produtos armazenados, possibilitando o cadastro, consulta, atualização e movimentação de itens em estoque.
+
+Inicialmente, o projeto utilizava armazenamento em arquivo JSON, mas foi migrado para **banco de dados MySQL**, tornando a persistência de dados mais adequada e profissional para a proposta do sistema.
 
 ---
 
@@ -16,69 +18,164 @@ O sistema permite acompanhar o fluxo de mercadorias, evitando perdas, excesso de
 
 O principal objetivo do projeto é:
 
-* Facilitar o controle de estoque
-* Organizar produtos cadastrados
-* Registrar entradas e saídas
-* Melhorar a tomada de decisão com base nos dados
+- Facilitar o controle de estoque
+- Organizar produtos cadastrados
+- Registrar entradas e saídas de mercadorias
+- Manter o histórico de movimentações
+- Melhorar a visualização e o acompanhamento dos dados
 
 ---
 
 ## ⚙️ Funcionalidades
 
-* 📋 Cadastro de produtos
-* ➕ Entrada de mercadorias
-* ➖ Saída de produtos
-* 🔍 Consulta de estoque
-* 📊 Controle de quantidade disponível
+### 📋 Produtos
+- Cadastro de produtos
+- Listagem de produtos
+- Edição de produtos
+- Exclusão de produtos
+- Filtros por nome, categoria, unidade e status
+
+### 📦 Estoque
+- Registro de entrada de mercadorias
+- Registro de saída de produtos
+- Atualização automática da quantidade disponível
+
+### 🕘 Movimentações
+- Histórico de movimentações por produto
+- Registro do tipo de movimentação
+- Registro da quantidade movimentada
+- Registro do motivo
+- Registro de observações
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-* Linguagem: PHP
-* interface: HTML, CSS
+- **PHP 8**
+- **HTML5**
+- **CSS3**
+- **MySQL**
+- **XAMPP**
+- **Arquitetura MVC**
+- **Git e GitHub**
+- **GitFlow**
+
+---
+
+## 📁 Estrutura do Projeto
+
+Eng.Software-Controle-de-Estoque/
+├── app/
+│   ├── Controllers/
+│   ├── Models/
+│   └── Views/
+├── config/
+│   └── Database.php
+├── database/
+│   └── schema.sql
+├── public/
+│   ├── index.php
+│   └── teste_conexao.php
+└── README.md
+
+---
+
+## 🗄️ Banco de Dados
+
+O sistema utiliza o banco de dados:
+
+controle_estoque
+
+Com as tabelas principais:
+
+produtos
+movimentacoes
+
+O script de criação do banco e das tabelas está em:
+
+database/schema.sql
 
 ---
 
 ## 🚀 Como Executar o Projeto
 
-```bash
-# Clone o repositório
-git clone https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque
+1. Clonar o repositório
+git clone https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque.git
 
-# Acesse a pasta
+2. Acessar a pasta do projeto
 cd Eng.Software-Controle-de-Estoque
 
-# entrar na main
-git checkout main
+3. Colocar o projeto no XAMPP
 
-# Execute o projeto (ajustar conforme tecnologia)
-php -S localhost:8000 -t public
+Copie a pasta do projeto para o diretório:
 
-# Acessar o link
-git checkout develop
+C:\xampp\htdocs\
 
+Ficando assim:
 
-## 📁 Estrutura do Projeto
+C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
 
-```
-/app
+4. Iniciar o XAMPP
 
-/controllers
+Abra o XAMPP Control Panel e inicie os módulos:
 
-/models
+Apache
+MySQL
 
-/views
+5. Criar o banco de dados
 
-/data
+Abra no navegador:
 
-/produtos.json
+http://localhost/phpmyadmin
 
-/index.php
+Crie um banco chamado:
 
-/readme.md
+controle_estoque
 
-```
+Depois execute o script do arquivo:
+
+database/schema.sql
+
+6. Configurar a conexão com o banco
+
+Verifique o arquivo:
+
+config/Database.php
+
+Exemplo de configuração:
+
+<?php
+
+class Database
+{
+    private $host = '127.0.0.1';
+    private $dbname = 'controle_estoque';
+    private $user = 'root';
+    private $pass = '';
+    private $port = '3306';
+    private $conn;
+
+    public function conectar()
+    {
+        try {
+            $this->conn = new PDO(
+                "mysql:host={$this->host};port={$this->port};dbname={$this->dbname};charset=utf8mb4",
+                $this->user,
+                $this->pass
+            );
+
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $this->conn;
+        } catch (PDOException $e) {
+            die('Erro na conexão com o banco: ' . $e->getMessage());
+        }
+    }
+}
+7. Acessar o sistema
+
+No navegador, acesse:
+
+http://localhost/Eng.Software-Controle-de-Estoque/public/
 
 ---
 
@@ -88,16 +185,12 @@ Este projeto pode ser utilizado para fins acadêmicos.
 
 ---
 
-## 📊 Apresentações do Projeto
-
-Documentação e apresentações oficiais:
-
-* 🎥 Vídeo do trabalho — https://drive.google.com/file/d/1c-Vv7s7j8tHVtl3zLq6i92OrunELLJ1o/view?usp=sharing
 
 ## 📌 Observações
-
-Este projeto foi desenvolvido com fins acadêmicos para a disciplina de Engenharia de Software.
-
+O sistema foi migrado de JSON para MySQL
+Para funcionamento correto, é necessário que o Apache e o MySQL estejam ativos no XAMPP
+O banco de dados deve ser criado corretamente antes de executar o projeto
+O projeto foi desenvolvido com fins acadêmicos para a disciplina de Engenharia de Software
 ---
 
 ## 👨‍💻 Contato & Créditos
