@@ -223,11 +223,11 @@ Projeto acadêmico colaborativo — **UFT (2026/1)**
 
 ### 👥 Equipe
 
-- João Pedro Rodrigues Bequiman — `feature/cadastro-produto`
-- Matheus Sulino Da Silva Costa — `feature/editar-produto`
-- Murillo Fernandes — `feature/listagem-produtos`
-- Iagor Lourenco — `feature/excluir-produto`
-- Giordano Bruno — `feature/movimentacao-estoque`
+- João Pedro Rodrigues Bequiman
+- Matheus Sulino Da Silva Costa
+- Murillo Fernandes
+- Iagor Lourenco
+- Giordano Bruno
 
 ---
 
