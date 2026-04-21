@@ -16,8 +16,8 @@ CREATE TABLE produtos (
     descricao TEXT,
     criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
     atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    estoque_minimo INT DEFAULT NULL,
-    estoque_maximo INT DEFAULT NULL
+    estoque_minimo INT DEFAULT 5,
+    estoque_maximo INT DEFAULT 50
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE movimentacoes (

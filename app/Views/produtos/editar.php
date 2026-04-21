@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Editar Produto</title>
@@ -12,9 +13,13 @@
             color: #1a1a1a;
         }
 
-        h1 { margin-bottom: 24px; }
+        h1 {
+            margin-bottom: 24px;
+        }
 
-        p { margin: 0 0 16px; }
+        p {
+            margin: 0 0 16px;
+        }
 
         label {
             display: block;
@@ -56,7 +61,9 @@
             margin-bottom: 12px;
         }
 
-        .linha-limites > div { flex: 1; }
+        .linha-limites>div {
+            flex: 1;
+        }
 
         /* ── Botão de sugestão ── */
         #btn-sugerir {
@@ -73,8 +80,14 @@
             transition: background 0.2s;
         }
 
-        #btn-sugerir:hover  { background: #0369a1; }
-        #btn-sugerir:disabled { background: #94a3b8; cursor: not-allowed; }
+        #btn-sugerir:hover {
+            background: #0369a1;
+        }
+
+        #btn-sugerir:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
 
         /* ── Card de sugestão ── */
         #card-sugestao {
@@ -127,7 +140,9 @@
             align-items: center;
         }
 
-        #card-sugestao .sugestao-item strong { color: #047857; }
+        #card-sugestao .sugestao-item strong {
+            color: #047857;
+        }
 
         #btn-aplicar {
             background: #059669;
@@ -140,7 +155,9 @@
             transition: background 0.2s;
         }
 
-        #btn-aplicar:hover { background: #047857; }
+        #btn-aplicar:hover {
+            background: #047857;
+        }
 
         /* ── Alertas ── */
         #aviso-sugestao {
@@ -175,7 +192,9 @@
             transition: background 0.2s;
         }
 
-        button[type="submit"]:hover { background: #1e40af; }
+        button[type="submit"]:hover {
+            background: #1e40af;
+        }
 
         .acoes-form a {
             padding: 10px 18px;
@@ -187,9 +206,12 @@
             transition: background 0.2s;
         }
 
-        .acoes-form a:hover { background: #f3f4f6; }
+        .acoes-form a:hover {
+            background: #f3f4f6;
+        }
     </style>
 </head>
+
 <body>
     <h1>Editar Produto</h1>
 
@@ -234,52 +256,39 @@
         <p>
             <label>Status:</label>
             <select name="status" required>
-                <option value="ativo"          <?= (($produto['status'] ?? '') === 'ativo')          ? 'selected' : '' ?>>Ativo</option>
-                <option value="inativo"        <?= (($produto['status'] ?? '') === 'inativo')        ? 'selected' : '' ?>>Inativo</option>
-                <option value="descontinuado"  <?= (($produto['status'] ?? '') === 'descontinuado')  ? 'selected' : '' ?>>Descontinuado</option>
+                <option value="ativo" <?= (($produto['status'] ?? '') === 'ativo') ? 'selected' : '' ?>>Ativo</option>
+                <option value="inativo" <?= (($produto['status'] ?? '') === 'inativo') ? 'selected' : '' ?>>Inativo
+                </option>
+                <option value="descontinuado" <?= (($produto['status'] ?? '') === 'descontinuado') ? 'selected' : '' ?>>
+                    Descontinuado</option>
             </select>
         </p>
 
-        <!-- ===== SEÇÃO: LIMITES DE ESTOQUE ===== -->
         <div class="secao-limites">
-            <h3>📊 Limites de Estoque</h3>
+            <h3> Limites de Estoque</h3>
 
             <div class="linha-limites">
                 <div>
                     <label for="estoque_minimo">Estoque Mínimo</label>
-                    <input
-                        type="number"
-                        id="estoque_minimo"
-                        name="estoque_minimo"
-                        min="0"
-                        value="<?= $produto['estoque_minimo'] !== null ? (int)$produto['estoque_minimo'] : '' ?>"
-                        placeholder="Ex: 50"
-                    >
+                    <input type="number" id="estoque_minimo" name="estoque_minimo" min="0"
+                        value="<?= $produto['estoque_minimo'] !== null ? (int) $produto['estoque_minimo'] : '' ?>"
+                        placeholder="Ex: 50">
                 </div>
                 <div>
                     <label for="estoque_maximo">Estoque Máximo</label>
-                    <input
-                        type="number"
-                        id="estoque_maximo"
-                        name="estoque_maximo"
-                        min="0"
-                        value="<?= $produto['estoque_maximo'] !== null ? (int)$produto['estoque_maximo'] : '' ?>"
-                        placeholder="Ex: 200"
-                    >
+                    <input type="number" id="estoque_maximo" name="estoque_maximo" min="0"
+                        value="<?= $produto['estoque_maximo'] !== null ? (int) $produto['estoque_maximo'] : '' ?>"
+                        placeholder="Ex: 200">
                 </div>
             </div>
 
-            <!-- Botão de sugestão -->
             <button type="button" id="btn-sugerir">
-                ✨ Sugerir limites pelo histórico de entradas
+                Sugerir limites
             </button>
 
-            <!-- Aviso de erro -->
             <div id="aviso-sugestao" class="erro"></div>
 
-            <!-- Card com o resultado da sugestão -->
             <div id="card-sugestao">
-                <!-- Badge do método utilizado -->
                 <div id="badge-metodo" style="
                     display:inline-block;
                     margin-bottom:10px;
@@ -303,6 +312,10 @@
                     <div class="stat">
                         <div class="valor" id="stat-prazo">—</div>
                         <div class="rotulo">Prazo médio entre entregas</div>
+                    </div>
+                    <div class="stat">
+                        <div class="valor" id="stat-ultima">—</div>
+                        <div class="rotulo">Última entrada (base do cálculo)</div>
                     </div>
                     <div class="stat">
                         <div class="valor" id="stat-media">—</div>
@@ -339,7 +352,6 @@
                 </div>
             </div>
         </div>
-        <!-- ===== FIM DA SEÇÃO DE LIMITES ===== -->
 
         <div class="acoes-form">
             <button type="submit">Atualizar</button>
@@ -348,63 +360,63 @@
     </form>
 
     <script>
-        const produtoId  = <?= (int) $produto['id'] ?>;
+        const produtoId = <?= (int) $produto['id'] ?>;
         const btnSugerir = document.getElementById('btn-sugerir');
         const cardSugest = document.getElementById('card-sugestao');
-        const avisoEl    = document.getElementById('aviso-sugestao');
+        const avisoEl = document.getElementById('aviso-sugestao');
 
         const metodoLabels = {
-            'consumo_x_prazo' : '📐 Fórmula: Consumo diário × Prazo médio de reposição',
-            'consumo_x_7dias' : '📐 Fórmula: Consumo diário × 7 dias (prazo padrão)',
-            'fallback_30pct'  : '⚠️ Sem saídas registradas — usando 30% da média de entradas',
+            'ultima_entrada_pct': ' Última entrada × 0,2 (mín) e × 0,8 (máx)',
+            'consumo_x_prazo': ' Consumo diário × Prazo médio de reposição',
+            'consumo_x_7dias': ' Consumo diário × 7 dias (prazo padrão)',
+            'fallback_30pct': ' Sem saídas registradas — usando 30% da média de entradas',
         };
 
         let dadosSugestao = null;
 
         btnSugerir.addEventListener('click', async () => {
             btnSugerir.disabled = true;
-            btnSugerir.textContent = '⏳ Calculando…';
+            btnSugerir.textContent = 'Calculando…';
             cardSugest.style.display = 'none';
-            avisoEl.style.display    = 'none';
+            avisoEl.style.display = 'none';
 
             try {
                 const resp = await fetch(`index.php?acao=sugerir_limites&id=${produtoId}`);
                 const data = await resp.json();
 
                 if (data.erro) {
-                    avisoEl.textContent   = '⚠️ ' + data.erro;
+                    avisoEl.textContent = '⚠️ ' + data.erro;
                     avisoEl.style.display = 'block';
                 } else {
                     dadosSugestao = data;
 
-                    // Badge do método
+
                     const badge = document.getElementById('badge-metodo');
                     badge.textContent = metodoLabels[data.metodo_minimo] ?? data.metodo_minimo;
 
-                    // Stats
-                    document.getElementById('stat-total').textContent   = data.total_entradas;
-                    document.getElementById('stat-media').textContent   = data.media_entrada;
-                    document.getElementById('stat-range').textContent   = data.menor_entrada + ' – ' + data.maior_entrada;
-                    document.getElementById('stat-saidas').textContent  = data.total_saidas ?? '—';
+                    document.getElementById('stat-total').textContent = data.total_entradas;
+                    document.getElementById('stat-media').textContent = data.media_entrada;
+                    document.getElementById('stat-range').textContent = data.menor_entrada + ' – ' + data.maior_entrada;
+                    document.getElementById('stat-saidas').textContent = data.total_saidas ?? '—';
                     document.getElementById('stat-consumo').textContent = data.consumo_diario !== null
                         ? data.consumo_diario + ' un/dia'
                         : '—';
-                    document.getElementById('stat-prazo').textContent   = data.prazo_reposicao_dias !== null
+                    document.getElementById('stat-prazo').textContent = data.prazo_reposicao_dias !== null
                         ? data.prazo_reposicao_dias + ' dias'
                         : '—';
+                    document.getElementById('stat-ultima').textContent = data.valor_ultima_entrada ?? '—';
 
-                    // Sugestões
                     document.getElementById('val-minimo').textContent = data.minimo_sugerido;
                     document.getElementById('val-maximo').textContent = data.maximo_sugerido;
 
                     cardSugest.style.display = 'block';
                 }
             } catch (err) {
-                avisoEl.textContent   = '⚠️ Erro ao buscar sugestão. Tente novamente.';
+                avisoEl.textContent = 'Erro ao buscar sugestão. Tente novamente.';
                 avisoEl.style.display = 'block';
             } finally {
-                btnSugerir.disabled    = false;
-                btnSugerir.textContent = '✨ Sugerir limites pelo histórico de entradas';
+                btnSugerir.disabled = false;
+                btnSugerir.textContent = 'Sugerir limites pelo histórico de entradas';
             }
         });
 
@@ -424,4 +436,5 @@
         }
     </script>
 </body>
+
 </html>
