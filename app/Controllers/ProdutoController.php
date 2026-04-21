@@ -35,16 +35,16 @@ class ProdutoController
     public function salvar()
     {
         $dados = [
-            'nome'            => trim($_POST['nome'] ?? ''),
-            'codigo'          => trim($_POST['codigo'] ?? ''),
-            'categoria'       => trim($_POST['categoria'] ?? ''),
-            'unidade'         => trim($_POST['unidade'] ?? ''),
-            'descricao'       => trim($_POST['descricao'] ?? ''),
-            'status'          => trim($_POST['status'] ?? 'ativo'),
-            'quantidade'      => (int) ($_POST['quantidade'] ?? 0),
-            'preco'           => (float) ($_POST['preco'] ?? 0),
-            'estoque_minimo'  => $_POST['estoque_minimo'] ?? null,
-            'estoque_maximo'  => $_POST['estoque_maximo'] ?? null,
+            'nome' => trim($_POST['nome'] ?? ''),
+            'codigo' => trim($_POST['codigo'] ?? ''),
+            'categoria' => trim($_POST['categoria'] ?? ''),
+            'unidade' => trim($_POST['unidade'] ?? ''),
+            'descricao' => trim($_POST['descricao'] ?? ''),
+            'status' => trim($_POST['status'] ?? 'ativo'),
+            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'preco' => (float) ($_POST['preco'] ?? 0),
+            'estoque_minimo' => $_POST['estoque_minimo'] ?? null,
+            'estoque_maximo' => $_POST['estoque_maximo'] ?? null,
         ];
 
         $this->model->criar($dados);
@@ -70,16 +70,16 @@ class ProdutoController
         $id = $_POST['id'] ?? 0;
 
         $dados = [
-            'nome'            => trim($_POST['nome'] ?? ''),
-            'codigo'          => trim($_POST['codigo'] ?? ''),
-            'categoria'       => trim($_POST['categoria'] ?? ''),
-            'unidade'         => trim($_POST['unidade'] ?? ''),
-            'descricao'       => trim($_POST['descricao'] ?? ''),
-            'status'          => trim($_POST['status'] ?? 'ativo'),
-            'quantidade'      => (int) ($_POST['quantidade'] ?? 0),
-            'preco'           => (float) ($_POST['preco'] ?? 0),
-            'estoque_minimo'  => $_POST['estoque_minimo'] ?? null,
-            'estoque_maximo'  => $_POST['estoque_maximo'] ?? null,
+            'nome' => trim($_POST['nome'] ?? ''),
+            'codigo' => trim($_POST['codigo'] ?? ''),
+            'categoria' => trim($_POST['categoria'] ?? ''),
+            'unidade' => trim($_POST['unidade'] ?? ''),
+            'descricao' => trim($_POST['descricao'] ?? ''),
+            'status' => trim($_POST['status'] ?? 'ativo'),
+            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'preco' => (float) ($_POST['preco'] ?? 0),
+            'estoque_minimo' => $_POST['estoque_minimo'] ?? null,
+            'estoque_maximo' => $_POST['estoque_maximo'] ?? null,
         ];
 
         $this->model->atualizar($id, $dados);
@@ -196,33 +196,53 @@ class ProdutoController
     }
 
     public function mostrarEntrada()
-        {
-            $id = $_GET['id'] ?? 0;
-            $produto = $this->model->buscarPorId($id);
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
 
-            if (!$produto) {
-                echo "Produto não encontrado.";
-                return;
-            }
-
-            include __DIR__ . '/../Views/produtos/entrada.php';
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
         }
+
+        include __DIR__ . '/../Views/produtos/entrada.php';
+    }
 
     public function registrarEntrada()
-        {
-            $id = $_POST['id'] ?? 0;
-            $motivo = $_POST['motivo'] ?? '';
-            $quantidade = $_POST['quantidade'] ?? 0;
-            $observacao = $_POST['observacao'] ?? '';
+    {
+        $id = $_POST['id'] ?? 0;
+        $motivo = $_POST['motivo'] ?? '';
+        $quantidade = $_POST['quantidade'] ?? 0;
+        $observacao = $_POST['observacao'] ?? '';
 
-            $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao);
+        $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao);
 
-            if (!$sucesso) {
-                echo "Não foi possível registrar a entrada de estoque.";
-                return;
-            }
-
-            header('Location: index.php?acao=listar');
-            exit;
+        if (!$sucesso) {
+            echo "Não foi possível registrar a entrada de estoque.";
+            return;
         }
+
+        header('Location: index.php?acao=listar');
+        exit;
+    }
+    public function sugerirLimites()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id = (int) ($_GET['id'] ?? 0);
+
+        if ($id <= 0) {
+            echo json_encode(['erro' => 'ID inválido.']);
+            return;
+        }
+
+        $sugestao = $this->model->sugerirLimites($id);
+
+        if ($sugestao === null) {
+            echo json_encode(['erro' => 'Nenhuma entrada registrada para este produto.']);
+            return;
+        }
+
+        echo json_encode($sugestao);
+    }
 }

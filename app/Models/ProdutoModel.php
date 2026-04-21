@@ -140,14 +140,14 @@ class ProdutoModel
             $stmt = $this->conn->prepare($sql);
 
             return $stmt->execute([
-                ':nome'           => trim((string) ($dados['nome'] ?? '')),
-                ':codigo'         => $this->valorOuNull($dados['codigo'] ?? null),
-                ':categoria'      => $this->valorOuNull($dados['categoria'] ?? null),
-                ':unidade'        => $this->valorOuNull($dados['unidade'] ?? null),
-                ':descricao'      => $this->valorOuNull($dados['descricao'] ?? null),
-                ':status'         => trim((string) ($dados['status'] ?? 'ativo')),
-                ':quantidade'     => (int) ($dados['quantidade'] ?? 0),
-                ':preco'          => (float) ($dados['preco'] ?? 0),
+                ':nome' => trim((string) ($dados['nome'] ?? '')),
+                ':codigo' => $this->valorOuNull($dados['codigo'] ?? null),
+                ':categoria' => $this->valorOuNull($dados['categoria'] ?? null),
+                ':unidade' => $this->valorOuNull($dados['unidade'] ?? null),
+                ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
+                ':status' => trim((string) ($dados['status'] ?? 'ativo')),
+                ':quantidade' => (int) ($dados['quantidade'] ?? 0),
+                ':preco' => (float) ($dados['preco'] ?? 0),
                 ':estoque_minimo' => ($dados['estoque_minimo'] !== '' && $dados['estoque_minimo'] !== null) ? (int) $dados['estoque_minimo'] : null,
                 ':estoque_maximo' => ($dados['estoque_maximo'] !== '' && $dados['estoque_maximo'] !== null) ? (int) $dados['estoque_maximo'] : null,
             ]);
@@ -175,15 +175,15 @@ class ProdutoModel
             $stmt = $this->conn->prepare($sql);
 
             return $stmt->execute([
-                ':id'             => (int) $id,
-                ':nome'           => trim((string) ($dados['nome'] ?? '')),
-                ':codigo'         => $this->valorOuNull($dados['codigo'] ?? null),
-                ':categoria'      => $this->valorOuNull($dados['categoria'] ?? null),
-                ':unidade'        => $this->valorOuNull($dados['unidade'] ?? null),
-                ':descricao'      => $this->valorOuNull($dados['descricao'] ?? null),
-                ':status'         => trim((string) ($dados['status'] ?? 'ativo')),
-                ':quantidade'     => (int) ($dados['quantidade'] ?? 0),
-                ':preco'          => (float) ($dados['preco'] ?? 0),
+                ':id' => (int) $id,
+                ':nome' => trim((string) ($dados['nome'] ?? '')),
+                ':codigo' => $this->valorOuNull($dados['codigo'] ?? null),
+                ':categoria' => $this->valorOuNull($dados['categoria'] ?? null),
+                ':unidade' => $this->valorOuNull($dados['unidade'] ?? null),
+                ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
+                ':status' => trim((string) ($dados['status'] ?? 'ativo')),
+                ':quantidade' => (int) ($dados['quantidade'] ?? 0),
+                ':preco' => (float) ($dados['preco'] ?? 0),
                 ':estoque_minimo' => ($dados['estoque_minimo'] !== '' && $dados['estoque_minimo'] !== null) ? (int) $dados['estoque_minimo'] : null,
                 ':estoque_maximo' => ($dados['estoque_maximo'] !== '' && $dados['estoque_maximo'] !== null) ? (int) $dados['estoque_maximo'] : null,
             ]);
@@ -393,5 +393,38 @@ class ProdutoModel
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function sugerirLimites($id)
+    {
+        $sql = "SELECT
+                    COUNT(*)       AS total_entradas,
+                    AVG(quantidade) AS media,
+                    MIN(quantidade) AS menor,
+                    MAX(quantidade) AS maior
+                FROM movimentacoes
+                WHERE produto_id = :id
+                  AND tipo = 'entrada'";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', (int) $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row || (int) $row['total_entradas'] === 0) {
+            return null;
+        }
+
+        $media = (float) $row['media'];
+
+        return [
+            'total_entradas' => (int) $row['total_entradas'],
+            'media' => round($media, 2),
+            'menor_entrada' => (int) $row['menor'],
+            'maior_entrada' => (int) $row['maior'],
+            'minimo_sugerido' => (int) round($media * 0.5),
+            'maximo_sugerido' => (int) round($media * 2.0),
+        ];
     }
 }

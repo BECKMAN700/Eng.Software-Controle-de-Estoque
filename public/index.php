@@ -69,4 +69,8 @@ switch ($acao) {
     default:
         echo "Ação inválida.";
         break;
+
+    case 'sugerir_limites':
+        $controller->sugerirLimites();
+        break;
 }
