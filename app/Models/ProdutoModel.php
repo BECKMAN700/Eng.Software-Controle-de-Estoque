@@ -115,6 +115,28 @@ class ProdutoModel
         return $this->anexarHistoricoAoProduto($produto);
     }
 
+    /**
+     * Retorna todos os produtos ativos com quantidade abaixo do mínimo configurado.
+     * Ordena do mais crítico (menor quantidade) para o menos crítico.
+     *
+     * @param int $minimo Quantidade mínima aceitável em estoque.
+     * @return array Lista de produtos que precisam de reabastecimento.
+     */
+    public function listarAbaixoDoMinimo(int $minimo): array
+    {
+        $sql = "SELECT id, nome, codigo, categoria, unidade, quantidade
+                FROM produtos
+                WHERE status = 'ativo'
+                  AND quantidade < :minimo
+                ORDER BY quantidade ASC, nome ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':minimo', $minimo, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function criar($dados)
     {
         try {
