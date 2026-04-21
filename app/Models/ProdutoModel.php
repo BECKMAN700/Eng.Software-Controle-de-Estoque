@@ -397,34 +397,107 @@ class ProdutoModel
 
     public function sugerirLimites($id)
     {
-        $sql = "SELECT
-                    COUNT(*)       AS total_entradas,
-                    AVG(quantidade) AS media,
-                    MIN(quantidade) AS menor,
-                    MAX(quantidade) AS maior
-                FROM movimentacoes
-                WHERE produto_id = :id
-                  AND tipo = 'entrada'";
+        // ── 1. Dados das entradas ─────────────────────────────────────────────
+        $sqlEntradas = "SELECT
+                            COUNT(*)        AS total_entradas,
+                            AVG(quantidade) AS media,
+                            MIN(quantidade) AS menor,
+                            MAX(quantidade) AS maior,
+                            MIN(data_hora)  AS primeira_entrada,
+                            MAX(data_hora)  AS ultima_entrada
+                        FROM movimentacoes
+                        WHERE produto_id = :id
+                          AND tipo = 'entrada'";
 
-        $stmt = $this->conn->prepare($sql);
+        $stmt = $this->conn->prepare($sqlEntradas);
         $stmt->bindValue(':id', (int) $id, PDO::PARAM_INT);
         $stmt->execute();
+        $rowEntradas = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$row || (int) $row['total_entradas'] === 0) {
+        if (!$rowEntradas || (int) $rowEntradas['total_entradas'] === 0) {
             return null;
         }
 
-        $media = (float) $row['media'];
+        $totalEntradas   = (int)   $rowEntradas['total_entradas'];
+        $mediaEntrada    = (float) $rowEntradas['media'];
+        $primeiraEntrada = $rowEntradas['primeira_entrada'];
+        $ultimaEntrada   = $rowEntradas['ultima_entrada'];
+
+        // ── 2. Prazo médio de reposição (dias entre entregas consecutivas) ────
+        // Só calculável com pelo menos 2 entradas.
+        $prazoReposicaoDias = null;
+
+        if ($totalEntradas >= 2 && $primeiraEntrada && $ultimaEntrada) {
+            $diasTotais = (float) ((strtotime($ultimaEntrada) - strtotime($primeiraEntrada)) / 86400);
+            if ($diasTotais > 0) {
+                // intervalo médio = período total ÷ (nº de entradas − 1)
+                $prazoReposicaoDias = $diasTotais / ($totalEntradas - 1);
+            }
+        }
+
+        // ── 3. Consumo médio diário (total de saídas ÷ dias do período) ───────
+        $consumoDiario = null;
+        $totalSaidas   = 0;
+        $diasPeriodo   = null;
+        $metodoMinimo  = 'fallback';
+
+        $sqlSaidas = "SELECT
+                          COALESCE(SUM(quantidade), 0) AS total_saidas,
+                          MIN(data_hora)               AS primeira_saida,
+                          MAX(data_hora)               AS ultima_saida
+                      FROM movimentacoes
+                      WHERE produto_id = :id
+                        AND tipo = 'saida'";
+
+        $stmtSaidas = $this->conn->prepare($sqlSaidas);
+        $stmtSaidas->bindValue(':id', (int) $id, PDO::PARAM_INT);
+        $stmtSaidas->execute();
+        $rowSaidas = $stmtSaidas->fetch(PDO::FETCH_ASSOC);
+
+        if ($rowSaidas && (int) $rowSaidas['total_saidas'] > 0) {
+            $totalSaidas = (int) $rowSaidas['total_saidas'];
+
+            // Período = da primeira movimentação (qualquer tipo) até a última
+            $inicio = min($primeiraEntrada, $rowSaidas['primeira_saida']);
+            $fim    = max($ultimaEntrada,   $rowSaidas['ultima_saida']);
+
+            $diasPeriodo   = max(1, (float) ((strtotime($fim) - strtotime($inicio)) / 86400));
+            $consumoDiario = $totalSaidas / $diasPeriodo;
+        }
+
+        // ── 4. Fórmula do Mínimo Sugerido ────────────────────────────────────
+        if ($consumoDiario !== null && $prazoReposicaoDias !== null) {
+            // Principal: ponto de reposição clássico
+            // Mínimo = consumo_diário × prazo_médio_de_reposição
+            $minimoSugerido = (int) round($consumoDiario * $prazoReposicaoDias);
+            $metodoMinimo   = 'consumo_x_prazo';
+
+        } elseif ($consumoDiario !== null) {
+            // Só temos consumo mas uma única entrada: assume prazo padrão de 7 dias
+            $minimoSugerido = (int) round($consumoDiario * 7);
+            $metodoMinimo   = 'consumo_x_7dias';
+
+        } else {
+            // Plano B: sem saídas registradas — usa 30% da média de entradas
+            $minimoSugerido = (int) round($mediaEntrada * 0.3);
+            $metodoMinimo   = 'fallback_30pct';
+        }
+
+        // ── 5. Máximo sugerido (2× média de entrada) ─────────────────────────
+        $maximoSugerido = (int) round($mediaEntrada * 2.0);
 
         return [
-            'total_entradas' => (int) $row['total_entradas'],
-            'media' => round($media, 2),
-            'menor_entrada' => (int) $row['menor'],
-            'maior_entrada' => (int) $row['maior'],
-            'minimo_sugerido' => (int) round($media * 0.5),
-            'maximo_sugerido' => (int) round($media * 2.0),
+            'total_entradas'       => $totalEntradas,
+            'media_entrada'        => round($mediaEntrada, 2),
+            'menor_entrada'        => (int) $rowEntradas['menor'],
+            'maior_entrada'        => (int) $rowEntradas['maior'],
+            'prazo_reposicao_dias' => $prazoReposicaoDias !== null ? round($prazoReposicaoDias, 1) : null,
+            'total_saidas'         => $totalSaidas,
+            'consumo_diario'       => $consumoDiario  !== null ? round($consumoDiario, 2) : null,
+            'dias_periodo'         => $diasPeriodo     !== null ? (int) round($diasPeriodo) : null,
+            'metodo_minimo'        => $metodoMinimo,
+            'minimo_sugerido'      => $minimoSugerido,
+            'maximo_sugerido'      => $maximoSugerido,
         ];
     }
 }

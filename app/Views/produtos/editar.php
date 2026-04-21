@@ -279,18 +279,42 @@
 
             <!-- Card com o resultado da sugestão -->
             <div id="card-sugestao">
+                <!-- Badge do método utilizado -->
+                <div id="badge-metodo" style="
+                    display:inline-block;
+                    margin-bottom:10px;
+                    padding:4px 10px;
+                    border-radius:20px;
+                    font-size:0.78rem;
+                    font-weight:bold;
+                    background:#dbeafe;
+                    color:#1d4ed8;
+                "></div>
+
                 <div class="stat-grid">
                     <div class="stat">
                         <div class="valor" id="stat-total">—</div>
                         <div class="rotulo">Entradas registradas</div>
                     </div>
                     <div class="stat">
+                        <div class="valor" id="stat-consumo">—</div>
+                        <div class="rotulo">Consumo médio/dia</div>
+                    </div>
+                    <div class="stat">
+                        <div class="valor" id="stat-prazo">—</div>
+                        <div class="rotulo">Prazo médio entre entregas</div>
+                    </div>
+                    <div class="stat">
                         <div class="valor" id="stat-media">—</div>
                         <div class="rotulo">Média por entrada</div>
                     </div>
                     <div class="stat">
+                        <div class="valor" id="stat-saidas">—</div>
+                        <div class="rotulo">Total de saídas</div>
+                    </div>
+                    <div class="stat">
                         <div class="valor" id="stat-range">—</div>
-                        <div class="rotulo">Variação (min–máx)</div>
+                        <div class="rotulo">Variação entrada (min–máx)</div>
                     </div>
                 </div>
 
@@ -329,6 +353,12 @@
         const cardSugest = document.getElementById('card-sugestao');
         const avisoEl    = document.getElementById('aviso-sugestao');
 
+        const metodoLabels = {
+            'consumo_x_prazo' : '📐 Fórmula: Consumo diário × Prazo médio de reposição',
+            'consumo_x_7dias' : '📐 Fórmula: Consumo diário × 7 dias (prazo padrão)',
+            'fallback_30pct'  : '⚠️ Sem saídas registradas — usando 30% da média de entradas',
+        };
+
         let dadosSugestao = null;
 
         btnSugerir.addEventListener('click', async () => {
@@ -347,11 +377,25 @@
                 } else {
                     dadosSugestao = data;
 
-                    document.getElementById('stat-total').textContent  = data.total_entradas;
-                    document.getElementById('stat-media').textContent  = data.media;
-                    document.getElementById('stat-range').textContent  = data.menor_entrada + ' – ' + data.maior_entrada;
-                    document.getElementById('val-minimo').textContent  = data.minimo_sugerido;
-                    document.getElementById('val-maximo').textContent  = data.maximo_sugerido;
+                    // Badge do método
+                    const badge = document.getElementById('badge-metodo');
+                    badge.textContent = metodoLabels[data.metodo_minimo] ?? data.metodo_minimo;
+
+                    // Stats
+                    document.getElementById('stat-total').textContent   = data.total_entradas;
+                    document.getElementById('stat-media').textContent   = data.media_entrada;
+                    document.getElementById('stat-range').textContent   = data.menor_entrada + ' – ' + data.maior_entrada;
+                    document.getElementById('stat-saidas').textContent  = data.total_saidas ?? '—';
+                    document.getElementById('stat-consumo').textContent = data.consumo_diario !== null
+                        ? data.consumo_diario + ' un/dia'
+                        : '—';
+                    document.getElementById('stat-prazo').textContent   = data.prazo_reposicao_dias !== null
+                        ? data.prazo_reposicao_dias + ' dias'
+                        : '—';
+
+                    // Sugestões
+                    document.getElementById('val-minimo').textContent = data.minimo_sugerido;
+                    document.getElementById('val-maximo').textContent = data.maximo_sugerido;
 
                     cardSugest.style.display = 'block';
                 }
