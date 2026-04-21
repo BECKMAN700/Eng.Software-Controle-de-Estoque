@@ -22,6 +22,7 @@ class ProdutoController
         $categorias = $this->model->listarCategorias();
         $unidades = $this->model->listarUnidades();
         $statusOptions = ['ativo', 'inativo', 'descontinuado'];
+        $produtosAcimaMaximo = $this->model->listarAcimaEstoqueMaximo();
 
         include __DIR__ . '/../Views/produtos/listar.php';
     }
@@ -34,14 +35,16 @@ class ProdutoController
     public function salvar()
     {
         $dados = [
-            'nome' => trim($_POST['nome'] ?? ''),
-            'codigo' => trim($_POST['codigo'] ?? ''),
-            'categoria' => trim($_POST['categoria'] ?? ''),
-            'unidade' => trim($_POST['unidade'] ?? ''),
-            'descricao' => trim($_POST['descricao'] ?? ''),
-            'status' => trim($_POST['status'] ?? 'ativo'),
-            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
-            'preco' => (float) ($_POST['preco'] ?? 0)
+            'nome'            => trim($_POST['nome'] ?? ''),
+            'codigo'          => trim($_POST['codigo'] ?? ''),
+            'categoria'       => trim($_POST['categoria'] ?? ''),
+            'unidade'         => trim($_POST['unidade'] ?? ''),
+            'descricao'       => trim($_POST['descricao'] ?? ''),
+            'status'          => trim($_POST['status'] ?? 'ativo'),
+            'quantidade'      => (int) ($_POST['quantidade'] ?? 0),
+            'preco'           => (float) ($_POST['preco'] ?? 0),
+            'estoque_minimo'  => $_POST['estoque_minimo'] ?? null,
+            'estoque_maximo'  => $_POST['estoque_maximo'] ?? null,
         ];
 
         $this->model->criar($dados);
@@ -67,14 +70,16 @@ class ProdutoController
         $id = $_POST['id'] ?? 0;
 
         $dados = [
-            'nome' => trim($_POST['nome'] ?? ''),
-            'codigo' => trim($_POST['codigo'] ?? ''),
-            'categoria' => trim($_POST['categoria'] ?? ''),
-            'unidade' => trim($_POST['unidade'] ?? ''),
-            'descricao' => trim($_POST['descricao'] ?? ''),
-            'status' => trim($_POST['status'] ?? 'ativo'),
-            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
-            'preco' => (float) ($_POST['preco'] ?? 0)
+            'nome'            => trim($_POST['nome'] ?? ''),
+            'codigo'          => trim($_POST['codigo'] ?? ''),
+            'categoria'       => trim($_POST['categoria'] ?? ''),
+            'unidade'         => trim($_POST['unidade'] ?? ''),
+            'descricao'       => trim($_POST['descricao'] ?? ''),
+            'status'          => trim($_POST['status'] ?? 'ativo'),
+            'quantidade'      => (int) ($_POST['quantidade'] ?? 0),
+            'preco'           => (float) ($_POST['preco'] ?? 0),
+            'estoque_minimo'  => $_POST['estoque_minimo'] ?? null,
+            'estoque_maximo'  => $_POST['estoque_maximo'] ?? null,
         ];
 
         $this->model->atualizar($id, $dados);

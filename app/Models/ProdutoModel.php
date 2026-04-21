@@ -37,6 +37,20 @@ class ProdutoModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function listarAcimaEstoqueMaximo()
+    {
+        $sql = "SELECT * FROM produtos
+                WHERE estoque_maximo IS NOT NULL
+                  AND estoque_maximo > 0
+                  AND quantidade > estoque_maximo
+                ORDER BY (quantidade - estoque_maximo) DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function listarFiltrados($busca = '', $categoria = '', $unidade = '', $status = '')
     {
         $sql = "SELECT * FROM produtos WHERE 1=1";
@@ -119,21 +133,23 @@ class ProdutoModel
     {
         try {
             $sql = "INSERT INTO produtos
-                    (nome, codigo, categoria, unidade, descricao, status, quantidade, preco)
+                    (nome, codigo, categoria, unidade, descricao, status, quantidade, preco, estoque_minimo, estoque_maximo)
                     VALUES
-                    (:nome, :codigo, :categoria, :unidade, :descricao, :status, :quantidade, :preco)";
+                    (:nome, :codigo, :categoria, :unidade, :descricao, :status, :quantidade, :preco, :estoque_minimo, :estoque_maximo)";
 
             $stmt = $this->conn->prepare($sql);
 
             return $stmt->execute([
-                ':nome' => trim((string) ($dados['nome'] ?? '')),
-                ':codigo' => $this->valorOuNull($dados['codigo'] ?? null),
-                ':categoria' => $this->valorOuNull($dados['categoria'] ?? null),
-                ':unidade' => $this->valorOuNull($dados['unidade'] ?? null),
-                ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
-                ':status' => trim((string) ($dados['status'] ?? 'ativo')),
-                ':quantidade' => (int) ($dados['quantidade'] ?? 0),
-                ':preco' => (float) ($dados['preco'] ?? 0)
+                ':nome'           => trim((string) ($dados['nome'] ?? '')),
+                ':codigo'         => $this->valorOuNull($dados['codigo'] ?? null),
+                ':categoria'      => $this->valorOuNull($dados['categoria'] ?? null),
+                ':unidade'        => $this->valorOuNull($dados['unidade'] ?? null),
+                ':descricao'      => $this->valorOuNull($dados['descricao'] ?? null),
+                ':status'         => trim((string) ($dados['status'] ?? 'ativo')),
+                ':quantidade'     => (int) ($dados['quantidade'] ?? 0),
+                ':preco'          => (float) ($dados['preco'] ?? 0),
+                ':estoque_minimo' => ($dados['estoque_minimo'] !== '' && $dados['estoque_minimo'] !== null) ? (int) $dados['estoque_minimo'] : null,
+                ':estoque_maximo' => ($dados['estoque_maximo'] !== '' && $dados['estoque_maximo'] !== null) ? (int) $dados['estoque_maximo'] : null,
             ]);
         } catch (PDOException $e) {
             die('Erro ao criar produto: ' . $e->getMessage());
@@ -151,21 +167,25 @@ class ProdutoModel
                         descricao = :descricao,
                         status = :status,
                         quantidade = :quantidade,
-                        preco = :preco
+                        preco = :preco,
+                        estoque_minimo = :estoque_minimo,
+                        estoque_maximo = :estoque_maximo
                     WHERE id = :id";
 
             $stmt = $this->conn->prepare($sql);
 
             return $stmt->execute([
-                ':id' => (int) $id,
-                ':nome' => trim((string) ($dados['nome'] ?? '')),
-                ':codigo' => $this->valorOuNull($dados['codigo'] ?? null),
-                ':categoria' => $this->valorOuNull($dados['categoria'] ?? null),
-                ':unidade' => $this->valorOuNull($dados['unidade'] ?? null),
-                ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
-                ':status' => trim((string) ($dados['status'] ?? 'ativo')),
-                ':quantidade' => (int) ($dados['quantidade'] ?? 0),
-                ':preco' => (float) ($dados['preco'] ?? 0)
+                ':id'             => (int) $id,
+                ':nome'           => trim((string) ($dados['nome'] ?? '')),
+                ':codigo'         => $this->valorOuNull($dados['codigo'] ?? null),
+                ':categoria'      => $this->valorOuNull($dados['categoria'] ?? null),
+                ':unidade'        => $this->valorOuNull($dados['unidade'] ?? null),
+                ':descricao'      => $this->valorOuNull($dados['descricao'] ?? null),
+                ':status'         => trim((string) ($dados['status'] ?? 'ativo')),
+                ':quantidade'     => (int) ($dados['quantidade'] ?? 0),
+                ':preco'          => (float) ($dados['preco'] ?? 0),
+                ':estoque_minimo' => ($dados['estoque_minimo'] !== '' && $dados['estoque_minimo'] !== null) ? (int) $dados['estoque_minimo'] : null,
+                ':estoque_maximo' => ($dados['estoque_maximo'] !== '' && $dados['estoque_maximo'] !== null) ? (int) $dados['estoque_maximo'] : null,
             ]);
         } catch (PDOException $e) {
             die('Erro ao atualizar produto: ' . $e->getMessage());
