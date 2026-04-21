@@ -119,11 +119,13 @@ class ProdutoModel
     {
         try {
             $sql = "INSERT INTO produtos
-                    (nome, codigo, categoria, unidade, descricao, status, quantidade, preco)
+                    (nome, codigo, categoria, unidade, descricao, status, quantidade, estoque_maximo, preco)
                     VALUES
-                    (:nome, :codigo, :categoria, :unidade, :descricao, :status, :quantidade, :preco)";
+                    (:nome, :codigo, :categoria, :unidade, :descricao, :status, :quantidade, :estoque_maximo, :preco)";
 
             $stmt = $this->conn->prepare($sql);
+
+            $estoqueMaximo = ($dados['estoque_maximo'] ?? '') !== '' ? (int) $dados['estoque_maximo'] : null;
 
             return $stmt->execute([
                 ':nome' => trim((string) ($dados['nome'] ?? '')),
@@ -133,6 +135,7 @@ class ProdutoModel
                 ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
                 ':status' => trim((string) ($dados['status'] ?? 'ativo')),
                 ':quantidade' => (int) ($dados['quantidade'] ?? 0),
+                ':estoque_maximo' => $estoqueMaximo,
                 ':preco' => (float) ($dados['preco'] ?? 0)
             ]);
         } catch (PDOException $e) {
@@ -151,10 +154,13 @@ class ProdutoModel
                         descricao = :descricao,
                         status = :status,
                         quantidade = :quantidade,
+                        estoque_maximo = :estoque_maximo,
                         preco = :preco
                     WHERE id = :id";
 
             $stmt = $this->conn->prepare($sql);
+
+            $estoqueMaximo = ($dados['estoque_maximo'] ?? '') !== '' ? (int) $dados['estoque_maximo'] : null;
 
             return $stmt->execute([
                 ':id' => (int) $id,
@@ -165,6 +171,7 @@ class ProdutoModel
                 ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
                 ':status' => trim((string) ($dados['status'] ?? 'ativo')),
                 ':quantidade' => (int) ($dados['quantidade'] ?? 0),
+                ':estoque_maximo' => $estoqueMaximo,
                 ':preco' => (float) ($dados['preco'] ?? 0)
             ]);
         } catch (PDOException $e) {

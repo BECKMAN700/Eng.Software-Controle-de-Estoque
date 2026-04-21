@@ -11,6 +11,7 @@ CREATE TABLE produtos (
     categoria VARCHAR(100),
     unidade VARCHAR(30),
     quantidade INT NOT NULL DEFAULT 0,
+    estoque_maximo INT DEFAULT NULL,
     preco DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     status VARCHAR(20) NOT NULL DEFAULT 'ativo',
     descricao TEXT,

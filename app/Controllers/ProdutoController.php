@@ -41,6 +41,7 @@ class ProdutoController
             'descricao' => trim($_POST['descricao'] ?? ''),
             'status' => trim($_POST['status'] ?? 'ativo'),
             'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'estoque_maximo' => trim($_POST['estoque_maximo'] ?? ''),
             'preco' => (float) ($_POST['preco'] ?? 0)
         ];
 
@@ -74,6 +75,7 @@ class ProdutoController
             'descricao' => trim($_POST['descricao'] ?? ''),
             'status' => trim($_POST['status'] ?? 'ativo'),
             'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'estoque_maximo' => trim($_POST['estoque_maximo'] ?? ''),
             'preco' => (float) ($_POST['preco'] ?? 0)
         ];
 
