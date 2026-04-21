@@ -49,6 +49,38 @@
         .tabela-reabastecimento {
             margin-top: 10px;
         }
+        .painel-criticos {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #dc3545;
+    background-color: #fff3f3;
+    border-radius: 8px;
+}
+
+.painel-criticos h2 {
+    margin-top: 0;
+    color: #dc3545;
+}
+
+.lista-criticos {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.lista-criticos li {
+    margin-bottom: 8px;
+}
+
+.badge-critico {
+    display: inline-block;
+    padding: 3px 8px;
+    margin-left: 8px;
+    background-color: #dc3545;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
     </style>
 </head>
 <body>
@@ -58,45 +90,26 @@
         <a href="index.php?acao=criar">Cadastrar novo produto</a>
     </p>
 
-    <?php if (!empty($produtosAbaixoDoMinimo)): ?>
-        <div class="alerta-reabastecimento">
-            <h3>Produtos que precisam de reabastecimento</h3>
-            <p>Estoque mínimo configurado: <strong><?= (int) $estoqueMinimo ?></strong></p>
+   <?php if (!empty($produtosCriticos)): ?>
+    <div class="painel-criticos">
+        <h2>⚠ Produtos com Estoque Baixo</h2>
 
-            <table class="tabela-reabastecimento">
-                <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th>Código</th>
-                        <th>Categoria</th>
-                        <th>Unidade</th>
-                        <th>Quantidade Atual</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($produtosAbaixoDoMinimo as $item): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($item['nome'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($item['codigo'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($item['categoria'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($item['unidade'] ?? '') ?></td>
-                            <td>
-                                <?php if ((int) $item['quantidade'] === 0): ?>
-                                    <strong>ZERADO</strong>
-                                <?php else: ?>
-                                    <?= (int) $item['quantidade'] ?>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <a href="index.php?acao=entrada&id=<?= $item['id'] ?>">Registrar entrada</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    <?php endif; ?>
+        <ul class="lista-criticos">
+            <?php foreach ($produtosCriticos as $produto): ?>
+                <li>
+                    <strong><?= htmlspecialchars($produto['nome']) ?></strong>
+                    (Código: <?= htmlspecialchars($produto['codigo']) ?>)
+                    - Quantidade: <?= (int) $produto['quantidade'] ?>
+                    <span class="badge-critico">Crítico</span>
+
+                    <a href="index.php?acao=entrada&id=<?= $produto['id'] ?>">
+                        Repor estoque
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
 
     <form class="filtros" action="index.php" method="GET">
         <input type="hidden" name="acao" value="listar">

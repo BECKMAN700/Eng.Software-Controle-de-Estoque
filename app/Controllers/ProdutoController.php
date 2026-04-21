@@ -14,24 +14,21 @@ class ProdutoController
         $this->model = new ProdutoModel();
     }
 
-    public function listar()
-    {
-        $busca = trim($_GET['busca'] ?? '');
-        $categoria = trim($_GET['categoria'] ?? '');
-        $unidade = trim($_GET['unidade'] ?? '');
-        $status = trim($_GET['status'] ?? '');
+   public function listar()
+{
+    $busca = trim($_GET['busca'] ?? '');
+    $categoria = trim($_GET['categoria'] ?? '');
+    $unidade = trim($_GET['unidade'] ?? '');
+    $status = trim($_GET['status'] ?? '');
 
-        $produtos = $this->model->listarFiltrados($busca, $categoria, $unidade, $status);
-        $categorias = $this->model->listarCategorias();
-        $unidades = $this->model->listarUnidades();
-        $statusOptions = ['ativo', 'inativo', 'descontinuado'];
+    $produtos = $this->model->listarFiltrados($busca, $categoria, $unidade, $status);
+    $produtosCriticos = $this->model->listarAbaixoDoMinimo(5);
+    $categorias = $this->model->listarCategorias();
+    $unidades = $this->model->listarUnidades();
+    $statusOptions = ['ativo', 'inativo', 'descontinuado'];
 
-        // Produtos ativos abaixo do estoque mínimo para o banner de alerta.
-        $produtosAbaixoDoMinimo = $this->model->listarAbaixoDoMinimo(ESTOQUE_MINIMO);
-        $estoqueMinimo = ESTOQUE_MINIMO;
-
-        include __DIR__ . '/../Views/produtos/listar.php';
-    }
+    include __DIR__ . '/../Views/produtos/listar.php';
+}
 
     public function mostrarCriar()
     {

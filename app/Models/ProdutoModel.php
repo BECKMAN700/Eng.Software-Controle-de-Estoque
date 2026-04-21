@@ -396,4 +396,5 @@ class ProdutoModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
 }
