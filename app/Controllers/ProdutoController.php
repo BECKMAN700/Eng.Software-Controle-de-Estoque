@@ -2,6 +2,9 @@
 
 require_once __DIR__ . '/../Models/ProdutoModel.php';
 
+// Estoque mínimo global: altere este valor para ajustar o limite de alerta.
+define('ESTOQUE_MINIMO', 10);
+
 class ProdutoController
 {
     private $model;
@@ -22,6 +25,10 @@ class ProdutoController
         $categorias = $this->model->listarCategorias();
         $unidades = $this->model->listarUnidades();
         $statusOptions = ['ativo', 'inativo', 'descontinuado'];
+
+        // Produtos ativos abaixo do estoque mínimo para o banner de alerta.
+        $produtosAbaixoDoMinimo = $this->model->listarAbaixoDoMinimo(ESTOQUE_MINIMO);
+        $estoqueMinimo = ESTOQUE_MINIMO;
 
         include __DIR__ . '/../Views/produtos/listar.php';
     }
@@ -191,33 +198,33 @@ class ProdutoController
     }
 
     public function mostrarEntrada()
-        {
-            $id = $_GET['id'] ?? 0;
-            $produto = $this->model->buscarPorId($id);
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
 
-            if (!$produto) {
-                echo "Produto não encontrado.";
-                return;
-            }
-
-            include __DIR__ . '/../Views/produtos/entrada.php';
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
         }
+
+        include __DIR__ . '/../Views/produtos/entrada.php';
+    }
 
     public function registrarEntrada()
-        {
-            $id = $_POST['id'] ?? 0;
-            $motivo = $_POST['motivo'] ?? '';
-            $quantidade = $_POST['quantidade'] ?? 0;
-            $observacao = $_POST['observacao'] ?? '';
+    {
+        $id = $_POST['id'] ?? 0;
+        $motivo = $_POST['motivo'] ?? '';
+        $quantidade = $_POST['quantidade'] ?? 0;
+        $observacao = $_POST['observacao'] ?? '';
 
-            $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao);
+        $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao);
 
-            if (!$sucesso) {
-                echo "Não foi possível registrar a entrada de estoque.";
-                return;
-            }
-
-            header('Location: index.php?acao=listar');
-            exit;
+        if (!$sucesso) {
+            echo "Não foi possível registrar a entrada de estoque.";
+            return;
         }
+
+        header('Location: index.php?acao=listar');
+        exit;
+    }
 }

@@ -34,6 +34,21 @@
             margin-right: 8px;
             display: inline-block;
         }
+
+        .alerta-reabastecimento {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #f0ad4e;
+            background-color: #fff8e5;
+        }
+
+        .alerta-reabastecimento h3 {
+            margin-top: 0;
+        }
+
+        .tabela-reabastecimento {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -42,6 +57,46 @@
     <p>
         <a href="index.php?acao=criar">Cadastrar novo produto</a>
     </p>
+
+    <?php if (!empty($produtosAbaixoDoMinimo)): ?>
+        <div class="alerta-reabastecimento">
+            <h3>Produtos que precisam de reabastecimento</h3>
+            <p>Estoque mínimo configurado: <strong><?= (int) $estoqueMinimo ?></strong></p>
+
+            <table class="tabela-reabastecimento">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Código</th>
+                        <th>Categoria</th>
+                        <th>Unidade</th>
+                        <th>Quantidade Atual</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($produtosAbaixoDoMinimo as $item): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($item['nome'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['codigo'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['categoria'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['unidade'] ?? '') ?></td>
+                            <td>
+                                <?php if ((int) $item['quantidade'] === 0): ?>
+                                    <strong>ZERADO</strong>
+                                <?php else: ?>
+                                    <?= (int) $item['quantidade'] ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <a href="index.php?acao=entrada&id=<?= $item['id'] ?>">Registrar entrada</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
 
     <form class="filtros" action="index.php" method="GET">
         <input type="hidden" name="acao" value="listar">
