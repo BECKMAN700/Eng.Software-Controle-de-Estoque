@@ -24,9 +24,20 @@
         </p>
 
         <p>
+            <label>Estoque mínimo:</label><br>
+            <input type="number" name="estoque_minimo" min="0" required>
+        </p>
+
+        <p>
+            <label>Estoque máximo:</label><br>
+            <input type="number" name="estoque_maximo" min="0">
+        </p>
+
+        <p>
             <label>Preço:</label><br>
             <input type="number" name="preco" step="0.01" min="0" required>
         </p>
+
         <p>
             <label>Categoria:</label><br>
             <input type="text" name="categoria" required>

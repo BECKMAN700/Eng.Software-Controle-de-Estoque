@@ -61,7 +61,7 @@
     <?php if (!empty($produtosAbaixoDoMinimo)): ?>
         <div class="alerta-reabastecimento">
             <h3>Produtos que precisam de reabastecimento</h3>
-            <p>Estoque mínimo configurado: <strong><?= (int) $estoqueMinimo ?></strong></p>
+            <p>Cada produto é comparado com seu próprio estoque mínimo.</p>
 
             <table class="tabela-reabastecimento">
                 <thead>
@@ -71,6 +71,8 @@
                         <th>Categoria</th>
                         <th>Unidade</th>
                         <th>Quantidade Atual</th>
+                        <th>Estoque Mínimo</th>
+                        <th>Faltam</th>
                         <th>Ação</th>
                     </tr>
                 </thead>
@@ -88,9 +90,44 @@
                                     <?= (int) $item['quantidade'] ?>
                                 <?php endif; ?>
                             </td>
+                            <td><?= (int) ($item['estoque_minimo'] ?? 0) ?></td>
+                            <td><?= max(0, (int) ($item['estoque_minimo'] ?? 0) - (int) ($item['quantidade'] ?? 0)) ?></td>
                             <td>
                                 <a href="index.php?acao=entrada&id=<?= $item['id'] ?>">Registrar entrada</a>
                             </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($produtosAcimaDoMaximo)): ?>
+        <div class="alerta-reabastecimento">
+            <h3>Produtos acima do estoque máximo</h3>
+
+            <table class="tabela-reabastecimento">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Código</th>
+                        <th>Categoria</th>
+                        <th>Unidade</th>
+                        <th>Quantidade Atual</th>
+                        <th>Estoque Máximo</th>
+                        <th>Excesso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($produtosAcimaDoMaximo as $item): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($item['nome'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['codigo'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['categoria'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['unidade'] ?? '') ?></td>
+                            <td><?= (int) ($item['quantidade'] ?? 0) ?></td>
+                            <td><?= (int) ($item['estoque_maximo'] ?? 0) ?></td>
+                            <td><?= max(0, (int) ($item['quantidade'] ?? 0) - (int) ($item['estoque_maximo'] ?? 0)) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -172,6 +209,8 @@
                     <th>Unidade</th>
                     <th>Status</th>
                     <th>Quantidade</th>
+                    <th>Estoque Mínimo</th>
+                    <th>Estoque Máximo</th>
                     <th>Preço</th>
                     <th>Ações</th>
                 </tr>
@@ -186,6 +225,12 @@
                         <td><?= htmlspecialchars($produto['unidade'] ?? '') ?></td>
                         <td><?= htmlspecialchars($produto['status'] ?? '') ?></td>
                         <td><?= $produto['quantidade'] ?? 0 ?></td>
+                        <td><?= $produto['estoque_minimo'] ?? 0 ?></td>
+                        <td>
+                            <?= (($produto['estoque_maximo'] ?? null) !== null && ($produto['estoque_maximo'] ?? '') !== '')
+                                ? (int) $produto['estoque_maximo']
+                                : '-' ?>
+                        </td>
                         <td>R$ <?= number_format((float) ($produto['preco'] ?? 0), 2, ',', '.') ?></td>
                         <td class="acoes">
                             <a href="index.php?acao=editar&id=<?= $produto['id'] ?>">Editar</a>
