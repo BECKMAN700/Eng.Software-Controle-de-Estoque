@@ -1,233 +1,258 @@
-<?php
-
-require_once __DIR__ . '/../Models/ProdutoModel.php';
-
-// Estoque mínimo global: altere este valor para ajustar o limite de alerta.
-define('ESTOQUE_MINIMO', 10);
-
-class ProdutoController
-{
-    private $model;
-
-    public function __construct()
-    {
-        $this->model = new ProdutoModel();
-    }
-
-   public function listar()
-{
-    $busca = trim($_GET['busca'] ?? '');
-    $categoria = trim($_GET['categoria'] ?? '');
-    $unidade = trim($_GET['unidade'] ?? '');
-    $status = trim($_GET['status'] ?? '');
-
-    $produtos = $this->model->listarFiltrados($busca, $categoria, $unidade, $status);
-    $produtosCriticos = $this->model->listarAbaixoDoMinimo(5);
-    $categorias = $this->model->listarCategorias();
-    $unidades = $this->model->listarUnidades();
-    $statusOptions = ['ativo', 'inativo', 'descontinuado'];
-
-<<<<<<< Updated upstream
-=======
-    $produtosAbaixoDoMinimo = $this->model->listarAbaixoDoMinimo(ESTOQUE_MINIMO);
-    $estoqueMinimo = ESTOQUE_MINIMO;
-
->>>>>>> Stashed changes
-    include __DIR__ . '/../Views/produtos/listar.php';
-}
-
-    public function mostrarCriar()
-    {
-        include __DIR__ . '/../Views/produtos/criar.php';
-    }
-
-    public function salvar()
-    {
-        $dados = [
-            'nome' => trim($_POST['nome'] ?? ''),
-            'codigo' => trim($_POST['codigo'] ?? ''),
-            'categoria' => trim($_POST['categoria'] ?? ''),
-            'unidade' => trim($_POST['unidade'] ?? ''),
-            'descricao' => trim($_POST['descricao'] ?? ''),
-            'status' => trim($_POST['status'] ?? 'ativo'),
-            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
-            'preco' => (float) ($_POST['preco'] ?? 0)
-        ];
-
-        $this->model->criar($dados);
-        header('Location: index.php?acao=listar');
-        exit;
-    }
-
-    public function mostrarEditar()
-    {
-        $id = $_GET['id'] ?? 0;
-        $produto = $this->model->buscarPorId($id);
-
-        if (!$produto) {
-            echo "Produto não encontrado.";
-            return;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Controle de Estoque</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
         }
 
-        include __DIR__ . '/../Views/produtos/editar.php';
-    }
-
-    public function atualizar()
-    {
-        $id = $_POST['id'] ?? 0;
-
-        $dados = [
-            'nome' => trim($_POST['nome'] ?? ''),
-            'codigo' => trim($_POST['codigo'] ?? ''),
-            'categoria' => trim($_POST['categoria'] ?? ''),
-            'unidade' => trim($_POST['unidade'] ?? ''),
-            'descricao' => trim($_POST['descricao'] ?? ''),
-            'status' => trim($_POST['status'] ?? 'ativo'),
-            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
-            'preco' => (float) ($_POST['preco'] ?? 0)
-        ];
-
-        $this->model->atualizar($id, $dados);
-        header('Location: index.php?acao=listar');
-        exit;
-    }
-
-    public function excluir()
-    {
-        $id = $_GET['id'] ?? 0;
-        $this->model->excluir($id);
-
-        header('Location: index.php?acao=listar');
-        exit;
-    }
-
-    public function mostrarMovimentar()
-    {
-        $id = $_GET['id'] ?? 0;
-        $produto = $this->model->buscarPorId($id);
-
-        if (!$produto) {
-            echo "Produto não encontrado.";
-            return;
+        .filtros {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
         }
 
-        include __DIR__ . '/../Views/produtos/movimentar.php';
-    }
-
-    public function mostrarSaida()
-    {
-        // Exibe uma tela própria para registrar saída de estoque com o motivo da baixa.
-        $id = $_GET['id'] ?? 0;
-        $produto = $this->model->buscarPorId($id);
-
-        if (!$produto) {
-            echo "Produto não encontrado.";
-            return;
+        .campo-filtro {
+            margin-bottom: 12px;
         }
 
-        include __DIR__ . '/../Views/produtos/saida.php';
-    }
-
-    public function mostrarDetalhesSaida()
-    {
-        $id = $_GET['id'] ?? 0;
-        $produto = $this->model->buscarPorId($id);
-
-        if (!$produto) {
-            echo "Produto não encontrado.";
-            return;
+        table {
+            border-collapse: collapse;
+            width: 100%;
         }
 
-        $historicoSaidas = array_values(array_filter(
-            $produto['historico_movimentacoes'] ?? [],
-            function ($movimentacao) {
-                return ($movimentacao['tipo'] ?? '') === 'saida';
-            }
-        ));
-
-        include __DIR__ . '/../Views/produtos/detalhes_saida.php';
-    }
-
-    public function registrarSaida()
-    {
-        // Recebe os dados da saída e envia para o model validar e persistir a baixa.
-        $id = $_POST['id'] ?? 0;
-        $motivo = $_POST['motivo'] ?? '';
-        $quantidade = $_POST['quantidade'] ?? 0;
-        $observacao = $_POST['observacao'] ?? '';
-
-        $sucesso = $this->model->registrarSaida($id, $motivo, $quantidade, $observacao);
-
-        if (!$sucesso) {
-            echo "Não foi possível registrar a saída de estoque.";
-            return;
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
         }
 
-        header('Location: index.php?acao=listar');
-        exit;
-    }
-
-    public function movimentar()
-    {
-        $id = $_POST['id'] ?? 0;
-        $tipo = $_POST['tipo'] ?? '';
-        $quantidade = $_POST['quantidade'] ?? 0;
-        $observacao = $_POST['observacao'] ?? '';
-
-        $sucesso = $this->model->movimentar($id, $tipo, $quantidade, $observacao);
-
-        if (!$sucesso) {
-            echo "Não foi possível realizar a movimentação.";
-            return;
+        .acoes a {
+            margin-right: 8px;
+            display: inline-block;
         }
 
-        header('Location: index.php?acao=listar');
-        exit;
-    }
-
-    public function mostrarHistoricoMovimentacoes()
-    {
-        $id = $_GET['id'] ?? 0;
-        $produto = $this->model->buscarPorId($id);
-
-        if (!$produto) {
-            echo "Produto não encontrado.";
-            return;
+        .alerta-reabastecimento {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #f0ad4e;
+            background-color: #fff8e5;
         }
 
-        $historico = $this->model->buscarHistoricoPorProduto($id);
-
-        include __DIR__ . '/../Views/produtos/historico_movimentacoes.php';
-    }
-
-    public function mostrarEntrada()
-    {
-        $id = $_GET['id'] ?? 0;
-        $produto = $this->model->buscarPorId($id);
-
-        if (!$produto) {
-            echo "Produto não encontrado.";
-            return;
+        .alerta-reabastecimento h3 {
+            margin-top: 0;
         }
 
-        include __DIR__ . '/../Views/produtos/entrada.php';
-    }
-
-    public function registrarEntrada()
-    {
-        $id = $_POST['id'] ?? 0;
-        $motivo = $_POST['motivo'] ?? '';
-        $quantidade = $_POST['quantidade'] ?? 0;
-        $observacao = $_POST['observacao'] ?? '';
-
-        $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao);
-
-        if (!$sucesso) {
-            echo "Não foi possível registrar a entrada de estoque.";
-            return;
+        .tabela-reabastecimento {
+            margin-top: 10px;
         }
 
-        header('Location: index.php?acao=listar');
-        exit;
-    }
-}
+        .painel-criticos {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #dc3545;
+            background-color: #fff3f3;
+            border-radius: 8px;
+        }
+
+        .painel-criticos h2 {
+            margin-top: 0;
+            color: #dc3545;
+        }
+
+        .lista-criticos {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .lista-criticos li {
+            margin-bottom: 8px;
+        }
+
+        .badge-critico {
+            display: inline-block;
+            padding: 3px 8px;
+            margin-left: 8px;
+            background-color: #dc3545;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Controle de Estoque</h1>
+
+    <p>
+        <a href="index.php?acao=criar">Cadastrar novo produto</a>
+    </p>
+
+    <?php if (!empty($produtosCriticos)): ?>
+        <div class="painel-criticos">
+            <h2>⚠ Produtos com Estoque Baixo</h2>
+
+            <ul class="lista-criticos">
+                <?php foreach ($produtosCriticos as $produto): ?>
+                    <li>
+                        <strong><?= htmlspecialchars($produto['nome']) ?></strong>
+                        (Código: <?= htmlspecialchars($produto['codigo']) ?>)
+                        - Quantidade: <?= (int) $produto['quantidade'] ?>
+                        <span class="badge-critico">Crítico</span>
+
+                        <a href="index.php?acao=entrada&id=<?= $produto['id'] ?>">
+                            Repor estoque
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($produtosAbaixoDoMinimo)): ?>
+        <div class="alerta-reabastecimento">
+            <h3>Produtos que precisam de reabastecimento</h3>
+            <p>Cada produto é comparado com seu próprio estoque mínimo.</p>
+
+            <table class="tabela-reabastecimento">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Código</th>
+                        <th>Categoria</th>
+                        <th>Unidade</th>
+                        <th>Quantidade Atual</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($produtosAbaixoDoMinimo as $item): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($item['nome'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['codigo'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['categoria'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['unidade'] ?? '') ?></td>
+                            <td>
+                                <?php if ((int) $item['quantidade'] === 0): ?>
+                                    <strong>ZERADO</strong>
+                                <?php else: ?>
+                                    <?= (int) $item['quantidade'] ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <a href="index.php?acao=entrada&id=<?= $item['id'] ?>">Registrar entrada</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+
+    <form class="filtros" action="index.php" method="GET">
+        <input type="hidden" name="acao" value="listar">
+
+        <div class="campo-filtro">
+            <label>Buscar por nome ou código:</label><br>
+            <input type="text" name="busca" value="<?= htmlspecialchars($busca ?? '') ?>">
+        </div>
+
+        <div class="campo-filtro">
+            <label>Categoria:</label><br>
+            <select name="categoria">
+                <option value="">Todas</option>
+                <?php foreach ($categorias as $item): ?>
+                    <option value="<?= htmlspecialchars($item) ?>" <?= (($categoria ?? '') === $item) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($item) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="campo-filtro">
+            <label>Unidade:</label><br>
+            <select name="unidade">
+                <option value="">Todas</option>
+                <?php foreach ($unidades as $item): ?>
+                    <option value="<?= htmlspecialchars($item) ?>" <?= (($unidade ?? '') === $item) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($item) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="campo-filtro">
+            <label>Status:</label><br>
+            <select name="status">
+                <option value="">Todos</option>
+                <?php foreach ($statusOptions as $item): ?>
+                    <option value="<?= htmlspecialchars($item) ?>" <?= (($status ?? '') === $item) ? 'selected' : '' ?>>
+                        <?= ucfirst(htmlspecialchars($item)) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <button type="submit">Filtrar</button>
+        <a href="index.php?acao=listar">Limpar filtros</a>
+    </form>
+
+    <?php
+        $temFiltrosAtivos = (
+            ($busca ?? '') !== '' ||
+            ($categoria ?? '') !== '' ||
+            ($unidade ?? '') !== '' ||
+            ($status ?? '') !== ''
+        );
+    ?>
+
+    <?php if (empty($produtos)): ?>
+        <?php if ($temFiltrosAtivos): ?>
+            <p>Nenhum produto encontrado com os filtros informados.</p>
+        <?php else: ?>
+            <p>Nenhum produto cadastrado.</p>
+        <?php endif; ?>
+    <?php else: ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Código</th>
+                    <th>Categoria</th>
+                    <th>Unidade</th>
+                    <th>Status</th>
+                    <th>Quantidade</th>
+                    <th>Preço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($produtos as $produto): ?>
+                    <tr>
+                        <td><?= $produto['id'] ?></td>
+                        <td><?= htmlspecialchars($produto['nome'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($produto['codigo'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($produto['categoria'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($produto['unidade'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($produto['status'] ?? '') ?></td>
+                        <td><?= $produto['quantidade'] ?? 0 ?></td>
+                        <td>R$ <?= number_format((float) ($produto['preco'] ?? 0), 2, ',', '.') ?></td>
+                        <td class="acoes">
+                            <a href="index.php?acao=editar&id=<?= $produto['id'] ?>">Editar</a>
+                            <a href="index.php?acao=excluir&id=<?= $produto['id'] ?>" onclick="return confirm('Deseja excluir este produto?')">Excluir</a>
+                            <a href="index.php?acao=movimentar&id=<?= $produto['id'] ?>">Movimentar</a>
+                            <a href="index.php?acao=saida&id=<?= $produto['id'] ?>">Registrar saída</a>
+                            <a href="index.php?acao=historico_movimentacoes&id=<?= $produto['id'] ?>">Histórico de movimentações</a>
+                            <a href="index.php?acao=entrada&id=<?= $produto['id'] ?>">Registrar entrada</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</body>
+</html>
