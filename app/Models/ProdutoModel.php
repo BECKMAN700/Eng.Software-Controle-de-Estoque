@@ -115,13 +115,42 @@ class ProdutoModel
         return $this->anexarHistoricoAoProduto($produto);
     }
 
+    public function listarAbaixoDoMinimo(): array
+    {
+        $sql = "SELECT id, nome, codigo, categoria, unidade, quantidade, estoque_minimo
+                FROM produtos
+                WHERE status = 'ativo'
+                  AND quantidade < estoque_minimo
+                ORDER BY quantidade ASC, nome ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listarAcimaDoMaximo(): array
+    {
+        $sql = "SELECT id, nome, codigo, categoria, unidade, quantidade, estoque_maximo
+                FROM produtos
+                WHERE status = 'ativo'
+                  AND estoque_maximo IS NOT NULL
+                  AND quantidade > estoque_maximo
+                ORDER BY quantidade DESC, nome ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function criar($dados)
     {
         try {
             $sql = "INSERT INTO produtos
-                    (nome, codigo, categoria, unidade, descricao, status, quantidade, estoque_maximo, preco)
+                    (nome, codigo, categoria, unidade, descricao, status, quantidade, estoque_minimo, estoque_maximo, preco)
                     VALUES
-                    (:nome, :codigo, :categoria, :unidade, :descricao, :status, :quantidade, :estoque_maximo, :preco)";
+                    (:nome, :codigo, :categoria, :unidade, :descricao, :status, :quantidade, :estoque_minimo, :estoque_maximo, :preco)";
 
             $stmt = $this->conn->prepare($sql);
 
@@ -135,7 +164,8 @@ class ProdutoModel
                 ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
                 ':status' => trim((string) ($dados['status'] ?? 'ativo')),
                 ':quantidade' => (int) ($dados['quantidade'] ?? 0),
-                ':estoque_maximo' => $estoqueMaximo,
+                ':estoque_minimo' => (int) ($dados['estoque_minimo'] ?? 0),
+                ':estoque_maximo' => $dados['estoque_maximo'] ?? null,
                 ':preco' => (float) ($dados['preco'] ?? 0)
             ]);
         } catch (PDOException $e) {
@@ -154,6 +184,7 @@ class ProdutoModel
                         descricao = :descricao,
                         status = :status,
                         quantidade = :quantidade,
+                        estoque_minimo = :estoque_minimo,
                         estoque_maximo = :estoque_maximo,
                         preco = :preco
                     WHERE id = :id";
@@ -171,7 +202,8 @@ class ProdutoModel
                 ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
                 ':status' => trim((string) ($dados['status'] ?? 'ativo')),
                 ':quantidade' => (int) ($dados['quantidade'] ?? 0),
-                ':estoque_maximo' => $estoqueMaximo,
+                ':estoque_minimo' => (int) ($dados['estoque_minimo'] ?? 0),
+                ':estoque_maximo' => $dados['estoque_maximo'] ?? null,
                 ':preco' => (float) ($dados['preco'] ?? 0)
             ]);
         } catch (PDOException $e) {
