@@ -27,6 +27,12 @@ class ProdutoController
     $unidades = $this->model->listarUnidades();
     $statusOptions = ['ativo', 'inativo', 'descontinuado'];
 
+<<<<<<< Updated upstream
+=======
+    $produtosAbaixoDoMinimo = $this->model->listarAbaixoDoMinimo(ESTOQUE_MINIMO);
+    $estoqueMinimo = ESTOQUE_MINIMO;
+
+>>>>>>> Stashed changes
     include __DIR__ . '/../Views/produtos/listar.php';
 }
 

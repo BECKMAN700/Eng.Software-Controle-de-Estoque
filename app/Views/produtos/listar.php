@@ -88,11 +88,38 @@
 
     <p>
         <a href="index.php?acao=criar">Cadastrar novo produto</a>
+        
     </p>
+<?php if (!empty($produtosCriticos)): ?>
+    <div class="painel-criticos">
+        <h2>⚠ Produtos com Estoque Baixo</h2>
 
+<<<<<<< Updated upstream
    <?php if (!empty($produtosCriticos)): ?>
     <div class="painel-criticos">
         <h2>⚠ Produtos com Estoque Baixo</h2>
+=======
+        <ul class="lista-criticos">
+            <?php foreach ($produtosCriticos as $produto): ?>
+                <li>
+                    <strong><?= htmlspecialchars($produto['nome']) ?></strong>
+                    (Código: <?= htmlspecialchars($produto['codigo']) ?>)
+                    - Quantidade: <?= (int) $produto['quantidade'] ?>
+                    <span class="badge-critico">Crítico</span>
+
+                    <a href="index.php?acao=entrada&id=<?= $produto['id'] ?>">
+                        Repor estoque
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+    <?php if (!empty($produtosAbaixoDoMinimo)): ?>
+        <div class="alerta-reabastecimento">
+            <h3>Produtos que precisam de reabastecimento</h3>
+            <p>Cada produto é comparado com seu próprio estoque mínimo.</p>
+>>>>>>> Stashed changes
 
         <ul class="lista-criticos">
             <?php foreach ($produtosCriticos as $produto): ?>
