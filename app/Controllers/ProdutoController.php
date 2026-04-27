@@ -24,6 +24,7 @@ class ProdutoController
         $statusOptions = ['ativo', 'inativo', 'descontinuado'];
 
         $produtosAbaixoDoMinimo = $this->model->listarAbaixoDoMinimo();
+        $produtosNoMinimo = $this->model->listarNoMinimo();
         $produtosAcimaDoMaximo = $this->model->listarAcimaDoMaximo();
 
         include __DIR__ . '/../Views/produtos/listar.php';

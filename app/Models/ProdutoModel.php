@@ -129,6 +129,21 @@ class ProdutoModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function listarNoMinimo(): array
+    {
+        $sql = "SELECT id, nome, codigo, categoria, unidade, quantidade, estoque_minimo
+                FROM produtos
+                WHERE status = 'ativo'
+                  AND estoque_minimo > 0
+                  AND quantidade = estoque_minimo
+                ORDER BY nome ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function listarAcimaDoMaximo(): array
     {
         $sql = "SELECT id, nome, codigo, categoria, unidade, quantidade, estoque_maximo
