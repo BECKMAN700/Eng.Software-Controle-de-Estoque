@@ -49,6 +49,17 @@
         .tabela-reabastecimento {
             margin-top: 10px;
         }
+
+        .alerta-estoque-minimo {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #d39e00;
+            background-color: #fff4cc;
+        }
+
+        .alerta-estoque-minimo h3 {
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
@@ -57,6 +68,42 @@
     <p>
         <a href="index.php?acao=criar">Cadastrar novo produto</a>
     </p>
+
+    <?php if (!empty($produtosNoMinimo)): ?>
+        <div class="alerta-estoque-minimo">
+            <h3>Produtos no estoque mínimo</h3>
+            <p>Esses itens chegaram ao limite mínimo configurado.</p>
+
+            <table class="tabela-reabastecimento">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Código</th>
+                        <th>Categoria</th>
+                        <th>Unidade</th>
+                        <th>Quantidade Atual</th>
+                        <th>Estoque Mínimo</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($produtosNoMinimo as $item): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($item['nome'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['codigo'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['categoria'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['unidade'] ?? '') ?></td>
+                            <td><?= (int) ($item['quantidade'] ?? 0) ?></td>
+                            <td><?= (int) ($item['estoque_minimo'] ?? 0) ?></td>
+                            <td>
+                                <a href="index.php?acao=entrada&id=<?= $item['id'] ?>">Registrar entrada</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
 
     <?php if (!empty($produtosAbaixoDoMinimo)): ?>
         <div class="alerta-reabastecimento">
