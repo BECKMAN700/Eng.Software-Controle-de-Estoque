@@ -343,7 +343,6 @@
                         <td><?= $produto['quantidade'] ?? 0 ?></td>
                         <td><?= $produto['estoque_minimo'] ?? 0 ?></td>
                         <td>
-                            <td>
                                 <?= (($produto['estoque_maximo'] ?? null) !== null && ($produto['estoque_maximo'] ?? '') !== '')
                                     ? (int) $produto['estoque_maximo']
                                     : '-' ?>
@@ -354,7 +353,7 @@
                                 </span>
                             </td>
                             <td>R$ <?= number_format((float) ($produto['preco'] ?? 0), 2, ',', '.') ?></td>
-                        <td class="acoes">
+                            <td class="acoes">
                             <a href="index.php?acao=editar&id=<?= $produto['id'] ?>">Editar</a>
                             <a href="index.php?acao=excluir&id=<?= $produto['id'] ?>" onclick="return confirm('Deseja excluir este produto?')">Excluir</a>
                             <a href="index.php?acao=movimentar&id=<?= $produto['id'] ?>">Movimentar</a>
