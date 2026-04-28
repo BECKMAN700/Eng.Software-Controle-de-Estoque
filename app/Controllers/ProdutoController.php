@@ -27,12 +27,12 @@ class ProdutoController
         $produtosNoMinimo = $this->model->listarNoMinimo();
         $produtosAcimaDoMaximo = $this->model->listarAcimaDoMaximo();
 
-        include __DIR__ . '/../Views/produtos/listar.php';
+        include __DIR__ . '/../Views/produtos/listar.html';
     }
 
     public function mostrarCriar()
     {
-        include __DIR__ . '/../Views/produtos/criar.php';
+        include __DIR__ . '/../Views/produtos/criar.html';
     }
 
     public function salvar()
@@ -77,7 +77,7 @@ class ProdutoController
             return;
         }
 
-        include __DIR__ . '/../Views/produtos/editar.php';
+        include __DIR__ . '/../Views/produtos/editar.html';
     }
 
     public function atualizar()
@@ -133,7 +133,7 @@ class ProdutoController
             return;
         }
 
-        include __DIR__ . '/../Views/produtos/movimentar.php';
+        include __DIR__ . '/../Views/produtos/movimentar.html';
     }
 
     public function mostrarSaida()
@@ -146,7 +146,7 @@ class ProdutoController
             return;
         }
 
-        include __DIR__ . '/../Views/produtos/saida.php';
+        include __DIR__ . '/../Views/produtos/saida.html';
     }
 
     public function mostrarDetalhesSaida()
@@ -166,7 +166,7 @@ class ProdutoController
             }
         ));
 
-        include __DIR__ . '/../Views/produtos/detalhes_saida.php';
+        include __DIR__ . '/../Views/produtos/detalhes_saida.html';
     }
 
     public function registrarSaida()
@@ -217,7 +217,7 @@ class ProdutoController
 
         $historico = $this->model->buscarHistoricoPorProduto($id);
 
-        include __DIR__ . '/../Views/produtos/historico_movimentacoes.php';
+        include __DIR__ . '/../Views/produtos/historico_movimentacoes.html';
     }
 
     public function mostrarEntrada()
@@ -230,7 +230,7 @@ class ProdutoController
             return;
         }
 
-        include __DIR__ . '/../Views/produtos/entrada.php';
+        include __DIR__ . '/../Views/produtos/entrada.html';
     }
 
     public function registrarEntrada()
