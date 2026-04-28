@@ -60,6 +60,36 @@
         .alerta-estoque-minimo h3 {
             margin-top: 0;
         }
+        .situacao-normal,
+        .situacao-critico,
+        .situacao-minimo,
+        .situacao-maximo {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .situacao-normal {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .situacao-critico {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .situacao-minimo {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .situacao-maximo {
+            background-color: #cce5ff;
+            color: #004085;
+        }
     </style>
 </head>
 <body>
@@ -277,12 +307,32 @@
                     <th>Quantidade</th>
                     <th>Estoque Mínimo</th>
                     <th>Estoque Máximo</th>
+                    <th>Situação do Estoque</th>
                     <th>Preço</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($produtos as $produto): ?>
+                    <?php
+                        $quantidadeAtual = (int) ($produto['quantidade'] ?? 0);
+                        $estoqueMinimo = (int) ($produto['estoque_minimo'] ?? 0);
+                        $estoqueMaximo = $produto['estoque_maximo'] ?? null;
+
+                        $situacaoEstoque = 'Normal';
+                        $classeSituacao = 'situacao-normal';
+
+                        if ($estoqueMinimo > 0 && $quantidadeAtual < $estoqueMinimo) {
+                            $situacaoEstoque = 'Crítico';
+                            $classeSituacao = 'situacao-critico';
+                        } elseif ($estoqueMinimo > 0 && $quantidadeAtual === $estoqueMinimo) {
+                            $situacaoEstoque = 'No mínimo';
+                            $classeSituacao = 'situacao-minimo';
+                        } elseif ($estoqueMaximo !== null && $estoqueMaximo !== '' && $quantidadeAtual > (int) $estoqueMaximo) {
+                            $situacaoEstoque = 'Acima do máximo';
+                            $classeSituacao = 'situacao-maximo';
+                        }
+                    ?>
                     <tr>
                         <td><?= $produto['id'] ?></td>
                         <td><?= htmlspecialchars($produto['nome'] ?? '') ?></td>
@@ -293,11 +343,17 @@
                         <td><?= $produto['quantidade'] ?? 0 ?></td>
                         <td><?= $produto['estoque_minimo'] ?? 0 ?></td>
                         <td>
-                            <?= (($produto['estoque_maximo'] ?? null) !== null && ($produto['estoque_maximo'] ?? '') !== '')
-                                ? (int) $produto['estoque_maximo']
-                                : '-' ?>
-                        </td>
-                        <td>R$ <?= number_format((float) ($produto['preco'] ?? 0), 2, ',', '.') ?></td>
+                            <td>
+                                <?= (($produto['estoque_maximo'] ?? null) !== null && ($produto['estoque_maximo'] ?? '') !== '')
+                                    ? (int) $produto['estoque_maximo']
+                                    : '-' ?>
+                            </td>
+                            <td>
+                                <span class="<?= $classeSituacao ?>">
+                                    <?= $situacaoEstoque ?>
+                                </span>
+                            </td>
+                            <td>R$ <?= number_format((float) ($produto['preco'] ?? 0), 2, ',', '.') ?></td>
                         <td class="acoes">
                             <a href="index.php?acao=editar&id=<?= $produto['id'] ?>">Editar</a>
                             <a href="index.php?acao=excluir&id=<?= $produto['id'] ?>" onclick="return confirm('Deseja excluir este produto?')">Excluir</a>
