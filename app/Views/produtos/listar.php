@@ -68,7 +68,26 @@
     <p>
         <a href="index.php?acao=criar">Cadastrar novo produto</a>
     </p>
+<h2>📊 Resumo do Estoque</h2>
 
+<div style="display:flex; gap:20px; margin-bottom:20px;">
+
+    <div style="background:#dc3545; padding:15px; color:white;">
+        🔴 Abaixo do mínimo<br>
+        <?= count($produtosAbaixoDoMinimo) ?>
+    </div>
+
+    <div style="background:#ffc107; padding:15px;">
+        🟡 No mínimo<br>
+        <?= count($produtosNoMinimo) ?>
+    </div>
+
+    <div style="background:#0d6efd; padding:15px; color:white;">
+        🔵 Acima do máximo<br>
+        <?= count($produtosAcimaDoMaximo) ?>
+    </div>
+
+</div>
     <?php if (!empty($produtosNoMinimo)): ?>
         <div class="alerta-estoque-minimo">
             <h3>Produtos no estoque mínimo</h3>
