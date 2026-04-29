@@ -30,6 +30,32 @@ class ProdutoController
         include __DIR__ . '/../Views/produtos/listar.php';
     }
 
+    public function catalogo()
+    {
+        $busca = trim($_GET['busca'] ?? '');
+        $categoria = trim($_GET['categoria'] ?? '');
+        $unidade = trim($_GET['unidade'] ?? '');
+        $status = trim($_GET['status'] ?? '');
+
+        $produtos = $this->model->listarFiltrados($busca, $categoria, $unidade, $status);
+        $categorias = $this->model->listarCategorias();
+        $unidades = $this->model->listarUnidades();
+        $statusOptions = ['ativo', 'inativo', 'descontinuado'];
+
+        include __DIR__ . '/../Views/produtos/catalogo.php';
+    }
+
+    public function relatorios()
+    {
+        $produtos = $this->model->listar();
+        $produtosAbaixoDoMinimo = $this->model->listarAbaixoDoMinimo();
+        $produtosNoMinimo = $this->model->listarNoMinimo();
+        $produtosAcimaDoMaximo = $this->model->listarAcimaDoMaximo();
+        $ultimasMovimentacoes = $this->model->buscarUltimasMovimentacoes(8);
+
+        include __DIR__ . '/../Views/produtos/relatorios.php';
+    }
+
     public function mostrarCriar()
     {
         include __DIR__ . '/../Views/produtos/criar.php';

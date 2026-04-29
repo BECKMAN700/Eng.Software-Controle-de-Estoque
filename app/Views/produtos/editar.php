@@ -1,71 +1,186 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Produto</title>
-</head>
-<body>
-    <h1>Editar Produto</h1>
+<?php
+$pageTitle = 'Editar produto';
+$pageSubtitle = 'Atualize os dados do produto, limites de estoque e informações de controle.';
 
-    <form action="index.php?acao=atualizar" method="POST">
-        <input type="hidden" name="id" value="<?= $produto['id'] ?>">
+$produto = $produto ?? [];
 
-        <p>
-            <label>Nome:</label><br>
-            <input type="text" name="nome" value="<?= htmlspecialchars($produto['nome']) ?>" required>
-        </p>
+if (!function_exists('esc')) {
+    function esc($valor): string
+    {
+        return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+    }
+}
 
-        <p>
-            <label>Código:</label><br>
-            <input type="text" name="codigo" value="<?= htmlspecialchars($produto['codigo']) ?>" required>
-        </p>
+ob_start();
+?>
 
-        <p>
-            <label>Quantidade:</label><br>
-            <input type="number" name="quantidade" min="0" value="<?= $produto['quantidade'] ?>" required>
-        </p>
+<section class="page-section">
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Editar produto</h2>
+                <p>Altere as informações necessárias e salve para atualizar o cadastro.</p>
+            </div>
 
-        <p>
-            <label>Estoque mínimo:</label><br>
-            <input type="number" name="estoque_minimo" min="0" value="<?= (int) ($produto['estoque_minimo'] ?? 0) ?>" required>
-        </p>
+            <a href="index.php?acao=listar" class="btn btn-secondary">
+                Voltar para o painel
+            </a>
+        </div>
 
-        <p>
-            <label>Estoque máximo:</label><br>
-            <input type="number" name="estoque_maximo" min="0" value="<?= htmlspecialchars((string) ($produto['estoque_maximo'] ?? '')) ?>">
-        </p>
+        <form action="index.php?acao=atualizar" method="POST">
+            <input type="hidden" name="id" value="<?= (int) ($produto['id'] ?? 0) ?>">
 
-        <p>
-            <label>Preço:</label><br>
-            <input type="number" name="preco" step="0.01" min="0" value="<?= $produto['preco'] ?>" required>
-        </p>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nome">Nome do produto</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        value="<?= esc($produto['nome'] ?? '') ?>"
+                        required
+                    >
+                </div>
 
-        <p>
-            <label>Categoria:</label><br>
-            <input type="text" name="categoria" value="<?= htmlspecialchars($produto['categoria'] ?? '') ?>" required>
-        </p>
+                <div class="form-group">
+                    <label for="codigo">Código</label>
+                    <input
+                        type="text"
+                        id="codigo"
+                        name="codigo"
+                        value="<?= esc($produto['codigo'] ?? '') ?>"
+                        placeholder="Ex: PROD-001"
+                    >
+                </div>
 
-        <p>
-            <label>Unidade:</label><br>
-            <input type="text" name="unidade" value="<?= htmlspecialchars($produto['unidade'] ?? '') ?>" required>
-        </p>
+                <div class="form-group">
+                    <label for="categoria">Categoria</label>
+                    <input
+                        type="text"
+                        id="categoria"
+                        name="categoria"
+                        value="<?= esc($produto['categoria'] ?? '') ?>"
+                        placeholder="Ex: Alimentos"
+                    >
+                </div>
 
-        <p>
-            <label>Descrição:</label><br>
-            <textarea name="descricao" rows="4" cols="40" required><?= htmlspecialchars($produto['descricao'] ?? '') ?></textarea>
-        </p>
+                <div class="form-group">
+                    <label for="unidade">Unidade</label>
+                    <input
+                        type="text"
+                        id="unidade"
+                        name="unidade"
+                        value="<?= esc($produto['unidade'] ?? '') ?>"
+                        placeholder="Ex: kg, un, caixa, pacote"
+                    >
+                </div>
 
-        <p>
-            <label>Status:</label><br>
-            <select name="status" required>
-                <option value="ativo" <?= (($produto['status'] ?? '') === 'ativo') ? 'selected' : '' ?>>Ativo</option>
-                <option value="inativo" <?= (($produto['status'] ?? '') === 'inativo') ? 'selected' : '' ?>>Inativo</option>
-                <option value="descontinuado" <?= (($produto['status'] ?? '') === 'descontinuado') ? 'selected' : '' ?>>Descontinuado</option>
-            </select>
-        </p>
+                <div class="form-group">
+                    <label for="quantidade">Quantidade atual</label>
+                    <input
+                        type="number"
+                        id="quantidade"
+                        name="quantidade"
+                        min="0"
+                        value="<?= (int) ($produto['quantidade'] ?? 0) ?>"
+                        required
+                    >
+                </div>
 
-        <button type="submit">Atualizar</button>
-        <a href="index.php?acao=listar">Voltar</a>
-    </form>
-</body>
-</html>
+                <div class="form-group">
+                    <label for="preco">Preço</label>
+                    <input
+                        type="number"
+                        id="preco"
+                        name="preco"
+                        min="0"
+                        step="0.01"
+                        value="<?= esc($produto['preco'] ?? '0.00') ?>"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="estoque_minimo">Estoque mínimo</label>
+                    <input
+                        type="number"
+                        id="estoque_minimo"
+                        name="estoque_minimo"
+                        min="0"
+                        value="<?= (int) ($produto['estoque_minimo'] ?? 0) ?>"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="estoque_maximo">Estoque máximo</label>
+                    <input
+                        type="number"
+                        id="estoque_maximo"
+                        name="estoque_maximo"
+                        min="0"
+                        value="<?= esc($produto['estoque_maximo'] ?? '') ?>"
+                        placeholder="Opcional"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" required>
+                        <?php
+                            $statusAtual = $produto['status'] ?? 'ativo';
+                        ?>
+
+                        <option value="ativo" <?= $statusAtual === 'ativo' ? 'selected' : '' ?>>
+                            Ativo
+                        </option>
+
+                        <option value="inativo" <?= $statusAtual === 'inativo' ? 'selected' : '' ?>>
+                            Inativo
+                        </option>
+
+                        <option value="descontinuado" <?= $statusAtual === 'descontinuado' ? 'selected' : '' ?>>
+                            Descontinuado
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group mt-2">
+                <label for="descricao">Descrição</label>
+                <textarea
+                    id="descricao"
+                    name="descricao"
+                    placeholder="Adicione uma descrição ou observação sobre o produto."
+                ><?= esc($produto['descricao'] ?? '') ?></textarea>
+            </div>
+
+            <div class="card mt-3 summary-card-warning">
+                <div class="card-header">
+                    <div>
+                        <h3>Atenção ao alterar a quantidade</h3>
+                        <p>
+                            Esta tela atualiza diretamente a quantidade atual do produto.
+                            Para registrar uma entrada ou saída com histórico, use as opções de movimentação no painel.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Salvar alterações
+                </button>
+
+                <a href="index.php?acao=listar" class="btn btn-secondary">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
+
+<?php
+$content = ob_get_clean();
+
+require __DIR__ . '/../layouts/main.php';
