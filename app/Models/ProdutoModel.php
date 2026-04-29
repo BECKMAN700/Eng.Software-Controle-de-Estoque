@@ -428,4 +428,25 @@ class ProdutoModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function buscarUltimasMovimentacoes($limite = 8): array
+    {
+        $sql = "
+            SELECT 
+                movimentacoes.*,
+                produtos.nome AS produto_nome,
+                produtos.codigo AS produto_codigo,
+                produtos.unidade AS produto_unidade
+            FROM movimentacoes
+            INNER JOIN produtos ON produtos.id = movimentacoes.produto_id
+            ORDER BY movimentacoes.data_hora DESC, movimentacoes.id DESC
+            LIMIT :limite
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':limite', (int) $limite, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
