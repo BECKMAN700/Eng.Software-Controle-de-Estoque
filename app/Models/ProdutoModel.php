@@ -1,327 +1,452 @@
 <?php
 
+require_once __DIR__ . '/../../config/Database.php';
+
 class ProdutoModel
 {
-    private $caminhoArquivo;
+    private $conn;
 
     public function __construct()
     {
-        $this->caminhoArquivo = __DIR__ . '/../../data/produtos.json';
+        $database = new Database();
+        $this->conn = $database->conectar();
+    }
 
-        if (!file_exists($this->caminhoArquivo)) {
-            file_put_contents($this->caminhoArquivo, json_encode([]));
+    private function valorOuNull($valor)
+    {
+        $valor = trim((string) $valor);
+        return $valor === '' ? null : $valor;
+    }
+
+    private function anexarHistoricoAoProduto($produto)
+    {
+        if (!$produto) {
+            return null;
         }
-    }
 
-    private function lerDados()
-    {
-        $json = file_get_contents($this->caminhoArquivo);
-        $dados = json_decode($json, true);
-
-        return is_array($dados) ? $dados : [];
-    }
-
-    private function salvarDados($produtos)
-    {
-        file_put_contents(
-            $this->caminhoArquivo,
-            json_encode($produtos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-        );
-    }
-
-    private function normalizarTexto($valor)
-    {
-        return strtolower(trim((string) $valor));
-    }
-
-    private function contemTexto($texto, $busca)
-    {
-        return strpos($texto, $busca) !== false;
+        $produto['historico_movimentacoes'] = $this->buscarHistoricoPorProduto($produto['id']);
+        return $produto;
     }
 
     public function listar()
     {
-        return $this->lerDados();
+        $sql = "SELECT * FROM produtos ORDER BY id DESC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listarFiltrados($busca = '', $categoria = '', $unidade = '', $status = '')
     {
-        $produtos = $this->lerDados();
+        $sql = "SELECT * FROM produtos WHERE 1=1";
+        $params = [];
 
-        $busca = $this->normalizarTexto($busca);
-        $categoria = $this->normalizarTexto($categoria);
-        $unidade = $this->normalizarTexto($unidade);
-        $status = $this->normalizarTexto($status);
+        $busca = trim((string) $busca);
+        $categoria = trim((string) $categoria);
+        $unidade = trim((string) $unidade);
+        $status = trim((string) $status);
 
-        $filtrados = array_filter($produtos, function ($produto) use ($busca, $categoria, $unidade, $status) {
-            $nome = $this->normalizarTexto($produto['nome'] ?? '');
-            $codigo = $this->normalizarTexto($produto['codigo'] ?? '');
-            $produtoCategoria = $this->normalizarTexto($produto['categoria'] ?? '');
-            $produtoUnidade = $this->normalizarTexto($produto['unidade'] ?? '');
-            $produtoStatus = $this->normalizarTexto($produto['status'] ?? '');
+        if ($busca !== '') {
+            $sql .= " AND (nome LIKE :busca OR codigo LIKE :busca)";
+            $params[':busca'] = '%' . $busca . '%';
+        }
 
-            $passaBusca = true;
-            if ($busca !== '') {
-                $passaBusca = $this->contemTexto($nome, $busca) || $this->contemTexto($codigo, $busca);
-            }
+        if ($categoria !== '') {
+            $sql .= " AND categoria = :categoria";
+            $params[':categoria'] = $categoria;
+        }
 
-            $passaCategoria = ($categoria === '' || $produtoCategoria === $categoria);
-            $passaUnidade = ($unidade === '' || $produtoUnidade === $unidade);
-            $passaStatus = ($status === '' || $produtoStatus === $status);
+        if ($unidade !== '') {
+            $sql .= " AND unidade = :unidade";
+            $params[':unidade'] = $unidade;
+        }
 
-            return $passaBusca && $passaCategoria && $passaUnidade && $passaStatus;
-        });
+        if ($status !== '') {
+            $sql .= " AND status = :status";
+            $params[':status'] = $status;
+        }
 
-        return array_values($filtrados);
+        $sql .= " ORDER BY id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function listarCategorias()
     {
-        $produtos = $this->lerDados();
-        $categorias = [];
+        $sql = "SELECT DISTINCT categoria
+                FROM produtos
+                WHERE categoria IS NOT NULL
+                  AND TRIM(categoria) <> ''
+                ORDER BY categoria ASC";
 
-        foreach ($produtos as $produto) {
-            $categoria = trim($produto['categoria'] ?? '');
-            if ($categoria !== '') {
-                $categorias[] = $categoria;
-            }
-        }
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
 
-        $categorias = array_values(array_unique($categorias));
-        natcasesort($categorias);
-
-        return array_values($categorias);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
     public function listarUnidades()
     {
-        $produtos = $this->lerDados();
-        $unidades = [];
+        $sql = "SELECT DISTINCT unidade
+                FROM produtos
+                WHERE unidade IS NOT NULL
+                  AND TRIM(unidade) <> ''
+                ORDER BY unidade ASC";
 
-        foreach ($produtos as $produto) {
-            $unidade = trim($produto['unidade'] ?? '');
-            if ($unidade !== '') {
-                $unidades[] = $unidade;
-            }
-        }
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
 
-        $unidades = array_values(array_unique($unidades));
-        natcasesort($unidades);
-
-        return array_values($unidades);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
     public function buscarPorId($id)
     {
-        $produtos = $this->lerDados();
+        $sql = "SELECT * FROM produtos WHERE id = :id LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', (int) $id, PDO::PARAM_INT);
+        $stmt->execute();
 
-        foreach ($produtos as $produto) {
-            if ($produto['id'] == $id) {
-                return $produto;
-            }
-        }
+        $produto = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return null;
+        return $this->anexarHistoricoAoProduto($produto);
+    }
+
+    public function listarAbaixoDoMinimo(): array
+    {
+        $sql = "SELECT id, nome, codigo, categoria, unidade, quantidade, estoque_minimo
+                FROM produtos
+                WHERE status = 'ativo'
+                  AND quantidade < estoque_minimo
+                ORDER BY quantidade ASC, nome ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listarNoMinimo(): array
+    {
+        $sql = "SELECT id, nome, codigo, categoria, unidade, quantidade, estoque_minimo
+                FROM produtos
+                WHERE status = 'ativo'
+                  AND estoque_minimo > 0
+                  AND quantidade = estoque_minimo
+                ORDER BY nome ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listarAcimaDoMaximo(): array
+    {
+        $sql = "SELECT id, nome, codigo, categoria, unidade, quantidade, estoque_maximo
+                FROM produtos
+                WHERE status = 'ativo'
+                  AND estoque_maximo IS NOT NULL
+                  AND quantidade > estoque_maximo
+                ORDER BY quantidade DESC, nome ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function criar($dados)
     {
-        $produtos = $this->lerDados();
+        try {
+            $sql = "INSERT INTO produtos
+                    (nome, codigo, categoria, unidade, descricao, status, quantidade, estoque_minimo, estoque_maximo, preco)
+                    VALUES
+                    (:nome, :codigo, :categoria, :unidade, :descricao, :status, :quantidade, :estoque_minimo, :estoque_maximo, :preco)";
 
-        $novoId = 1;
-        if (!empty($produtos)) {
-            $ids = array_column($produtos, 'id');
-            $novoId = max($ids) + 1;
+            $stmt = $this->conn->prepare($sql);
+
+            $estoqueMaximo = ($dados['estoque_maximo'] ?? '') !== '' ? (int) $dados['estoque_maximo'] : null;
+
+            return $stmt->execute([
+                ':nome' => trim((string) ($dados['nome'] ?? '')),
+                ':codigo' => $this->valorOuNull($dados['codigo'] ?? null),
+                ':categoria' => $this->valorOuNull($dados['categoria'] ?? null),
+                ':unidade' => $this->valorOuNull($dados['unidade'] ?? null),
+                ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
+                ':status' => trim((string) ($dados['status'] ?? 'ativo')),
+                ':quantidade' => (int) ($dados['quantidade'] ?? 0),
+                ':estoque_minimo' => (int) ($dados['estoque_minimo'] ?? 0),
+                ':estoque_maximo' => $dados['estoque_maximo'] ?? null,
+                ':preco' => (float) ($dados['preco'] ?? 0)
+            ]);
+        } catch (PDOException $e) {
+            die('Erro ao criar produto: ' . $e->getMessage());
         }
-
-        $novoProduto = [
-            'id' => $novoId,
-            'nome' => $dados['nome'],
-            'codigo' => $dados['codigo'],
-            'categoria' => $dados['categoria'],
-            'unidade' => $dados['unidade'],
-            'descricao' => $dados['descricao'],
-            'status' => $dados['status'],
-            'quantidade' => (int) $dados['quantidade'],
-            'preco' => (float) $dados['preco'],
-            'historico_movimentacoes' => []
-        ];
-
-        $produtos[] = $novoProduto;
-        $this->salvarDados($produtos);
     }
 
     public function atualizar($id, $dados)
     {
-        $produtos = $this->lerDados();
+        try {
+            $sql = "UPDATE produtos SET
+                        nome = :nome,
+                        codigo = :codigo,
+                        categoria = :categoria,
+                        unidade = :unidade,
+                        descricao = :descricao,
+                        status = :status,
+                        quantidade = :quantidade,
+                        estoque_minimo = :estoque_minimo,
+                        estoque_maximo = :estoque_maximo,
+                        preco = :preco
+                    WHERE id = :id";
 
-        foreach ($produtos as &$produto) {
-            if ($produto['id'] == $id) {
-                $produto['nome'] = $dados['nome'];
-                $produto['codigo'] = $dados['codigo'];
-                $produto['categoria'] = $dados['categoria'];
-                $produto['unidade'] = $dados['unidade'];
-                $produto['descricao'] = $dados['descricao'];
-                $produto['status'] = $dados['status'];
-                $produto['quantidade'] = (int) $dados['quantidade'];
-                $produto['preco'] = (float) $dados['preco'];
+            $stmt = $this->conn->prepare($sql);
 
-                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
-                    $produto['historico_movimentacoes'] = [];
-                }
+            $estoqueMaximo = ($dados['estoque_maximo'] ?? '') !== '' ? (int) $dados['estoque_maximo'] : null;
 
-                break;
-            }
+            return $stmt->execute([
+                ':id' => (int) $id,
+                ':nome' => trim((string) ($dados['nome'] ?? '')),
+                ':codigo' => $this->valorOuNull($dados['codigo'] ?? null),
+                ':categoria' => $this->valorOuNull($dados['categoria'] ?? null),
+                ':unidade' => $this->valorOuNull($dados['unidade'] ?? null),
+                ':descricao' => $this->valorOuNull($dados['descricao'] ?? null),
+                ':status' => trim((string) ($dados['status'] ?? 'ativo')),
+                ':quantidade' => (int) ($dados['quantidade'] ?? 0),
+                ':estoque_minimo' => (int) ($dados['estoque_minimo'] ?? 0),
+                ':estoque_maximo' => $dados['estoque_maximo'] ?? null,
+                ':preco' => (float) ($dados['preco'] ?? 0)
+            ]);
+        } catch (PDOException $e) {
+            die('Erro ao atualizar produto: ' . $e->getMessage());
         }
-
-        $this->salvarDados($produtos);
     }
 
     public function excluir($id)
     {
-        $produtos = $this->lerDados();
+        try {
+            $sql = "DELETE FROM produtos WHERE id = :id";
+            $stmt = $this->conn->prepare($sql);
 
-        $produtos = array_filter($produtos, function ($produto) use ($id) {
-            return $produto['id'] != $id;
-        });
-
-        $this->salvarDados(array_values($produtos));
+            return $stmt->execute([
+                ':id' => (int) $id
+            ]);
+        } catch (PDOException $e) {
+            die('Erro ao excluir produto: ' . $e->getMessage());
+        }
     }
 
     public function movimentar($id, $tipo, $quantidade, $observacao = '')
     {
-        $produtos = $this->lerDados();
-        
-        foreach ($produtos as &$produto) {
-            if ($produto['id'] == $id) {
-                $quantidade = (int) $quantidade;
+        $quantidade = (int) $quantidade;
 
-                if ($quantidade <= 0) {
-                    return false;
-                }
-
-                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
-                    $produto['historico_movimentacoes'] = [];
-                }
-
-                if ($tipo === 'entrada') {
-                    $produto['quantidade'] += $quantidade;
-                    $motivo = 'entrada_manual';
-                } elseif ($tipo === 'saida') {
-                    if ((int) $produto['quantidade'] < $quantidade) {
-                        return false;
-                    }
-
-                    $produto['quantidade'] -= $quantidade;
-                    $motivo = 'saida_manual';
-                } else {
-                    return false;
-                }
-
-                $produto['historico_movimentacoes'][] = [
-                    'tipo' => $tipo,
-                    'motivo' => $motivo,
-                    'quantidade' => $quantidade,
-                    'observacao' => trim($observacao),
-                    'data_hora' => (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
-                ];
-
-                $this->salvarDados($produtos);
-                return true;
-            }
+        if ($quantidade <= 0) {
+            return false;
         }
 
-        return false;
+        $produto = $this->buscarPorId($id);
+
+        if (!$produto) {
+            return false;
+        }
+
+        if ($tipo !== 'entrada' && $tipo !== 'saida') {
+            return false;
+        }
+
+        if ($tipo === 'saida' && (int) $produto['quantidade'] < $quantidade) {
+            return false;
+        }
+
+        $motivo = ($tipo === 'entrada') ? 'entrada_manual' : 'saida_manual';
+
+        try {
+            $this->conn->beginTransaction();
+
+            if ($tipo === 'entrada') {
+                $sqlProduto = "UPDATE produtos
+                               SET quantidade = quantidade + :quantidade
+                               WHERE id = :id";
+            } else {
+                $sqlProduto = "UPDATE produtos
+                               SET quantidade = quantidade - :quantidade
+                               WHERE id = :id";
+            }
+
+            $stmtProduto = $this->conn->prepare($sqlProduto);
+            $stmtProduto->execute([
+                ':quantidade' => $quantidade,
+                ':id' => (int) $id
+            ]);
+
+            $sqlMov = "INSERT INTO movimentacoes
+                       (produto_id, tipo, motivo, quantidade, observacao)
+                       VALUES
+                       (:produto_id, :tipo, :motivo, :quantidade, :observacao)";
+
+            $stmtMov = $this->conn->prepare($sqlMov);
+            $stmtMov->execute([
+                ':produto_id' => (int) $id,
+                ':tipo' => $tipo,
+                ':motivo' => $motivo,
+                ':quantidade' => $quantidade,
+                ':observacao' => trim((string) $observacao)
+            ]);
+
+            $this->conn->commit();
+            return true;
+        } catch (PDOException $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            die('Erro ao movimentar produto: ' . $e->getMessage());
+        }
     }
 
     public function registrarEntrada($id, $motivo, $quantidade, $observacao = '')
     {
         $motivosValidos = ['compra', 'devolucao', 'transferencia'];
         $quantidade = (int) $quantidade;
+        $motivo = trim((string) $motivo);
 
         if ($quantidade <= 0 || !in_array($motivo, $motivosValidos, true)) {
             return false;
         }
 
-        $produtos = $this->lerDados();
+        $produto = $this->buscarPorId($id);
 
-        foreach ($produtos as &$produto) {
-            if ($produto['id'] == $id) {
-                $produto['quantidade'] += $quantidade;
-
-                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
-                    $produto['historico_movimentacoes'] = [];
-                }
-
-                $produto['historico_movimentacoes'][] = [
-                    'tipo' => 'entrada',
-                    'motivo' => $motivo,
-                    'quantidade' => $quantidade,
-                    'observacao' => trim($observacao),
-                    'data_hora' => (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
-                ];
-
-                $this->salvarDados($produtos);
-                return true;
-            }
+        if (!$produto) {
+            return false;
         }
 
-        return false;
+        try {
+            $this->conn->beginTransaction();
+
+            $sqlProduto = "UPDATE produtos
+                           SET quantidade = quantidade + :quantidade
+                           WHERE id = :id";
+
+            $stmtProduto = $this->conn->prepare($sqlProduto);
+            $stmtProduto->execute([
+                ':quantidade' => $quantidade,
+                ':id' => (int) $id
+            ]);
+
+            $sqlMov = "INSERT INTO movimentacoes
+                       (produto_id, tipo, motivo, quantidade, observacao)
+                       VALUES
+                       (:produto_id, 'entrada', :motivo, :quantidade, :observacao)";
+
+            $stmtMov = $this->conn->prepare($sqlMov);
+            $stmtMov->execute([
+                ':produto_id' => (int) $id,
+                ':motivo' => $motivo,
+                ':quantidade' => $quantidade,
+                ':observacao' => trim((string) $observacao)
+            ]);
+
+            $this->conn->commit();
+            return true;
+        } catch (PDOException $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            die('Erro ao registrar entrada: ' . $e->getMessage());
+        }
     }
 
     public function registrarSaida($id, $motivo, $quantidade, $observacao = '')
     {
         $motivosValidos = ['venda', 'consumo_interno', 'perda', 'avaria'];
         $quantidade = (int) $quantidade;
+        $motivo = trim((string) $motivo);
 
         if ($quantidade <= 0 || !in_array($motivo, $motivosValidos, true)) {
             return false;
         }
 
-        $produtos = $this->lerDados();
+        $produto = $this->buscarPorId($id);
 
-        foreach ($produtos as &$produto) {
-            if ($produto['id'] == $id) {
-                if ((int) $produto['quantidade'] < $quantidade) {
-                    return false;
-                }
-
-                $produto['quantidade'] -= $quantidade;
-
-                if (!isset($produto['historico_movimentacoes']) || !is_array($produto['historico_movimentacoes'])) {
-                    $produto['historico_movimentacoes'] = [];
-                }
-
-                $produto['historico_movimentacoes'][] = [
-                    'tipo' => 'saida',
-                    'motivo' => $motivo,
-                    'quantidade' => $quantidade,
-                    'observacao' => trim($observacao),
-                    'data_hora' => (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
-                ];
-
-                $this->salvarDados($produtos);
-                return true;
-            }
+        if (!$produto) {
+            return false;
         }
 
-        return false;
+        if ((int) $produto['quantidade'] < $quantidade) {
+            return false;
+        }
+
+        try {
+            $this->conn->beginTransaction();
+
+            $sqlProduto = "UPDATE produtos
+                           SET quantidade = quantidade - :quantidade
+                           WHERE id = :id";
+
+            $stmtProduto = $this->conn->prepare($sqlProduto);
+            $stmtProduto->execute([
+                ':quantidade' => $quantidade,
+                ':id' => (int) $id
+            ]);
+
+            $sqlMov = "INSERT INTO movimentacoes
+                       (produto_id, tipo, motivo, quantidade, observacao)
+                       VALUES
+                       (:produto_id, 'saida', :motivo, :quantidade, :observacao)";
+
+            $stmtMov = $this->conn->prepare($sqlMov);
+            $stmtMov->execute([
+                ':produto_id' => (int) $id,
+                ':motivo' => $motivo,
+                ':quantidade' => $quantidade,
+                ':observacao' => trim((string) $observacao)
+            ]);
+
+            $this->conn->commit();
+            return true;
+        } catch (PDOException $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            die('Erro ao registrar saída: ' . $e->getMessage());
+        }
     }
 
     public function buscarHistoricoPorProduto($id)
     {
-        $produto = $this->buscarPorId($id);
+        $sql = "SELECT *
+                FROM movimentacoes
+                WHERE produto_id = :id
+                ORDER BY data_hora DESC, id DESC";
 
-        if (!$produto) {
-            return [];
-        }
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', (int) $id, PDO::PARAM_INT);
+        $stmt->execute();
 
-        $historico = $produto['historico_movimentacoes'] ?? [];
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-        usort($historico, function ($a, $b) {
-            return strtotime($b['data_hora'] ?? '') <=> strtotime($a['data_hora'] ?? '');
-        });
+    public function buscarUltimasMovimentacoes($limite = 8): array
+    {
+        $sql = "
+            SELECT 
+                movimentacoes.*,
+                produtos.nome AS produto_nome,
+                produtos.codigo AS produto_codigo,
+                produtos.unidade AS produto_unidade
+            FROM movimentacoes
+            INNER JOIN produtos ON produtos.id = movimentacoes.produto_id
+            ORDER BY movimentacoes.data_hora DESC, movimentacoes.id DESC
+            LIMIT :limite
+        ";
 
-        return $historico;
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':limite', (int) $limite, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

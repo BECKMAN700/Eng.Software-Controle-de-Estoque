@@ -66,6 +66,14 @@ switch ($acao) {
         }
         break;
 
+    case 'catalogo':
+        $controller->catalogo();
+        break;
+
+    case 'relatorios':
+        $controller->relatorios();
+        break;
+
     default:
         echo "Ação inválida.";
         break;

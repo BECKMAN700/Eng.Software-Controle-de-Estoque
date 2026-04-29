@@ -23,7 +23,37 @@ class ProdutoController
         $unidades = $this->model->listarUnidades();
         $statusOptions = ['ativo', 'inativo', 'descontinuado'];
 
+        $produtosAbaixoDoMinimo = $this->model->listarAbaixoDoMinimo();
+        $produtosNoMinimo = $this->model->listarNoMinimo();
+        $produtosAcimaDoMaximo = $this->model->listarAcimaDoMaximo();
+
         include __DIR__ . '/../Views/produtos/listar.php';
+    }
+
+    public function catalogo()
+    {
+        $busca = trim($_GET['busca'] ?? '');
+        $categoria = trim($_GET['categoria'] ?? '');
+        $unidade = trim($_GET['unidade'] ?? '');
+        $status = trim($_GET['status'] ?? '');
+
+        $produtos = $this->model->listarFiltrados($busca, $categoria, $unidade, $status);
+        $categorias = $this->model->listarCategorias();
+        $unidades = $this->model->listarUnidades();
+        $statusOptions = ['ativo', 'inativo', 'descontinuado'];
+
+        include __DIR__ . '/../Views/produtos/catalogo.php';
+    }
+
+    public function relatorios()
+    {
+        $produtos = $this->model->listar();
+        $produtosAbaixoDoMinimo = $this->model->listarAbaixoDoMinimo();
+        $produtosNoMinimo = $this->model->listarNoMinimo();
+        $produtosAcimaDoMaximo = $this->model->listarAcimaDoMaximo();
+        $ultimasMovimentacoes = $this->model->buscarUltimasMovimentacoes(8);
+
+        include __DIR__ . '/../Views/produtos/relatorios.php';
     }
 
     public function mostrarCriar()
@@ -33,6 +63,18 @@ class ProdutoController
 
     public function salvar()
     {
+        $estoqueMinimo = (int) ($_POST['estoque_minimo'] ?? 0);
+        $estoqueMaximoBruto = trim((string) ($_POST['estoque_maximo'] ?? ''));
+        $estoqueMaximo = $estoqueMaximoBruto === '' ? null : (int) $estoqueMaximoBruto;
+
+        if ($estoqueMinimo < 0) {
+            die('O estoque mínimo não pode ser negativo.');
+        }
+
+        if ($estoqueMaximo !== null && $estoqueMaximo < $estoqueMinimo) {
+            die('O estoque máximo deve ser maior ou igual ao estoque mínimo.');
+        }
+
         $dados = [
             'nome' => trim($_POST['nome'] ?? ''),
             'codigo' => trim($_POST['codigo'] ?? ''),
@@ -41,6 +83,8 @@ class ProdutoController
             'descricao' => trim($_POST['descricao'] ?? ''),
             'status' => trim($_POST['status'] ?? 'ativo'),
             'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'estoque_minimo' => $estoqueMinimo,
+            'estoque_maximo' => $estoqueMaximo,
             'preco' => (float) ($_POST['preco'] ?? 0)
         ];
 
@@ -66,6 +110,18 @@ class ProdutoController
     {
         $id = $_POST['id'] ?? 0;
 
+        $estoqueMinimo = (int) ($_POST['estoque_minimo'] ?? 0);
+        $estoqueMaximoBruto = trim((string) ($_POST['estoque_maximo'] ?? ''));
+        $estoqueMaximo = $estoqueMaximoBruto === '' ? null : (int) $estoqueMaximoBruto;
+
+        if ($estoqueMinimo < 0) {
+            die('O estoque mínimo não pode ser negativo.');
+        }
+
+        if ($estoqueMaximo !== null && $estoqueMaximo < $estoqueMinimo) {
+            die('O estoque máximo deve ser maior ou igual ao estoque mínimo.');
+        }
+
         $dados = [
             'nome' => trim($_POST['nome'] ?? ''),
             'codigo' => trim($_POST['codigo'] ?? ''),
@@ -74,6 +130,8 @@ class ProdutoController
             'descricao' => trim($_POST['descricao'] ?? ''),
             'status' => trim($_POST['status'] ?? 'ativo'),
             'quantidade' => (int) ($_POST['quantidade'] ?? 0),
+            'estoque_minimo' => $estoqueMinimo,
+            'estoque_maximo' => $estoqueMaximo,
             'preco' => (float) ($_POST['preco'] ?? 0)
         ];
 
@@ -106,7 +164,6 @@ class ProdutoController
 
     public function mostrarSaida()
     {
-        // Exibe uma tela própria para registrar saída de estoque com o motivo da baixa.
         $id = $_GET['id'] ?? 0;
         $produto = $this->model->buscarPorId($id);
 
@@ -140,7 +197,6 @@ class ProdutoController
 
     public function registrarSaida()
     {
-        // Recebe os dados da saída e envia para o model validar e persistir a baixa.
         $id = $_POST['id'] ?? 0;
         $motivo = $_POST['motivo'] ?? '';
         $quantidade = $_POST['quantidade'] ?? 0;
@@ -191,33 +247,33 @@ class ProdutoController
     }
 
     public function mostrarEntrada()
-        {
-            $id = $_GET['id'] ?? 0;
-            $produto = $this->model->buscarPorId($id);
+    {
+        $id = $_GET['id'] ?? 0;
+        $produto = $this->model->buscarPorId($id);
 
-            if (!$produto) {
-                echo "Produto não encontrado.";
-                return;
-            }
-
-            include __DIR__ . '/../Views/produtos/entrada.php';
+        if (!$produto) {
+            echo "Produto não encontrado.";
+            return;
         }
+
+        include __DIR__ . '/../Views/produtos/entrada.php';
+    }
 
     public function registrarEntrada()
-        {
-            $id = $_POST['id'] ?? 0;
-            $motivo = $_POST['motivo'] ?? '';
-            $quantidade = $_POST['quantidade'] ?? 0;
-            $observacao = $_POST['observacao'] ?? '';
+    {
+        $id = $_POST['id'] ?? 0;
+        $motivo = $_POST['motivo'] ?? '';
+        $quantidade = $_POST['quantidade'] ?? 0;
+        $observacao = $_POST['observacao'] ?? '';
 
-            $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao);
+        $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao);
 
-            if (!$sucesso) {
-                echo "Não foi possível registrar a entrada de estoque.";
-                return;
-            }
-
-            header('Location: index.php?acao=listar');
-            exit;
+        if (!$sucesso) {
+            echo "Não foi possível registrar a entrada de estoque.";
+            return;
         }
+
+        header('Location: index.php?acao=listar');
+        exit;
+    }
 }
