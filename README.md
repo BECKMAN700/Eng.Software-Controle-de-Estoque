@@ -1,88 +1,160 @@
-# 📦 Controle de Estoque
+# Controle de Estoque
 
-Sistema web desenvolvido para o gerenciamento eficiente de estoque, permitindo o controle de produtos, entradas, saídas e histórico de movimentações de forma prática e organizada.
+Sistema web desenvolvido para gerenciamento de estoque, permitindo o controle de produtos, entradas, saídas, limites de estoque e histórico de movimentações.
 
----
-
-## 📌 Sobre o Projeto
-
-O **Controle de Estoque** é uma aplicação desenvolvida com **PHP nativo**, **HTML**, **CSS** e **MySQL**, seguindo o padrão de arquitetura **MVC**.
-
-O sistema foi criado com o objetivo de auxiliar no gerenciamento de produtos armazenados, possibilitando o cadastro, consulta, atualização e movimentação de itens em estoque.
-
-Inicialmente, o projeto utilizava armazenamento em arquivo JSON, mas foi migrado para **banco de dados MySQL**, tornando a persistência de dados mais adequada e profissional para a proposta do sistema.
+O projeto foi desenvolvido em **PHP nativo**, utilizando **HTML**, **CSS**, **MySQL** e o padrão de arquitetura **MVC**.
 
 ---
 
-## 🎯 Objetivo
+## Sobre o Projeto
 
-O principal objetivo do projeto é:
+O **Controle de Estoque** é uma aplicação web criada com o objetivo de facilitar o gerenciamento de produtos armazenados.
 
-- Facilitar o controle de estoque
-- Organizar produtos cadastrados
-- Registrar entradas e saídas de mercadorias
-- Manter o histórico de movimentações
-- Melhorar a visualização e o acompanhamento dos dados
+O sistema permite cadastrar produtos, consultar informações do estoque, registrar entradas e saídas, acompanhar movimentações e visualizar alertas quando os produtos estão abaixo do estoque mínimo, no limite mínimo ou acima do estoque máximo.
+
+Inicialmente, o projeto utilizava armazenamento em arquivo JSON. Posteriormente, foi migrado para **MySQL**, tornando a persistência dos dados mais adequada para a proposta do sistema.
 
 ---
 
-## ⚙️ Funcionalidades
+## Objetivo
 
-### 📋 Produtos
+O objetivo principal do sistema é oferecer uma solução simples e organizada para controle de estoque.
+
+Entre os objetivos específicos estão:
+
+- Cadastrar e organizar produtos
+- Controlar a quantidade disponível em estoque
+- Definir estoque mínimo e máximo por produto
+- Registrar entradas de estoque
+- Registrar saídas de estoque
+- Manter histórico de movimentações
+- Exibir alertas de reabastecimento
+- Facilitar a consulta de produtos por filtros
+- Melhorar a visualização dos dados com um front-end mais limpo e profissional
+
+---
+
+## Funcionalidades
+
+### Produtos
+
 - Cadastro de produtos
 - Listagem de produtos
 - Edição de produtos
 - Exclusão de produtos
-- Filtros por nome, categoria, unidade e status
+- Consulta por nome ou código
+- Filtros por categoria, unidade e status
+- Visualização em tabela
+- Visualização em catálogo de cards
 
-### 📦 Estoque
-- Registro de entrada de mercadorias
+### Controle de Estoque
+
+- Registro de entrada de produtos
 - Registro de saída de produtos
+- Movimentação manual de estoque
 - Atualização automática da quantidade disponível
+- Validação para evitar saída maior que o estoque disponível
 
-### 🕘 Movimentações
+### Estoque Mínimo e Máximo
+
+- Definição de estoque mínimo por produto
+- Definição de estoque máximo por produto
+- Alerta para produtos abaixo do mínimo
+- Alerta para produtos no limite mínimo
+- Alerta para produtos acima do máximo
+
+### Movimentações
+
 - Histórico de movimentações por produto
 - Registro do tipo de movimentação
+- Registro do motivo da movimentação
 - Registro da quantidade movimentada
-- Registro do motivo
 - Registro de observações
+- Consulta de entradas e saídas realizadas
+
+### Relatórios
+
+- Total de produtos cadastrados
+- Total de unidades em estoque
+- Valor estimado do estoque
+- Produtos abaixo do estoque mínimo
+- Produtos no estoque mínimo
+- Produtos acima do estoque máximo
+- Últimas movimentações registradas
+- Produtos com maior quantidade em estoque
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
-- **PHP 8**
-- **HTML5**
-- **CSS3**
-- **MySQL**
-- **XAMPP**
-- **Arquitetura MVC**
-- **Git e GitHub**
-- **GitFlow**
+- PHP 8
+- HTML5
+- CSS3
+- MySQL
+- PDO
+- XAMPP
+- Arquitetura MVC
+- Git
+- GitHub
+- GitFlow
 
 ---
 
-## 📁 Estrutura do Projeto
+## Arquitetura do Projeto
+
+O projeto segue o padrão **MVC**, separando responsabilidades em:
+
+- **Model:** responsável pelo acesso ao banco de dados e regras de persistência
+- **View:** responsável pelas telas exibidas ao usuário
+- **Controller:** responsável por intermediar as ações entre o usuário, as views e o model
+
+---
+
+## Estrutura de Pastas
 
 ```bash
 Eng.Software-Controle-de-Estoque/
 ├── app/
 │   ├── Controllers/
+│   │   └── ProdutoController.php
 │   ├── Models/
+│   │   └── ProdutoModel.php
 │   └── Views/
+│       ├── layouts/
+│       │   └── main.php
+│       ├── partials/
+│       │   ├── sidebar.php
+│       │   ├── topbar.php
+│       │   └── flash.php
+│       └── produtos/
+│           ├── listar.php
+│           ├── catalogo.php
+│           ├── criar.php
+│           ├── editar.php
+│           ├── entrada.php
+│           ├── saida.php
+│           ├── movimentar.php
+│           ├── historico_movimentacoes.php
+│           ├── detalhes_saida.php
+│           └── relatorios.php
 ├── config/
 │   └── Database.php
 ├── database/
 │   └── schema.sql
 ├── public/
 │   ├── index.php
-│   └── teste_conexao.php
+│   └── assets/
+│       └── css/
+│           ├── base.css
+│           ├── layout.css
+│           ├── components.css
+│           └── pages.css
 └── README.md
 ```
 
 ---
 
-## 🗄️ Banco de Dados
+## Banco de Dados
 
 O sistema utiliza o banco de dados:
 
@@ -90,20 +162,69 @@ O sistema utiliza o banco de dados:
 controle_estoque
 ```
 
-Com as tabelas principais:
+As principais tabelas são:
 
-- `produtos`
-- `movimentacoes`
+```text
+produtos
+movimentacoes
+```
 
-O script de criação do banco e das tabelas está em:
+O script de criação do banco e das tabelas está localizado em:
 
 ```bash
 database/schema.sql
 ```
 
+### Tabela `produtos`
+
+Armazena os dados principais dos produtos cadastrados, como:
+
+- Nome
+- Código
+- Categoria
+- Unidade
+- Quantidade
+- Estoque mínimo
+- Estoque máximo
+- Preço
+- Status
+- Descrição
+
+### Tabela `movimentacoes`
+
+Armazena o histórico de entradas e saídas dos produtos, contendo:
+
+- Produto relacionado
+- Tipo da movimentação
+- Motivo
+- Quantidade
+- Observação
+- Data e hora da movimentação
+
 ---
 
-## 🚀 Como Executar o Projeto
+## Rotas Principais
+
+O sistema utiliza o arquivo `public/index.php` como ponto de entrada.
+
+Algumas ações disponíveis são:
+
+```text
+index.php?acao=listar
+index.php?acao=catalogo
+index.php?acao=relatorios
+index.php?acao=criar
+index.php?acao=editar&id=1
+index.php?acao=entrada&id=1
+index.php?acao=saida&id=1
+index.php?acao=movimentar&id=1
+index.php?acao=historico_movimentacoes&id=1
+index.php?acao=detalhes_saida&id=1
+```
+
+---
+
+## Como Executar o Projeto
 
 ### 1. Clonar o repositório
 
@@ -125,7 +246,7 @@ Copie a pasta do projeto para o diretório:
 C:\xampp\htdocs\
 ```
 
-Ficando assim:
+O caminho final deve ficar assim:
 
 ```text
 C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
@@ -135,28 +256,26 @@ C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
 
 Abra o **XAMPP Control Panel** e inicie os módulos:
 
-- Apache
-- MySQL
+```text
+Apache
+MySQL
+```
 
 ### 5. Criar o banco de dados
 
-Abra no navegador:
+Abra o phpMyAdmin no navegador:
 
 ```text
 http://localhost/phpmyadmin
 ```
 
-Crie um banco chamado:
-
-```text
-controle_estoque
-```
-
-Depois execute o script do arquivo:
+Depois execute o script SQL localizado em:
 
 ```bash
 database/schema.sql
 ```
+
+Esse script cria o banco `controle_estoque` e as tabelas necessárias para o funcionamento do sistema.
 
 ### 6. Configurar a conexão com o banco
 
@@ -166,37 +285,17 @@ Verifique o arquivo:
 config/Database.php
 ```
 
-Exemplo de configuração:
+Configuração padrão utilizada no XAMPP:
 
 ```php
-<?php
-
-class Database
-{
-    private $host = '127.0.0.1';
-    private $dbname = 'controle_estoque';
-    private $user = 'root';
-    private $pass = '';
-    private $port = '3306';
-    private $conn;
-
-    public function conectar()
-    {
-        try {
-            $this->conn = new PDO(
-                "mysql:host={$this->host};port={$this->port};dbname={$this->dbname};charset=utf8mb4",
-                $this->user,
-                $this->pass
-            );
-
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $this->conn;
-        } catch (PDOException $e) {
-            die('Erro na conexão com o banco: ' . $e->getMessage());
-        }
-    }
-}
+private $host = '127.0.0.1';
+private $dbname = 'controle_estoque';
+private $user = 'root';
+private $pass = '';
+private $port = '3306';
 ```
+
+Caso o MySQL esteja usando outra porta, altere o valor de `$port`.
 
 ### 7. Acessar o sistema
 
@@ -208,20 +307,97 @@ http://localhost/Eng.Software-Controle-de-Estoque/public/
 
 ---
 
-## 📌 Observações
+## Fluxo de Trabalho com GitFlow
 
-- O sistema foi migrado de **JSON para MySQL**
-- Para funcionamento correto, é necessário que o **Apache** e o **MySQL** estejam ativos no XAMPP
-- O banco de dados deve ser criado corretamente antes de executar o projeto
-- O projeto foi desenvolvido com fins acadêmicos para a disciplina de **Engenharia de Software**
+O projeto utiliza uma organização baseada em GitFlow.
+
+Branches principais:
+
+```text
+main
+develop
+```
+
+Branches de desenvolvimento:
+
+```text
+feature/nome-da-feature
+```
+
+Exemplo de criação de uma feature:
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/nome-da-feature
+```
+
+Exemplo de commit:
+
+```bash
+git add .
+git commit -m "feat: adiciona nova funcionalidade"
+git push -u origin feature/nome-da-feature
+```
+
+Após finalizar a feature, deve ser aberto um Pull Request para a branch `develop`.
 
 ---
 
-## 👨‍💻 Contato & Créditos
+## Atualizações Recentes
 
-Projeto acadêmico colaborativo — **UFT (2026/1)**
+Nesta versão, foi realizada uma atualização no front-end do sistema.
 
-### 👥 Equipe
+As principais melhorias foram:
+
+- Criação de layout base reutilizável
+- Criação de sidebar lateral
+- Criação de topbar
+- Separação de CSS em arquivos organizados
+- Atualização da tela principal de estoque
+- Criação de catálogo visual de produtos
+- Atualização das telas de cadastro e edição
+- Atualização das telas de entrada e saída
+- Atualização da tela de movimentação manual
+- Atualização do histórico de movimentações
+- Criação da tela de relatórios
+- Padronização visual das telas
+- Melhor organização das views com `layouts` e `partials`
+
+---
+
+## Requisitos Implementados
+
+- Cadastro de produtos
+- Listagem de produtos
+- Edição de produtos
+- Exclusão de produtos
+- Registro de entrada de estoque
+- Registro de saída de estoque
+- Histórico de movimentações
+- Filtros de busca
+- Estoque mínimo por produto
+- Estoque máximo por produto
+- Alertas de estoque
+- Relatórios gerais
+- Layout visual atualizado
+
+---
+
+## Informações Acadêmicas
+
+Projeto desenvolvido para fins acadêmicos.
+
+```text
+Universidade: Universidade Federal do Tocantins
+Curso: Ciência da Computação
+Disciplina: Engenharia de Software
+Semestre: 2026/1
+```
+
+---
+
+## Equipe
 
 - João Pedro Rodrigues Bequiman
 - Matheus Sulino Da Silva Costa
@@ -231,6 +407,27 @@ Projeto acadêmico colaborativo — **UFT (2026/1)**
 
 ---
 
-## 📄 Licença
+## Vídeo de Apresentação
 
-Este projeto pode ser utilizado para fins acadêmicos.
+Link do vídeo:
+
+```text
+Adicionar link do vídeo aqui
+```
+
+---
+
+## Observações
+
+- O sistema precisa do Apache e MySQL ativos no XAMPP.
+- O banco de dados deve ser criado antes de acessar o sistema.
+- O projeto utiliza PHP nativo, sem framework.
+- O sistema segue arquitetura MVC.
+- As movimentações de estoque são registradas na tabela `movimentacoes`.
+- A exclusão de produto remove também suas movimentações por causa do relacionamento com `ON DELETE CASCADE`.
+
+---
+
+## Licença
+
+Este projeto foi desenvolvido para fins acadêmicos.
