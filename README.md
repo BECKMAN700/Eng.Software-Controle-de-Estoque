@@ -407,16 +407,6 @@ Semestre: 2026/1
 
 ---
 
-## Vídeo de Apresentação
-
-Link do vídeo:
-
-```text
-Adicionar link do vídeo aqui
-```
-
----
-
 ## Observações
 
 - O sistema precisa do Apache e MySQL ativos no XAMPP.
