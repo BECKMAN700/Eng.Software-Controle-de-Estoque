@@ -8,7 +8,7 @@ if (!function_exists('menuAtivo')) {
 }
 ?>
 
-<aside class="sidebar">
+<aside class="sidebar" id="app-sidebar" aria-label="Menu principal">
     <div class="sidebar-brand">
         <div class="brand-mark">CE</div>
 
@@ -16,6 +16,10 @@ if (!function_exists('menuAtivo')) {
             <strong>Controle</strong>
             <span>de Estoque</span>
         </div>
+
+        <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar menu">
+            &times;
+        </button>
     </div>
 
     <nav class="sidebar-nav">
@@ -28,12 +32,12 @@ if (!function_exists('menuAtivo')) {
 
         <a class="nav-link <?= menuAtivo(['catalogo']) ?>" href="index.php?acao=catalogo">
             <span class="nav-icon"></span>
-            <span>Catálogo de produtos</span>
+            <span>Catalogo de produtos</span>
         </a>
 
         <a class="nav-link <?= menuAtivo(['relatorios']) ?>" href="index.php?acao=relatorios">
             <span class="nav-icon"></span>
-            <span>Relatórios</span>
+            <span>Relatorios</span>
         </a>
 
         <span class="nav-section-title">Produtos</span>
@@ -53,16 +57,16 @@ if (!function_exists('menuAtivo')) {
             <span>Alertas de estoque</span>
         </a>
 
-        <span class="nav-section-title">Movimentações</span>
+        <span class="nav-section-title">Movimentacoes</span>
 
         <a class="nav-link" href="index.php?acao=listar#movimentacoes">
             <span class="nav-icon"></span>
-            <span>Histórico e ações</span>
+            <span>Historico e acoes</span>
         </a>
     </nav>
 
     <div class="sidebar-footer">
-        <span class="sidebar-footer-label">Projeto acadêmico</span>
+        <span class="sidebar-footer-label">Projeto academico</span>
         <strong>Engenharia de Software</strong>
     </div>
 </aside>
