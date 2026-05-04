@@ -1,9 +1,21 @@
 <?php
 
+$acao = $_GET['acao'] ?? 'login';
+
+if ($acao === 'login') {
+    include __DIR__ . '/../app/Views/auth/login.php';
+    exit;
+}
+
+if ($acao === 'autenticar') {
+    $mensagem = urlencode('Autenticacao sera implementada na feature auth-sessao.');
+    header('Location: index.php?acao=login&erro=' . $mensagem);
+    exit;
+}
+
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 
 $controller = new ProdutoController();
-$acao = $_GET['acao'] ?? 'listar';
 
 switch ($acao) {
     case 'listar':

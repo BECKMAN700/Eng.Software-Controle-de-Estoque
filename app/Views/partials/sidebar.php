@@ -8,7 +8,7 @@ if (!function_exists('menuAtivo')) {
 }
 ?>
 
-<aside class="sidebar">
+<aside class="sidebar" id="app-sidebar" aria-label="Menu principal">
     <div class="sidebar-brand">
         <div class="brand-mark">CE</div>
 
@@ -16,6 +16,11 @@ if (!function_exists('menuAtivo')) {
             <strong>Controle</strong>
             <span>de Estoque</span>
         </div>
+
+        <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar menu">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </button>
     </div>
 
     <nav class="sidebar-nav">
