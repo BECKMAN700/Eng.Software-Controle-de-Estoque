@@ -3,6 +3,7 @@ $pageTitle = $pageTitle ?? 'Controle de Estoque';
 $pageSubtitle = $pageSubtitle ?? 'Gerencie produtos, entradas, saídas e alertas de estoque.';
 $content = $content ?? '';
 $currentAction = $_GET['acao'] ?? 'listar';
+$assetVersion = '20260504-menu';
 ?>
 
 <!DOCTYPE html>
@@ -12,10 +13,10 @@ $currentAction = $_GET['acao'] ?? 'listar';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle) ?> | Controle de Estoque</title>
 
-    <link rel="stylesheet" href="assets/css/base.css">
-    <link rel="stylesheet" href="assets/css/layout.css">
-    <link rel="stylesheet" href="assets/css/components.css">
-    <link rel="stylesheet" href="assets/css/pages.css">
+    <link rel="stylesheet" href="assets/css/base.css?v=<?= $assetVersion ?>">
+    <link rel="stylesheet" href="assets/css/layout.css?v=<?= $assetVersion ?>">
+    <link rel="stylesheet" href="assets/css/components.css?v=<?= $assetVersion ?>">
+    <link rel="stylesheet" href="assets/css/pages.css?v=<?= $assetVersion ?>">
 </head>
 <body>
     <button
