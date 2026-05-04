@@ -6,6 +6,10 @@ $controller = new ProdutoController();
 $acao = $_GET['acao'] ?? 'listar';
 
 switch ($acao) {
+    case 'login':
+        include __DIR__ . '/../app/Views/auth/login.php';
+        break;
+
     case 'listar':
         $controller->listar();
         break;
