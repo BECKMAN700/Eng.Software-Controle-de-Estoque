@@ -1,17 +1,46 @@
 <?php
 
-$acao = $_GET['acao'] ?? 'login';
+/**
+ * public/index.php — Front Controller
+ *
+ * Ponto único de entrada. Toda sessão é gerenciada pelo helper Sessao,
+ * que é carregado aqui para garantir session_start() em um único lugar.
+ */
+
+require_once __DIR__ . '/../app/Helpers/Sessao.php';
+require_once __DIR__ . '/../app/Controllers/AuthController.php';
+
+Sessao::iniciar();
+
+$acao = trim($_GET['acao'] ?? 'login');
+
+// ─── Rotas de autenticação (públicas) ────────────────────────────────────────
+
+$authController = new AuthController();
 
 if ($acao === 'login') {
-    include __DIR__ . '/../app/Views/auth/login.php';
+    $authController->login();
     exit;
 }
 
 if ($acao === 'autenticar') {
-    $mensagem = urlencode('Autenticacao sera implementada na feature auth-sessao.');
-    header('Location: index.php?acao=login&erro=' . $mensagem);
+    $authController->autenticar();
     exit;
 }
+
+if ($acao === 'logout') {
+    $authController->logout();
+    exit;
+}
+
+// ─── Proteção de sessão: redireciona para login se não estiver autenticado ───
+
+if (!Sessao::estaLogado()) {
+    header('Location: index.php?acao=login');
+    exit;
+}
+
+// ─── Rotas protegidas ────────────────────────────────────────────────────────
 
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 
@@ -87,6 +116,6 @@ switch ($acao) {
         break;
 
     default:
-        echo "Ação inválida.";
+        echo 'Ação inválida.';
         break;
 }
