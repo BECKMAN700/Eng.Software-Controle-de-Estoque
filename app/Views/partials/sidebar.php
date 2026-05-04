@@ -6,6 +6,10 @@ if (!function_exists('menuAtivo')) {
         return in_array($acaoAtual, $acoes, true) ? 'active' : '';
     }
 }
+
+$nomeUsuario = Sessao::getNome();
+$papelUsuario = Sessao::getPapel();
+$papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 ?>
 
 <aside class="sidebar" id="app-sidebar" aria-label="Menu principal">
@@ -67,7 +71,13 @@ if (!function_exists('menuAtivo')) {
     </nav>
 
     <div class="sidebar-footer">
-        <span class="sidebar-footer-label">Projeto acadêmico</span>
-        <strong>Engenharia de Software</strong>
+        <div class="sidebar-user">
+            <span class="sidebar-user-nome"><?= htmlspecialchars($nomeUsuario) ?></span>
+            <span class="sidebar-user-papel"><?= htmlspecialchars($papelLabel) ?></span>
+        </div>
+
+        <a class="btn-logout" href="index.php?acao=logout" title="Sair do sistema">
+            Sair
+        </a>
     </div>
 </aside>
