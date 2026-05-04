@@ -1,10 +1,89 @@
 .app-shell {
     min-height: 100vh;
+}
+
+.sidebar-tab {
+    position: fixed;
+    left: 0;
+    top: 132px;
+    width: 46px;
+    min-height: 104px;
+    border: none;
+    border-radius: 0 14px 14px 0;
+    background: var(--primary);
+    color: #ffffff;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 800;
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
+    z-index: 35;
+}
+
+.sidebar-tab span:last-child {
+    writing-mode: vertical-rl;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+}
+
+.sidebar-tab-lines,
+.sidebar-tab-lines::before,
+.sidebar-tab-lines::after {
+    width: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    display: block;
+}
+
+.sidebar-tab-lines {
+    position: relative;
+}
+
+.sidebar-tab-lines::before,
+.sidebar-tab-lines::after {
+    content: "";
+    position: absolute;
+    left: 0;
+}
+
+.sidebar-tab-lines::before {
+    top: -6px;
+}
+
+.sidebar-tab-lines::after {
+    top: 6px;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 24, 40, 0.48);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 25;
+}
+
+body.sidebar-open {
+    overflow: hidden;
+}
+
+body.sidebar-open .sidebar {
+    transform: translateX(0);
+}
+
+body.sidebar-open .sidebar-overlay {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .sidebar {
     width: var(--sidebar-width);
+    max-width: calc(100vw - 28px);
     min-height: 100vh;
     background: var(--bg-sidebar);
     color: var(--text-light);
@@ -15,7 +94,11 @@
     bottom: 0;
     display: flex;
     flex-direction: column;
-    z-index: 20;
+    z-index: 30;
+    transform: translateX(-105%);
+    transition: transform 0.24s ease;
+    overflow-y: auto;
+    box-shadow: 18px 0 44px rgba(2, 6, 23, 0.24);
 }
 
 .sidebar-brand {
@@ -35,7 +118,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    letter-spacing: -0.5px;
+    letter-spacing: 0;
 }
 
 .brand-text {
@@ -51,6 +134,22 @@
 .brand-text span {
     color: #98a2b3;
     font-size: 13px;
+}
+
+.sidebar-close {
+    width: 36px;
+    height: 36px;
+    margin-left: auto;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: var(--bg-sidebar-soft);
+    color: #ffffff;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.sidebar-close:hover {
+    background: #344054;
 }
 
 .sidebar-nav {
@@ -121,7 +220,7 @@
 .app-main {
     width: 100%;
     min-height: 100vh;
-    margin-left: var(--sidebar-width);
+    margin-left: 0;
 }
 
 .topbar {
@@ -129,7 +228,7 @@
     background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 20px 32px;
+    padding: 20px 32px 20px 70px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -155,7 +254,7 @@
 .topbar-title h1 {
     font-size: 25px;
     line-height: 1.2;
-    letter-spacing: -0.5px;
+    letter-spacing: 0;
 }
 
 .topbar-title p {
@@ -222,33 +321,18 @@
 }
 
 .content-area {
-    padding: 32px;
+    padding: 32px 32px 32px 70px;
 }
 
 @media (max-width: 900px) {
-    .app-shell {
-        display: block;
-    }
-
-    .sidebar {
-        position: static;
-        width: 100%;
-        min-height: auto;
-        border-radius: 0 0 24px 24px;
-    }
-
-    .sidebar-nav {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .app-main {
-        margin-left: 0;
+    .sidebar-tab {
+        top: 96px;
     }
 
     .topbar {
         flex-direction: column;
         align-items: flex-start;
+        padding: 20px 20px 20px 64px;
     }
 
     .topbar-actions,
@@ -262,6 +346,6 @@
     }
 
     .content-area {
-        padding: 20px;
+        padding: 20px 20px 20px 64px;
     }
 }
