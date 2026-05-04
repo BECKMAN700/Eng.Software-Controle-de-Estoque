@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Login';
-$pageSubtitle = 'Acesse o sistema com e-mail e senha cadastrados.';
+$erro = trim($_GET['erro'] ?? '');
 
 if (!function_exists('esc')) {
     function esc($valor): string
@@ -8,40 +8,49 @@ if (!function_exists('esc')) {
         return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
     }
 }
-
-$erro = trim($_GET['erro'] ?? '');
-
-ob_start();
 ?>
 
-<section class="page-section">
-    <div class="card">
-        <div class="card-header">
-            <div>
-                <h2>Entrar no sistema</h2>
-                <p>Informe suas credenciais para acessar o controle de estoque.</p>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= esc($pageTitle) ?> | Controle de Estoque</title>
+
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body class="login-page">
+    <main class="login-shell">
+        <section class="login-card" aria-labelledby="login-title">
+            <div class="login-brand">
+                <div class="brand-mark">CE</div>
+                <div>
+                    <strong>Controle de Estoque</strong>
+                    <span>Acesso ao sistema</span>
+                </div>
             </div>
 
-            <a href="index.php?acao=listar" class="btn btn-secondary">
-                Voltar ao painel
-            </a>
-        </div>
+            <header class="login-header">
+                <h1 id="login-title">Entrar</h1>
+                <p>Use seu e-mail e senha cadastrados.</p>
+            </header>
 
-        <?php if ($erro !== ''): ?>
-            <div class="alert alert-danger">
-                <?= esc($erro) ?>
-            </div>
-        <?php endif; ?>
+            <?php if ($erro !== ''): ?>
+                <div class="alert alert-danger">
+                    <?= esc($erro) ?>
+                </div>
+            <?php endif; ?>
 
-        <form action="index.php?acao=autenticar" method="POST">
-            <div class="form-grid">
+            <form action="index.php?acao=autenticar" method="POST" class="login-form">
                 <div class="form-group">
                     <label for="email">E-mail</label>
                     <input
                         type="email"
                         id="email"
                         name="email"
-                        placeholder="admin@controleestoque.local"
+                        placeholder="email@exemplo.com"
                         autocomplete="email"
                         required
                     >
@@ -58,34 +67,12 @@ ob_start();
                         required
                     >
                 </div>
-            </div>
 
-            <div class="card mt-3 summary-card-info">
-                <div class="card-header">
-                    <div>
-                        <h3>Credenciais de teste</h3>
-                        <p>
-                            Os usuarios admin e estoquista estao documentados em docs/SPRINT2.md.
-                            A validacao do login sera implementada na proxima feature de autenticacao.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary login-submit">
                     Entrar
                 </button>
-
-                <a href="index.php?acao=listar" class="btn btn-secondary">
-                    Cancelar
-                </a>
-            </div>
-        </form>
-    </div>
-</section>
-
-<?php
-$content = ob_get_clean();
-
-require __DIR__ . '/../layouts/main.php';
+            </form>
+        </section>
+    </main>
+</body>
+</html>
