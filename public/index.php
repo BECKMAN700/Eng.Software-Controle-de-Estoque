@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 
 $controller = new ProdutoController();
-$acao = $_GET['acao'] ?? 'listar';
+$acao = $_GET['acao'] ?? 'login';
 
 switch ($acao) {
     case 'login':
