@@ -1,15 +1,17 @@
 <?php
 
+$acao = $_GET['acao'] ?? 'login';
+
+if ($acao === 'login') {
+    include __DIR__ . '/../app/Views/auth/login.php';
+    exit;
+}
+
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 
 $controller = new ProdutoController();
-$acao = $_GET['acao'] ?? 'login';
 
 switch ($acao) {
-    case 'login':
-        include __DIR__ . '/../app/Views/auth/login.php';
-        break;
-
     case 'listar':
         $controller->listar();
         break;
