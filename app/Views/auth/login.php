@@ -1,6 +1,7 @@
 <?php
 $pageTitle = 'Login';
 $erro = trim($_GET['erro'] ?? '');
+$assetVersion = '20260504-menu';
 
 if (!function_exists('esc')) {
     function esc($valor): string
@@ -17,9 +18,9 @@ if (!function_exists('esc')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($pageTitle) ?> | Controle de Estoque</title>
 
-    <link rel="stylesheet" href="assets/css/base.css">
-    <link rel="stylesheet" href="assets/css/components.css">
-    <link rel="stylesheet" href="assets/css/auth.css">
+    <link rel="stylesheet" href="assets/css/base.css?v=<?= $assetVersion ?>">
+    <link rel="stylesheet" href="assets/css/components.css?v=<?= $assetVersion ?>">
+    <link rel="stylesheet" href="assets/css/auth.css?v=<?= $assetVersion ?>">
 </head>
 <body class="login-page">
     <main class="login-shell">
