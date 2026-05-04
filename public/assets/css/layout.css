@@ -2,61 +2,37 @@
     min-height: 100vh;
 }
 
-.sidebar-tab {
+.menu-toggle {
     position: fixed;
-    left: 0;
-    top: 132px;
-    width: 46px;
-    min-height: 104px;
-    border: none;
-    border-radius: 0 14px 14px 0;
-    background: var(--primary);
-    color: #ffffff;
+    left: 18px;
+    top: 22px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #ffffff;
+    color: var(--text-main);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    font-weight: 800;
-    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
+    gap: 5px;
+    box-shadow: var(--shadow-sm);
     z-index: 35;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 
-.sidebar-tab span:last-child {
-    writing-mode: vertical-rl;
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 0.08em;
+.menu-toggle:hover {
+    background: #f9fafb;
+    border-color: #cbd5e1;
 }
 
-.sidebar-tab-lines,
-.sidebar-tab-lines::before,
-.sidebar-tab-lines::after {
+.menu-toggle span {
     width: 18px;
     height: 2px;
     border-radius: 999px;
     background: currentColor;
     display: block;
-}
-
-.sidebar-tab-lines {
-    position: relative;
-}
-
-.sidebar-tab-lines::before,
-.sidebar-tab-lines::after {
-    content: "";
-    position: absolute;
-    left: 0;
-}
-
-.sidebar-tab-lines::before {
-    top: -6px;
-}
-
-.sidebar-tab-lines::after {
-    top: 6px;
 }
 
 .sidebar-overlay {
@@ -77,10 +53,9 @@ body.sidebar-open .sidebar {
     transform: translateX(0);
 }
 
-body.sidebar-open .sidebar-tab {
+body.sidebar-open .menu-toggle {
     opacity: 0;
     pointer-events: none;
-    transform: translateX(-100%);
 }
 
 body.sidebar-open .sidebar-overlay {
@@ -235,7 +210,7 @@ body.sidebar-open .sidebar-overlay {
     background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 20px 32px 20px 70px;
+    padding: 20px 32px 20px 84px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -328,18 +303,19 @@ body.sidebar-open .sidebar-overlay {
 }
 
 .content-area {
-    padding: 32px 32px 32px 70px;
+    padding: 32px;
 }
 
 @media (max-width: 900px) {
-    .sidebar-tab {
-        top: 96px;
+    .menu-toggle {
+        left: 14px;
+        top: 18px;
     }
 
     .topbar {
         flex-direction: column;
         align-items: flex-start;
-        padding: 20px 20px 20px 64px;
+        padding: 20px 20px 20px 74px;
     }
 
     .topbar-actions,
@@ -353,6 +329,6 @@ body.sidebar-open .sidebar-overlay {
     }
 
     .content-area {
-        padding: 20px 20px 20px 64px;
+        padding: 20px;
     }
 }
