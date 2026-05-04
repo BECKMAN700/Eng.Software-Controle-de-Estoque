@@ -20,13 +20,15 @@ $currentAction = $_GET['acao'] ?? 'listar';
 <body>
     <button
         type="button"
-        class="sidebar-tab"
+        class="menu-toggle"
         data-sidebar-open
         aria-controls="app-sidebar"
         aria-expanded="false"
+        aria-label="Abrir menu"
     >
-        <span class="sidebar-tab-lines" aria-hidden="true"></span>
-        <span>Menu</span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
     </button>
 
     <div class="sidebar-overlay" data-sidebar-close></div>
@@ -47,27 +49,30 @@ $currentAction = $_GET['acao'] ?? 'listar';
 
     <script>
         (function () {
-            const body = document.body;
-            const openButtons = document.querySelectorAll('[data-sidebar-open]');
-            const closeButtons = document.querySelectorAll('[data-sidebar-close]');
+            var body = document.body;
+            var openButtons = document.querySelectorAll('[data-sidebar-open]');
 
             function setMenuState(isOpen) {
                 body.classList.toggle('sidebar-open', isOpen);
+
                 openButtons.forEach(function (button) {
                     button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    button.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
                 });
             }
 
-            openButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    setMenuState(true);
-                });
-            });
+            document.addEventListener('click', function (event) {
+                var openTarget = event.target.closest('[data-sidebar-open]');
+                var closeTarget = event.target.closest('[data-sidebar-close], .sidebar .nav-link');
 
-            closeButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
+                if (openTarget) {
+                    setMenuState(true);
+                    return;
+                }
+
+                if (closeTarget) {
                     setMenuState(false);
-                });
+                }
             });
 
             document.addEventListener('keydown', function (event) {
