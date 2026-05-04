@@ -7,6 +7,12 @@ if ($acao === 'login') {
     exit;
 }
 
+if ($acao === 'autenticar') {
+    $mensagem = urlencode('Autenticacao sera implementada na feature auth-sessao.');
+    header('Location: index.php?acao=login&erro=' . $mensagem);
+    exit;
+}
+
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 
 $controller = new ProdutoController();
