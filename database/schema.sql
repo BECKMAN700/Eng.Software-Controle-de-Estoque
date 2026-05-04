@@ -4,6 +4,26 @@ COLLATE utf8mb4_unicode_ci;
 
 USE controle_estoque;
 
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    papel ENUM('admin', 'estoquista') NOT NULL DEFAULT 'estoquista',
+    status ENUM('ativo', 'inativo') NOT NULL DEFAULT 'ativo',
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO usuarios (nome, email, senha, papel, status) VALUES
+    ('Joao Pedro Admin', 'admin@controleestoque.local', '$2y$12$T6V1NMzxXIwJDXbFBmVWyOYrn6ULoxK/s609nM4uRuJf61rn3T1v6', 'admin', 'ativo'),
+    ('Usuario Estoquista', 'estoquista@controleestoque.local', '$2y$12$WOtNrp4bMQEFP3tzSE5nQ.ZIJ5ThzMFR6KbsSiI.64QPUJzY6dQhi', 'estoquista', 'ativo')
+ON DUPLICATE KEY UPDATE
+    nome = VALUES(nome),
+    senha = VALUES(senha),
+    papel = VALUES(papel),
+    status = VALUES(status);
+
 CREATE TABLE produtos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
