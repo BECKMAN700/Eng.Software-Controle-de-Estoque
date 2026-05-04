@@ -18,7 +18,8 @@ if (!function_exists('menuAtivo')) {
         </div>
 
         <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar menu">
-            &times;
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
         </button>
     </div>
 
