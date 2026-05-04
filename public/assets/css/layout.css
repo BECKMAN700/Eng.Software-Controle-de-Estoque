@@ -20,6 +20,7 @@
     font-weight: 800;
     box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
     z-index: 35;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .sidebar-tab span:last-child {
@@ -74,6 +75,12 @@ body.sidebar-open {
 
 body.sidebar-open .sidebar {
     transform: translateX(0);
+}
+
+body.sidebar-open .sidebar-tab {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-100%);
 }
 
 body.sidebar-open .sidebar-overlay {
