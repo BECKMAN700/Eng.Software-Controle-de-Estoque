@@ -31,7 +31,15 @@
 
 .login-brand .brand-mark {
     flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--primary);
     color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
 }
 
 .login-brand strong,
