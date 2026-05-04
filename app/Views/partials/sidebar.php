@@ -32,12 +32,12 @@ if (!function_exists('menuAtivo')) {
 
         <a class="nav-link <?= menuAtivo(['catalogo']) ?>" href="index.php?acao=catalogo">
             <span class="nav-icon"></span>
-            <span>Catalogo de produtos</span>
+            <span>Catálogo de produtos</span>
         </a>
 
         <a class="nav-link <?= menuAtivo(['relatorios']) ?>" href="index.php?acao=relatorios">
             <span class="nav-icon"></span>
-            <span>Relatorios</span>
+            <span>Relatórios</span>
         </a>
 
         <span class="nav-section-title">Produtos</span>
@@ -57,16 +57,16 @@ if (!function_exists('menuAtivo')) {
             <span>Alertas de estoque</span>
         </a>
 
-        <span class="nav-section-title">Movimentacoes</span>
+        <span class="nav-section-title">Movimentações</span>
 
         <a class="nav-link" href="index.php?acao=listar#movimentacoes">
             <span class="nav-icon"></span>
-            <span>Historico e acoes</span>
+            <span>Histórico e ações</span>
         </a>
     </nav>
 
     <div class="sidebar-footer">
-        <span class="sidebar-footer-label">Projeto academico</span>
+        <span class="sidebar-footer-label">Projeto acadêmico</span>
         <strong>Engenharia de Software</strong>
     </div>
 </aside>
