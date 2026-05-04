@@ -1,6 +1,6 @@
 <?php
 $pageTitle = $pageTitle ?? 'Controle de Estoque';
-$pageSubtitle = $pageSubtitle ?? 'Gerencie produtos, entradas, saidas e alertas de estoque.';
+$pageSubtitle = $pageSubtitle ?? 'Gerencie produtos, entradas, saídas e alertas de estoque.';
 $content = $content ?? '';
 $currentAction = $_GET['acao'] ?? 'listar';
 ?>
