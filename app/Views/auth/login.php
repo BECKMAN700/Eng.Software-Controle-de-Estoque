@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Login';
-$erro = trim($_GET['erro'] ?? '');
+$flashErro = Sessao::getFlashErro();
 $assetVersion = '20260504-menu';
 
 if (!function_exists('esc')) {
@@ -13,6 +13,7 @@ if (!function_exists('esc')) {
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,6 +23,7 @@ if (!function_exists('esc')) {
     <link rel="stylesheet" href="assets/css/components.css?v=<?= $assetVersion ?>">
     <link rel="stylesheet" href="assets/css/auth.css?v=<?= $assetVersion ?>">
 </head>
+
 <body class="login-page">
     <main class="login-shell">
         <section class="login-card" aria-labelledby="login-title">
@@ -38,35 +40,23 @@ if (!function_exists('esc')) {
                 <p>Use seu e-mail e senha cadastrados.</p>
             </header>
 
-            <?php if ($erro !== ''): ?>
-                <div class="alert alert-danger">
-                    <?= esc($erro) ?>
+            <?php if ($flashErro !== ''): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= esc($flashErro) ?>
                 </div>
             <?php endif; ?>
 
             <form action="index.php?acao=autenticar" method="POST" class="login-form">
                 <div class="form-group">
                     <label for="email">E-mail</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="email@exemplo.com"
-                        autocomplete="email"
-                        required
-                    >
+                    <input type="email" id="email" name="email" placeholder="email@exemplo.com" autocomplete="email"
+                        required>
                 </div>
 
                 <div class="form-group">
                     <label for="senha">Senha</label>
-                    <input
-                        type="password"
-                        id="senha"
-                        name="senha"
-                        placeholder="Digite sua senha"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha"
+                        autocomplete="current-password" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary login-submit">
@@ -76,4 +66,5 @@ if (!function_exists('esc')) {
         </section>
     </main>
 </body>
+
 </html>
