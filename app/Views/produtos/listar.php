@@ -436,9 +436,11 @@ ob_start();
                 <p>Lista completa dos produtos encontrados no sistema.</p>
             </div>
 
+            <?php if (Auth::isAdmin()): ?>
             <a href="index.php?acao=criar" class="btn btn-primary">
                 Novo produto
             </a>
+            <?php endif; ?>
         </div>
 
         <?php if (empty($produtos)): ?>
@@ -547,7 +549,6 @@ ob_start();
                                        </a>
 
                                        <?php endif; ?>
-                                        </a>
                                     </div>
                                 </td>
                             </tr>
