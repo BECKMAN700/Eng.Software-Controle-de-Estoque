@@ -7,6 +7,7 @@
  * que é carregado aqui para garantir session_start() em um único lugar.
  */
 
+require_once __DIR__ . '/../app/Helpers/Auth.php';
 require_once __DIR__ . '/../app/Helpers/Sessao.php';
 require_once __DIR__ . '/../app/Controllers/AuthController.php';
 
@@ -35,10 +36,8 @@ if ($acao === 'logout') {
 
 // ─── Proteção de sessão: redireciona para login se não estiver autenticado ───
 
-if (!Sessao::estaLogado()) {
-    header('Location: index.php?acao=login');
-    exit;
-}
+Auth::exigirLogin();
+
 
 // ─── Rotas protegidas ────────────────────────────────────────────────────────
 
@@ -52,10 +51,13 @@ switch ($acao) {
         break;
 
     case 'criar':
+        Auth::exigirAdmin();
         $controller->mostrarCriar();
         break;
 
     case 'salvar':
+        Auth::exigirAdmin();
+            
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller->salvar();
         }
@@ -72,8 +74,11 @@ switch ($acao) {
         break;
 
     case 'excluir':
-        $controller->excluir();
-        break;
+
+    Auth::exigirAdmin();
+
+    $controller->excluir();
+    break;
 
     case 'movimentar':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

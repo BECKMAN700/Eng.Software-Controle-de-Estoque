@@ -48,9 +48,7 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
         <span class="nav-section-title">Produtos</span>
 
         <a class="nav-link <?= menuAtivo(['criar']) ?>" href="index.php?acao=criar">
-            <span class="nav-icon"></span>
-            <span>Cadastrar produto</span>
-        </a>
+
 
         <a class="nav-link" href="index.php?acao=listar#produtos">
             <span class="nav-icon"></span>

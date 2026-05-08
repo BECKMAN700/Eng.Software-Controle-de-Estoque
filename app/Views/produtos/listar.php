@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../Helpers/Auth.php';
 $pageTitle = 'Painel de estoque';
 $pageSubtitle = 'Acompanhe produtos, alertas de estoque e movimentações principais.';
 
@@ -137,9 +138,22 @@ ob_start();
             </div>
 
             <div class="dashboard-actions">
-                <a href="index.php?acao=criar" class="btn btn-primary">Cadastrar produto</a>
-                <a href="#produtos" class="btn btn-secondary">Ver produtos</a>
-                <a href="#alertas-estoque" class="btn btn-secondary">Ver alertas</a>
+
+                 <?php if (Auth::isAdmin()): ?>
+
+                 <a href="index.php?acao=criar" class="btn btn-primary">
+
+                Cadastrar produto
+          </a>
+
+        <?php endif; ?>
+        <a href="#produtos" class="btn btn-secondary">Ver produtos</a>
+
+    <a href="#alertas-estoque" class="btn btn-secondary">
+        Ver alertas
+    </a>
+
+</div>
             </div>
         </div>
 
@@ -522,12 +536,17 @@ ob_start();
                                             Histórico
                                         </a>
 
-                                        <a
-                                            class="btn btn-danger btn-sm"
-                                            href="index.php?acao=excluir&id=<?= $idProduto ?>"
-                                            onclick="return confirm('Tem certeza que deseja excluir este produto?')"
-                                        >
-                                            Excluir
+                                        <?php if (Auth::isAdmin()): ?>
+
+                                       <a
+                                        class="btn btn-danger btn-sm"
+                                        href="index.php?acao=excluir&id=<?= $idProduto ?>"
+                                        onclick="return confirm('Tem certeza que deseja excluir este produto?')"
+                                       >
+                                         Excluir
+                                       </a>
+
+                                       <?php endif; ?>
                                         </a>
                                     </div>
                                 </td>
