@@ -57,17 +57,19 @@ switch ($acao) {
 
     case 'salvar':
         Auth::exigirAdmin();
-            
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller->salvar();
         }
         break;
 
     case 'editar':
+        Auth::exigirAdmin();
         $controller->mostrarEditar();
         break;
 
     case 'atualizar':
+        Auth::exigirAdmin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller->atualizar();
         }

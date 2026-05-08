@@ -3,10 +3,10 @@
 require_once __DIR__ . '/Sessao.php';
 
 class Auth
-{   
-    public static function exigirLogin(): void  
-    {   
-        if (!Sessao::estaLogado()) {    
+{
+    public static function exigirLogin(): void
+    {
+        if (!Sessao::estaLogado()) {
 
             Sessao::setFlashErro('Faça login.');
 
