@@ -183,6 +183,8 @@ class ProdutoModel
                 ':estoque_maximo' => $dados['estoque_maximo'] ?? null,
                 ':preco' => (float) ($dados['preco'] ?? 0)
             ]);
+
+            return (int) $this->conn->lastInsertId();
         } catch (PDOException $e) {
             die('Erro ao criar produto: ' . $e->getMessage());
         }
@@ -429,24 +431,47 @@ class ProdutoModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function buscarUltimasMovimentacoes($limite = 8): array
+    public function listarMovimentacoes($produtoId = null, $limite = null): array
     {
-        $sql = "
-            SELECT 
-                movimentacoes.*,
-                produtos.nome AS produto_nome,
-                produtos.codigo AS produto_codigo,
-                produtos.unidade AS produto_unidade
-            FROM movimentacoes
-            INNER JOIN produtos ON produtos.id = movimentacoes.produto_id
-            ORDER BY movimentacoes.data_hora DESC, movimentacoes.id DESC
-            LIMIT :limite
-        ";
+        $sql = "SELECT
+                    movimentacoes.*,
+                    produtos.nome AS produto_nome,
+                    produtos.codigo AS produto_codigo,
+                    produtos.unidade AS produto_unidade,
+                    produtos.categoria AS produto_categoria
+                FROM movimentacoes
+                INNER JOIN produtos ON produtos.id = movimentacoes.produto_id";
+
+        $params = [];
+
+        if ($produtoId !== null && $produtoId !== '') {
+            $sql .= " WHERE movimentacoes.produto_id = :produto_id";
+            $params[':produto_id'] = (int) $produtoId;
+        }
+
+        $sql .= " ORDER BY movimentacoes.data_hora DESC, movimentacoes.id DESC";
+
+        if ($limite !== null) {
+            $sql .= " LIMIT :limite";
+        }
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':limite', (int) $limite, PDO::PARAM_INT);
+
+        foreach ($params as $chave => $valor) {
+            $stmt->bindValue($chave, $valor, PDO::PARAM_INT);
+        }
+
+        if ($limite !== null) {
+            $stmt->bindValue(':limite', (int) $limite, PDO::PARAM_INT);
+        }
+
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function buscarUltimasMovimentacoes($limite = 8): array
+    {
+        return $this->listarMovimentacoes(null, $limite);
     }
 }

@@ -220,7 +220,29 @@ index.php?acao=saida&id=1
 index.php?acao=movimentar&id=1
 index.php?acao=historico_movimentacoes&id=1
 index.php?acao=detalhes_saida&id=1
+index.php?acao=api_produtos
+index.php?acao=api_movimentacoes
 ```
+
+### APIs JSON
+
+As APIs usam `public/index.php` como ponto de entrada e retornam JSON.
+
+#### Produtos
+
+- `GET index.php?acao=api_produtos` lista produtos, com filtros opcionais `busca`, `categoria`, `unidade` e `status`
+- `GET index.php?acao=api_produtos&id=1` retorna um produto específico com o histórico de movimentações
+- `POST index.php?acao=api_produtos` cria um produto
+- `PUT` ou `PATCH index.php?acao=api_produtos&id=1` atualiza um produto
+- `DELETE index.php?acao=api_produtos&id=1` remove um produto
+
+#### Movimentações
+
+- `GET index.php?acao=api_movimentacoes` lista as últimas movimentações
+- `GET index.php?acao=api_movimentacoes&produto_id=1` lista as movimentações de um produto
+- `POST index.php?acao=api_movimentacoes` registra uma movimentação usando `produto_id`, `tipo`, `motivo`, `quantidade` e `observacao`
+
+As rotas de escrita exigem usuário autenticado; operações de produto que alteram dados exigem perfil `admin`.
 
 ---
 

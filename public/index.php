@@ -14,6 +14,8 @@ require_once __DIR__ . '/../app/Controllers/AuthController.php';
 Sessao::iniciar();
 
 $acao = trim($_GET['acao'] ?? 'login');
+$acoesApi = ['api_produtos', 'api_movimentacoes'];
+$ehApi = in_array($acao, $acoesApi, true);
 
 // ─── Rotas de autenticação (públicas) ────────────────────────────────────────
 
@@ -36,7 +38,9 @@ if ($acao === 'logout') {
 
 // ─── Proteção de sessão: redireciona para login se não estiver autenticado ───
 
-Auth::exigirLogin();
+if (!$ehApi) {
+    Auth::exigirLogin();
+}
 
 
 // ─── Rotas protegidas ────────────────────────────────────────────────────────
@@ -120,6 +124,14 @@ switch ($acao) {
 
     case 'relatorios':
         $controller->relatorios();
+        break;
+
+    case 'api_produtos':
+        $controller->apiProdutos();
+        break;
+
+    case 'api_movimentacoes':
+        $controller->apiMovimentacoes();
         break;
 
     default:

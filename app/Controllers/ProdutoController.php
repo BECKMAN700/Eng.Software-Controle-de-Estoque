@@ -11,6 +11,120 @@ class ProdutoController
         $this->model = new ProdutoModel();
     }
 
+    private function responderJson(array $dados, int $statusCode = 200): void
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($dados, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
+    private function lerPayloadJson(): array
+    {
+        $conteudo = file_get_contents('php://input');
+
+        if ($conteudo === false || trim($conteudo) === '') {
+            return [];
+        }
+
+        $dados = json_decode($conteudo, true);
+
+        return json_last_error() === JSON_ERROR_NONE && is_array($dados) ? $dados : [];
+    }
+
+    private function dadosDaRequisicao(): array
+    {
+        return array_merge($_GET, $_POST, $this->lerPayloadJson());
+    }
+
+    private function dadosProdutoNormalizados(array $origem): array
+    {
+        $estoqueMinimo = (int) ($origem['estoque_minimo'] ?? 0);
+        $estoqueMaximoBruto = trim((string) ($origem['estoque_maximo'] ?? ''));
+
+        return [
+            'nome' => trim((string) ($origem['nome'] ?? '')),
+            'codigo' => trim((string) ($origem['codigo'] ?? '')),
+            'categoria' => trim((string) ($origem['categoria'] ?? '')),
+            'unidade' => trim((string) ($origem['unidade'] ?? '')),
+            'descricao' => trim((string) ($origem['descricao'] ?? '')),
+            'status' => trim((string) ($origem['status'] ?? 'ativo')),
+            'quantidade' => (int) ($origem['quantidade'] ?? 0),
+            'estoque_minimo' => $estoqueMinimo,
+            'estoque_maximo' => $estoqueMaximoBruto === '' ? null : (int) $estoqueMaximoBruto,
+            'preco' => (float) ($origem['preco'] ?? 0),
+        ];
+    }
+
+    private function validarDadosProduto(array $dados): array
+    {
+        $erros = [];
+
+        if ($dados['nome'] === '') {
+            $erros['nome'] = 'O nome do produto é obrigatório.';
+        }
+
+        if ($dados['quantidade'] < 0) {
+            $erros['quantidade'] = 'A quantidade não pode ser negativa.';
+        }
+
+        if ($dados['estoque_minimo'] < 0) {
+            $erros['estoque_minimo'] = 'O estoque mínimo não pode ser negativo.';
+        }
+
+        if ($dados['estoque_maximo'] !== null && $dados['estoque_maximo'] < $dados['estoque_minimo']) {
+            $erros['estoque_maximo'] = 'O estoque máximo deve ser maior ou igual ao estoque mínimo.';
+        }
+
+        $statusValidos = ['ativo', 'inativo', 'descontinuado'];
+
+        if (!in_array($dados['status'], $statusValidos, true)) {
+            $erros['status'] = 'Status inválido.';
+        }
+
+        return $erros;
+    }
+
+    private function exigirLoginApi(): void
+    {
+        if (!Sessao::estaLogado()) {
+            $this->responderJson(['erro' => 'Faça login para acessar esta API.'], 401);
+        }
+    }
+
+    private function exigirAdminApi(): void
+    {
+        $this->exigirLoginApi();
+
+        if (!Auth::isAdmin()) {
+            $this->responderJson(['erro' => 'Você não tem permissão para acessar esta funcionalidade.'], 403);
+        }
+    }
+
+    private function executarMovimentacaoApi(int $produtoId, string $tipo, string $motivo, int $quantidade, string $observacao): bool
+    {
+        $tipo = trim($tipo);
+        $motivo = trim($motivo);
+
+        if ($tipo === 'entrada') {
+            if ($motivo === '') {
+                return $this->model->movimentar($produtoId, 'entrada', $quantidade, $observacao);
+            }
+
+            return $this->model->registrarEntrada($produtoId, $motivo, $quantidade, $observacao);
+        }
+
+        if ($tipo === 'saida') {
+            if ($motivo === '') {
+                return $this->model->movimentar($produtoId, 'saida', $quantidade, $observacao);
+            }
+
+            return $this->model->registrarSaida($produtoId, $motivo, $quantidade, $observacao);
+        }
+
+        return false;
+    }
+
     public function listar()
     {
         $busca = trim($_GET['busca'] ?? '');
@@ -63,30 +177,12 @@ class ProdutoController
 
     public function salvar()
     {
-        $estoqueMinimo = (int) ($_POST['estoque_minimo'] ?? 0);
-        $estoqueMaximoBruto = trim((string) ($_POST['estoque_maximo'] ?? ''));
-        $estoqueMaximo = $estoqueMaximoBruto === '' ? null : (int) $estoqueMaximoBruto;
+        $dados = $this->dadosProdutoNormalizados($_POST);
+        $erros = $this->validarDadosProduto($dados);
 
-        if ($estoqueMinimo < 0) {
-            die('O estoque mínimo não pode ser negativo.');
+        if ($erros !== []) {
+            die(implode(' ', $erros));
         }
-
-        if ($estoqueMaximo !== null && $estoqueMaximo < $estoqueMinimo) {
-            die('O estoque máximo deve ser maior ou igual ao estoque mínimo.');
-        }
-
-        $dados = [
-            'nome' => trim($_POST['nome'] ?? ''),
-            'codigo' => trim($_POST['codigo'] ?? ''),
-            'categoria' => trim($_POST['categoria'] ?? ''),
-            'unidade' => trim($_POST['unidade'] ?? ''),
-            'descricao' => trim($_POST['descricao'] ?? ''),
-            'status' => trim($_POST['status'] ?? 'ativo'),
-            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
-            'estoque_minimo' => $estoqueMinimo,
-            'estoque_maximo' => $estoqueMaximo,
-            'preco' => (float) ($_POST['preco'] ?? 0)
-        ];
 
         $this->model->criar($dados);
         header('Location: index.php?acao=listar');
@@ -110,30 +206,12 @@ class ProdutoController
     {
         $id = $_POST['id'] ?? 0;
 
-        $estoqueMinimo = (int) ($_POST['estoque_minimo'] ?? 0);
-        $estoqueMaximoBruto = trim((string) ($_POST['estoque_maximo'] ?? ''));
-        $estoqueMaximo = $estoqueMaximoBruto === '' ? null : (int) $estoqueMaximoBruto;
+        $dados = $this->dadosProdutoNormalizados($_POST);
+        $erros = $this->validarDadosProduto($dados);
 
-        if ($estoqueMinimo < 0) {
-            die('O estoque mínimo não pode ser negativo.');
+        if ($erros !== []) {
+            die(implode(' ', $erros));
         }
-
-        if ($estoqueMaximo !== null && $estoqueMaximo < $estoqueMinimo) {
-            die('O estoque máximo deve ser maior ou igual ao estoque mínimo.');
-        }
-
-        $dados = [
-            'nome' => trim($_POST['nome'] ?? ''),
-            'codigo' => trim($_POST['codigo'] ?? ''),
-            'categoria' => trim($_POST['categoria'] ?? ''),
-            'unidade' => trim($_POST['unidade'] ?? ''),
-            'descricao' => trim($_POST['descricao'] ?? ''),
-            'status' => trim($_POST['status'] ?? 'ativo'),
-            'quantidade' => (int) ($_POST['quantidade'] ?? 0),
-            'estoque_minimo' => $estoqueMinimo,
-            'estoque_maximo' => $estoqueMaximo,
-            'preco' => (float) ($_POST['preco'] ?? 0)
-        ];
 
         $this->model->atualizar($id, $dados);
         header('Location: index.php?acao=listar');
@@ -275,5 +353,161 @@ class ProdutoController
 
         header('Location: index.php?acao=listar');
         exit;
+    }
+
+    public function apiProdutos(): void
+    {
+        $this->exigirLoginApi();
+
+        $metodo = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+        $dadosRequisicao = $this->dadosDaRequisicao();
+        $id = (int) ($dadosRequisicao['id'] ?? 0);
+
+        if ($metodo === 'GET') {
+            if ($id > 0) {
+                $produto = $this->model->buscarPorId($id);
+
+                if (!$produto) {
+                    $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+                }
+
+                $this->responderJson(['dados' => $produto]);
+            }
+
+            $produtos = $this->model->listarFiltrados(
+                trim((string) ($dadosRequisicao['busca'] ?? '')),
+                trim((string) ($dadosRequisicao['categoria'] ?? '')),
+                trim((string) ($dadosRequisicao['unidade'] ?? '')),
+                trim((string) ($dadosRequisicao['status'] ?? ''))
+            );
+
+            $this->responderJson(['dados' => $produtos]);
+        }
+
+        if ($metodo === 'POST') {
+            $this->exigirAdminApi();
+
+            $dados = $this->dadosProdutoNormalizados($dadosRequisicao);
+            $erros = $this->validarDadosProduto($dados);
+
+            if ($erros !== []) {
+                $this->responderJson(['erro' => 'Dados inválidos.', 'erros' => $erros], 422);
+            }
+
+            $novoId = $this->model->criar($dados);
+            $produto = $this->model->buscarPorId($novoId);
+
+            $this->responderJson([
+                'mensagem' => 'Produto criado com sucesso.',
+                'dados' => $produto,
+            ], 201);
+        }
+
+        if (in_array($metodo, ['PUT', 'PATCH'], true)) {
+            $this->exigirAdminApi();
+
+            if ($id <= 0) {
+                $this->responderJson(['erro' => 'Informe o id do produto.'], 400);
+            }
+
+            if (!$this->model->buscarPorId($id)) {
+                $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+            }
+
+            $dados = $this->dadosProdutoNormalizados($dadosRequisicao);
+            $erros = $this->validarDadosProduto($dados);
+
+            if ($erros !== []) {
+                $this->responderJson(['erro' => 'Dados inválidos.', 'erros' => $erros], 422);
+            }
+
+            $this->model->atualizar($id, $dados);
+
+            $this->responderJson([
+                'mensagem' => 'Produto atualizado com sucesso.',
+                'dados' => $this->model->buscarPorId($id),
+            ]);
+        }
+
+        if ($metodo === 'DELETE') {
+            $this->exigirAdminApi();
+
+            if ($id <= 0) {
+                $this->responderJson(['erro' => 'Informe o id do produto.'], 400);
+            }
+
+            if (!$this->model->buscarPorId($id)) {
+                $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+            }
+
+            $this->model->excluir($id);
+
+            $this->responderJson([
+                'mensagem' => 'Produto removido com sucesso.'
+            ]);
+        }
+
+        $this->responderJson(['erro' => 'Método não permitido.'], 405);
+    }
+
+    public function apiMovimentacoes(): void
+    {
+        $this->exigirLoginApi();
+
+        $metodo = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+        $dadosRequisicao = $this->dadosDaRequisicao();
+        $produtoId = (int) ($dadosRequisicao['produto_id'] ?? $dadosRequisicao['id'] ?? 0);
+
+        if ($metodo === 'GET') {
+            if ($produtoId > 0) {
+                $produto = $this->model->buscarPorId($produtoId);
+
+                if (!$produto) {
+                    $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+                }
+
+                $this->responderJson([
+                    'dados' => $this->model->listarMovimentacoes($produtoId)
+                ]);
+            }
+
+            $limite = isset($dadosRequisicao['limite']) ? (int) $dadosRequisicao['limite'] : 50;
+
+            $this->responderJson([
+                'dados' => $this->model->listarMovimentacoes(null, $limite)
+            ]);
+        }
+
+        if ($metodo === 'POST') {
+            if ($produtoId <= 0) {
+                $this->responderJson(['erro' => 'Informe o produto_id.'], 400);
+            }
+
+            if (!$this->model->buscarPorId($produtoId)) {
+                $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+            }
+
+            $tipo = trim((string) ($dadosRequisicao['tipo'] ?? ''));
+            $motivo = trim((string) ($dadosRequisicao['motivo'] ?? ''));
+            $quantidade = (int) ($dadosRequisicao['quantidade'] ?? 0);
+            $observacao = trim((string) ($dadosRequisicao['observacao'] ?? ''));
+
+            if ($tipo === '' || $quantidade <= 0) {
+                $this->responderJson(['erro' => 'Tipo e quantidade são obrigatórios.'], 422);
+            }
+
+            $sucesso = $this->executarMovimentacaoApi($produtoId, $tipo, $motivo, $quantidade, $observacao);
+
+            if (!$sucesso) {
+                $this->responderJson(['erro' => 'Não foi possível registrar a movimentação.'], 422);
+            }
+
+            $this->responderJson([
+                'mensagem' => 'Movimentação registrada com sucesso.',
+                'dados' => $this->model->buscarPorId($produtoId),
+            ], 201);
+        }
+
+        $this->responderJson(['erro' => 'Método não permitido.'], 405);
     }
 }
