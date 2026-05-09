@@ -5,20 +5,27 @@
  * Acesse: http://localhost/Eng.Software-Controle-de-Estoque/setup.php
  */
 
-require_once __DIR__ . '/config/Database.php';
-
 try {
-    $database = new Database();
-    $conn = $database->conectar();
-
     // Ler o arquivo schema.sql
     $schemaPath = __DIR__ . '/database/schema.sql';
-    
+
     if (!file_exists($schemaPath)) {
         throw new Exception("Arquivo schema.sql não encontrado em: $schemaPath");
     }
 
     $sql = file_get_contents($schemaPath);
+
+    if ($sql === false) {
+        throw new Exception("Não foi possível ler o arquivo schema.sql.");
+    }
+
+    // Conectar sem selecionar banco para permitir que o CREATE DATABASE rode.
+    $conn = new PDO(
+        'mysql:host=127.0.0.1;port=3306;charset=utf8mb4',
+        'root',
+        ''
+    );
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Substituir CREATE TABLE por CREATE TABLE IF NOT EXISTS
     $sql = str_replace('CREATE TABLE ', 'CREATE TABLE IF NOT EXISTS ', $sql);
