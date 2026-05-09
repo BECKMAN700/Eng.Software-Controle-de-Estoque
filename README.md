@@ -220,7 +220,43 @@ index.php?acao=saida&id=1
 index.php?acao=movimentar&id=1
 index.php?acao=historico_movimentacoes&id=1
 index.php?acao=detalhes_saida&id=1
+index.php?acao=api_produtos
+index.php?acao=api_movimentacoes
 ```
+
+### APIs JSON
+
+As APIs usam `public/index.php` como ponto de entrada principal e também possuem atalhos em `public/api`.
+Todas retornam JSON.
+
+#### Produtos
+
+- `GET index.php?acao=api_produtos` lista produtos, com filtros opcionais `busca`, `categoria`, `unidade` e `status`
+- `GET index.php?acao=api_produtos&id=1` retorna um produto específico com o histórico de movimentações
+- `POST index.php?acao=api_produtos` cria um produto
+- `PUT index.php?acao=api_produtos&id=1` atualiza todos os dados de um produto
+- `PATCH index.php?acao=api_produtos&id=1` atualiza parcialmente um produto, mantendo os campos não enviados
+- `DELETE index.php?acao=api_produtos&id=1` remove um produto
+- Atalhos equivalentes: `api/produtos.php` e `api/produto.php?id=1`
+
+#### Movimentações
+
+- `GET index.php?acao=api_movimentacoes` lista as últimas movimentações
+- `GET index.php?acao=api_movimentacoes&produto_id=1` lista as movimentações de um produto
+- `POST index.php?acao=api_movimentacoes` registra uma movimentação usando `produto_id`, `tipo`, `motivo`, `quantidade` e `observacao`
+- Atalho equivalente: `api/movimentacoes.php`
+
+As rotas de escrita exigem usuário autenticado; operações de produto que alteram dados exigem perfil `admin`.
+
+## Como testar a API
+
+1. Fazer login com um usuario valido no sistema.
+2. Abrir `index.php?acao=api_produtos` ou `api/produtos.php` e confirmar uma resposta JSON com a lista de produtos.
+3. Abrir `index.php?acao=api_produtos&id=1` ou `api/produto.php?id=1` e confirmar a resposta JSON com o produto e o historico de movimentacoes.
+4. Executar `POST index.php?acao=api_produtos` com os campos de produto e conferir se o JSON retorna o produto criado com o `id` correto.
+5. Executar `PATCH index.php?acao=api_produtos&id=1` enviando apenas um campo e confirmar que os demais dados permanecem no banco.
+6. Executar `GET index.php?acao=api_movimentacoes&limite=-1` e confirmar que a API responde `422` em JSON.
+7. Executar `DELETE index.php?acao=api_movimentacoes` e confirmar que a resposta é `405` em JSON.
 
 ---
 
