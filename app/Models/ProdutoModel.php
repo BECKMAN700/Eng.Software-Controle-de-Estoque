@@ -171,7 +171,7 @@ class ProdutoModel
 
             $estoqueMaximo = ($dados['estoque_maximo'] ?? '') !== '' ? (int) $dados['estoque_maximo'] : null;
 
-            return $stmt->execute([
+            $sucesso = $stmt->execute([
                 ':nome' => trim((string) ($dados['nome'] ?? '')),
                 ':codigo' => $this->valorOuNull($dados['codigo'] ?? null),
                 ':categoria' => $this->valorOuNull($dados['categoria'] ?? null),
@@ -180,13 +180,17 @@ class ProdutoModel
                 ':status' => trim((string) ($dados['status'] ?? 'ativo')),
                 ':quantidade' => (int) ($dados['quantidade'] ?? 0),
                 ':estoque_minimo' => (int) ($dados['estoque_minimo'] ?? 0),
-                ':estoque_maximo' => $dados['estoque_maximo'] ?? null,
+                ':estoque_maximo' => $estoqueMaximo,
                 ':preco' => (float) ($dados['preco'] ?? 0)
             ]);
 
+            if (!$sucesso) {
+                return false;
+            }
+
             return (int) $this->conn->lastInsertId();
         } catch (PDOException $e) {
-            die('Erro ao criar produto: ' . $e->getMessage());
+            throw new RuntimeException('Erro ao criar produto.', 0, $e);
         }
     }
 
@@ -220,11 +224,11 @@ class ProdutoModel
                 ':status' => trim((string) ($dados['status'] ?? 'ativo')),
                 ':quantidade' => (int) ($dados['quantidade'] ?? 0),
                 ':estoque_minimo' => (int) ($dados['estoque_minimo'] ?? 0),
-                ':estoque_maximo' => $dados['estoque_maximo'] ?? null,
+                ':estoque_maximo' => $estoqueMaximo,
                 ':preco' => (float) ($dados['preco'] ?? 0)
             ]);
         } catch (PDOException $e) {
-            die('Erro ao atualizar produto: ' . $e->getMessage());
+            throw new RuntimeException('Erro ao atualizar produto.', 0, $e);
         }
     }
 
@@ -238,7 +242,7 @@ class ProdutoModel
                 ':id' => (int) $id
             ]);
         } catch (PDOException $e) {
-            die('Erro ao excluir produto: ' . $e->getMessage());
+            throw new RuntimeException('Erro ao excluir produto.', 0, $e);
         }
     }
 
@@ -305,7 +309,7 @@ class ProdutoModel
             if ($this->conn->inTransaction()) {
                 $this->conn->rollBack();
             }
-            die('Erro ao movimentar produto: ' . $e->getMessage());
+            throw new RuntimeException('Erro ao movimentar produto.', 0, $e);
         }
     }
 
@@ -357,7 +361,7 @@ class ProdutoModel
             if ($this->conn->inTransaction()) {
                 $this->conn->rollBack();
             }
-            die('Erro ao registrar entrada: ' . $e->getMessage());
+            throw new RuntimeException('Erro ao registrar entrada.', 0, $e);
         }
     }
 
@@ -413,7 +417,7 @@ class ProdutoModel
             if ($this->conn->inTransaction()) {
                 $this->conn->rollBack();
             }
-            die('Erro ao registrar saída: ' . $e->getMessage());
+            throw new RuntimeException('Erro ao registrar saída.', 0, $e);
         }
     }
 
@@ -433,6 +437,10 @@ class ProdutoModel
 
     public function listarMovimentacoes($produtoId = null, $limite = null): array
     {
+        if ($limite !== null && (int) $limite <= 0) {
+            return [];
+        }
+
         $sql = "SELECT
                     movimentacoes.*,
                     produtos.nome AS produto_nome,

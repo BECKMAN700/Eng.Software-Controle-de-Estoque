@@ -244,6 +244,16 @@ As APIs usam `public/index.php` como ponto de entrada e retornam JSON.
 
 As rotas de escrita exigem usuário autenticado; operações de produto que alteram dados exigem perfil `admin`.
 
+## Como testar a API
+
+1. Fazer login com um usuario valido no sistema.
+2. Abrir `index.php?acao=api_produtos` e confirmar uma resposta JSON com a lista de produtos.
+3. Abrir `index.php?acao=api_produtos&id=1` e confirmar a resposta JSON com o produto e o historico de movimentacoes.
+4. Executar `POST index.php?acao=api_produtos` com os campos de produto e conferir se o JSON retorna o produto criado com o `id` correto.
+5. Executar `PATCH index.php?acao=api_produtos&id=1` enviando apenas um campo e confirmar que os demais dados permanecem no banco.
+6. Executar `GET index.php?acao=api_movimentacoes&limite=-1` e confirmar que a API responde `422` em JSON.
+7. Executar `DELETE index.php?acao=api_movimentacoes` e confirmar que a resposta é `405` em JSON.
+
 ---
 
 ## Como Executar o Projeto

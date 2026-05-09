@@ -56,6 +56,54 @@ class ProdutoController
         ];
     }
 
+    private function dadosProdutoParaPatch(array $produtoAtual, array $origem): array
+    {
+        $dados = $this->dadosProdutoNormalizados($produtoAtual);
+
+        if (array_key_exists('nome', $origem)) {
+            $dados['nome'] = trim((string) $origem['nome']);
+        }
+
+        if (array_key_exists('codigo', $origem)) {
+            $dados['codigo'] = trim((string) $origem['codigo']);
+        }
+
+        if (array_key_exists('categoria', $origem)) {
+            $dados['categoria'] = trim((string) $origem['categoria']);
+        }
+
+        if (array_key_exists('unidade', $origem)) {
+            $dados['unidade'] = trim((string) $origem['unidade']);
+        }
+
+        if (array_key_exists('descricao', $origem)) {
+            $dados['descricao'] = trim((string) $origem['descricao']);
+        }
+
+        if (array_key_exists('status', $origem)) {
+            $dados['status'] = trim((string) $origem['status']);
+        }
+
+        if (array_key_exists('quantidade', $origem)) {
+            $dados['quantidade'] = (int) $origem['quantidade'];
+        }
+
+        if (array_key_exists('estoque_minimo', $origem)) {
+            $dados['estoque_minimo'] = (int) $origem['estoque_minimo'];
+        }
+
+        if (array_key_exists('estoque_maximo', $origem)) {
+            $estoqueMaximoBruto = trim((string) $origem['estoque_maximo']);
+            $dados['estoque_maximo'] = $estoqueMaximoBruto === '' ? null : (int) $estoqueMaximoBruto;
+        }
+
+        if (array_key_exists('preco', $origem)) {
+            $dados['preco'] = (float) $origem['preco'];
+        }
+
+        return $dados;
+    }
+
     private function validarDadosProduto(array $dados): array
     {
         $erros = [];
@@ -357,157 +405,179 @@ class ProdutoController
 
     public function apiProdutos(): void
     {
-        $this->exigirLoginApi();
+        try {
+            $this->exigirLoginApi();
 
-        $metodo = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
-        $dadosRequisicao = $this->dadosDaRequisicao();
-        $id = (int) ($dadosRequisicao['id'] ?? 0);
+            $metodo = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+            $dadosRequisicao = $this->dadosDaRequisicao();
+            $id = (int) ($dadosRequisicao['id'] ?? 0);
 
-        if ($metodo === 'GET') {
-            if ($id > 0) {
-                $produto = $this->model->buscarPorId($id);
+            if ($metodo === 'GET') {
+                if ($id > 0) {
+                    $produto = $this->model->buscarPorId($id);
 
-                if (!$produto) {
+                    if (!$produto) {
+                        $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+                    }
+
+                    $this->responderJson(['dados' => $produto]);
+                }
+
+                $produtos = $this->model->listarFiltrados(
+                    trim((string) ($dadosRequisicao['busca'] ?? '')),
+                    trim((string) ($dadosRequisicao['categoria'] ?? '')),
+                    trim((string) ($dadosRequisicao['unidade'] ?? '')),
+                    trim((string) ($dadosRequisicao['status'] ?? ''))
+                );
+
+                $this->responderJson(['dados' => $produtos]);
+            }
+
+            if ($metodo === 'POST') {
+                $this->exigirAdminApi();
+
+                $dados = $this->dadosProdutoNormalizados($dadosRequisicao);
+                $erros = $this->validarDadosProduto($dados);
+
+                if ($erros !== []) {
+                    $this->responderJson(['erro' => 'Dados inválidos.', 'erros' => $erros], 422);
+                }
+
+                $novoId = $this->model->criar($dados);
+
+                if (!$novoId) {
+                    $this->responderJson(['erro' => 'Não foi possível criar o produto.'], 500);
+                }
+
+                $produto = $this->model->buscarPorId($novoId);
+
+                $this->responderJson([
+                    'mensagem' => 'Produto criado com sucesso.',
+                    'dados' => $produto,
+                ], 201);
+            }
+
+            if (in_array($metodo, ['PUT', 'PATCH'], true)) {
+                $this->exigirAdminApi();
+
+                if ($id <= 0) {
+                    $this->responderJson(['erro' => 'Informe o id do produto.'], 400);
+                }
+
+                $produtoAtual = $this->model->buscarPorId($id);
+
+                if (!$produtoAtual) {
                     $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
                 }
 
-                $this->responderJson(['dados' => $produto]);
+                $dados = $metodo === 'PATCH'
+                    ? $this->dadosProdutoParaPatch($produtoAtual, $dadosRequisicao)
+                    : $this->dadosProdutoNormalizados($dadosRequisicao);
+
+                $erros = $this->validarDadosProduto($dados);
+
+                if ($erros !== []) {
+                    $this->responderJson(['erro' => 'Dados inválidos.', 'erros' => $erros], 422);
+                }
+
+                $this->model->atualizar($id, $dados);
+
+                $this->responderJson([
+                    'mensagem' => 'Produto atualizado com sucesso.',
+                    'dados' => $this->model->buscarPorId($id),
+                ]);
             }
 
-            $produtos = $this->model->listarFiltrados(
-                trim((string) ($dadosRequisicao['busca'] ?? '')),
-                trim((string) ($dadosRequisicao['categoria'] ?? '')),
-                trim((string) ($dadosRequisicao['unidade'] ?? '')),
-                trim((string) ($dadosRequisicao['status'] ?? ''))
-            );
+            if ($metodo === 'DELETE') {
+                $this->exigirAdminApi();
 
-            $this->responderJson(['dados' => $produtos]);
+                if ($id <= 0) {
+                    $this->responderJson(['erro' => 'Informe o id do produto.'], 400);
+                }
+
+                if (!$this->model->buscarPorId($id)) {
+                    $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+                }
+
+                $this->model->excluir($id);
+
+                $this->responderJson([
+                    'mensagem' => 'Produto removido com sucesso.'
+                ]);
+            }
+
+            $this->responderJson(['erro' => 'Método não permitido.'], 405);
+        } catch (Throwable $e) {
+            $this->responderJson(['erro' => 'Erro interno ao processar a requisição.'], 500);
         }
-
-        if ($metodo === 'POST') {
-            $this->exigirAdminApi();
-
-            $dados = $this->dadosProdutoNormalizados($dadosRequisicao);
-            $erros = $this->validarDadosProduto($dados);
-
-            if ($erros !== []) {
-                $this->responderJson(['erro' => 'Dados inválidos.', 'erros' => $erros], 422);
-            }
-
-            $novoId = $this->model->criar($dados);
-            $produto = $this->model->buscarPorId($novoId);
-
-            $this->responderJson([
-                'mensagem' => 'Produto criado com sucesso.',
-                'dados' => $produto,
-            ], 201);
-        }
-
-        if (in_array($metodo, ['PUT', 'PATCH'], true)) {
-            $this->exigirAdminApi();
-
-            if ($id <= 0) {
-                $this->responderJson(['erro' => 'Informe o id do produto.'], 400);
-            }
-
-            if (!$this->model->buscarPorId($id)) {
-                $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
-            }
-
-            $dados = $this->dadosProdutoNormalizados($dadosRequisicao);
-            $erros = $this->validarDadosProduto($dados);
-
-            if ($erros !== []) {
-                $this->responderJson(['erro' => 'Dados inválidos.', 'erros' => $erros], 422);
-            }
-
-            $this->model->atualizar($id, $dados);
-
-            $this->responderJson([
-                'mensagem' => 'Produto atualizado com sucesso.',
-                'dados' => $this->model->buscarPorId($id),
-            ]);
-        }
-
-        if ($metodo === 'DELETE') {
-            $this->exigirAdminApi();
-
-            if ($id <= 0) {
-                $this->responderJson(['erro' => 'Informe o id do produto.'], 400);
-            }
-
-            if (!$this->model->buscarPorId($id)) {
-                $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
-            }
-
-            $this->model->excluir($id);
-
-            $this->responderJson([
-                'mensagem' => 'Produto removido com sucesso.'
-            ]);
-        }
-
-        $this->responderJson(['erro' => 'Método não permitido.'], 405);
     }
 
     public function apiMovimentacoes(): void
     {
-        $this->exigirLoginApi();
+        try {
+            $this->exigirLoginApi();
 
-        $metodo = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
-        $dadosRequisicao = $this->dadosDaRequisicao();
-        $produtoId = (int) ($dadosRequisicao['produto_id'] ?? $dadosRequisicao['id'] ?? 0);
+            $metodo = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+            $dadosRequisicao = $this->dadosDaRequisicao();
+            $produtoId = (int) ($dadosRequisicao['produto_id'] ?? $dadosRequisicao['id'] ?? 0);
 
-        if ($metodo === 'GET') {
-            if ($produtoId > 0) {
-                $produto = $this->model->buscarPorId($produtoId);
+            if ($metodo === 'GET') {
+                if ($produtoId > 0) {
+                    $produto = $this->model->buscarPorId($produtoId);
 
-                if (!$produto) {
-                    $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+                    if (!$produto) {
+                        $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+                    }
+
+                    $this->responderJson([
+                        'dados' => $this->model->listarMovimentacoes($produtoId)
+                    ]);
+                }
+
+                $limite = isset($dadosRequisicao['limite']) ? (int) $dadosRequisicao['limite'] : 50;
+
+                if ($limite <= 0) {
+                    $this->responderJson(['erro' => 'O limite deve ser maior que zero.'], 422);
                 }
 
                 $this->responderJson([
-                    'dados' => $this->model->listarMovimentacoes($produtoId)
+                    'dados' => $this->model->listarMovimentacoes(null, $limite)
                 ]);
             }
 
-            $limite = isset($dadosRequisicao['limite']) ? (int) $dadosRequisicao['limite'] : 50;
+            if ($metodo === 'POST') {
+                if ($produtoId <= 0) {
+                    $this->responderJson(['erro' => 'Informe o produto_id.'], 400);
+                }
 
-            $this->responderJson([
-                'dados' => $this->model->listarMovimentacoes(null, $limite)
-            ]);
+                if (!$this->model->buscarPorId($produtoId)) {
+                    $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
+                }
+
+                $tipo = trim((string) ($dadosRequisicao['tipo'] ?? ''));
+                $motivo = trim((string) ($dadosRequisicao['motivo'] ?? ''));
+                $quantidade = (int) ($dadosRequisicao['quantidade'] ?? 0);
+                $observacao = trim((string) ($dadosRequisicao['observacao'] ?? ''));
+
+                if ($tipo === '' || $quantidade <= 0) {
+                    $this->responderJson(['erro' => 'Tipo e quantidade são obrigatórios.'], 422);
+                }
+
+                $sucesso = $this->executarMovimentacaoApi($produtoId, $tipo, $motivo, $quantidade, $observacao);
+
+                if (!$sucesso) {
+                    $this->responderJson(['erro' => 'Não foi possível registrar a movimentação.'], 422);
+                }
+
+                $this->responderJson([
+                    'mensagem' => 'Movimentação registrada com sucesso.',
+                    'dados' => $this->model->buscarPorId($produtoId),
+                ], 201);
+            }
+
+            $this->responderJson(['erro' => 'Método não permitido.'], 405);
+        } catch (Throwable $e) {
+            $this->responderJson(['erro' => 'Erro interno ao processar a requisição.'], 500);
         }
-
-        if ($metodo === 'POST') {
-            if ($produtoId <= 0) {
-                $this->responderJson(['erro' => 'Informe o produto_id.'], 400);
-            }
-
-            if (!$this->model->buscarPorId($produtoId)) {
-                $this->responderJson(['erro' => 'Produto não encontrado.'], 404);
-            }
-
-            $tipo = trim((string) ($dadosRequisicao['tipo'] ?? ''));
-            $motivo = trim((string) ($dadosRequisicao['motivo'] ?? ''));
-            $quantidade = (int) ($dadosRequisicao['quantidade'] ?? 0);
-            $observacao = trim((string) ($dadosRequisicao['observacao'] ?? ''));
-
-            if ($tipo === '' || $quantidade <= 0) {
-                $this->responderJson(['erro' => 'Tipo e quantidade são obrigatórios.'], 422);
-            }
-
-            $sucesso = $this->executarMovimentacaoApi($produtoId, $tipo, $motivo, $quantidade, $observacao);
-
-            if (!$sucesso) {
-                $this->responderJson(['erro' => 'Não foi possível registrar a movimentação.'], 422);
-            }
-
-            $this->responderJson([
-                'mensagem' => 'Movimentação registrada com sucesso.',
-                'dados' => $this->model->buscarPorId($produtoId),
-            ], 201);
-        }
-
-        $this->responderJson(['erro' => 'Método não permitido.'], 405);
     }
 }
