@@ -1,12 +1,16 @@
-# Controle de Estoque
+# 📦 Controle de Estoque
 
 Sistema web desenvolvido para gerenciamento de estoque, permitindo o controle de produtos, entradas, saídas, limites de estoque e histórico de movimentações.
 
-O projeto foi desenvolvido em **PHP nativo**, utilizando **HTML**, **CSS**, **MySQL** e o padrão de arquitetura **MVC**.
+![PHP](https://img.shields.io/badge/PHP-8.x-blue)
+![MySQL](https://img.shields.io/badge/MySQL-Database-orange)
+![MVC](https://img.shields.io/badge/Arquitetura-MVC-green)
+![GitFlow](https://img.shields.io/badge/GitFlow-Workflow-purple)
+![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-success)
 
 ---
 
-## Sobre o Projeto
+# 📖 Sobre o Projeto
 
 O **Controle de Estoque** é uma aplicação web criada com o objetivo de facilitar o gerenciamento de produtos armazenados.
 
@@ -16,27 +20,28 @@ Inicialmente, o projeto utilizava armazenamento em arquivo JSON. Posteriormente,
 
 ---
 
-## Objetivo
+# 🎯 Objetivo
 
-O objetivo principal do sistema é oferecer uma solução simples e organizada para controle de estoque.
+O objetivo principal do sistema é oferecer uma solução simples, organizada e eficiente para controle de estoque.
 
 Entre os objetivos específicos estão:
 
-- Cadastrar e organizar produtos
-- Controlar a quantidade disponível em estoque
-- Definir estoque mínimo e máximo por produto
-- Registrar entradas de estoque
-- Registrar saídas de estoque
-- Manter histórico de movimentações
-- Exibir alertas de reabastecimento
-- Facilitar a consulta de produtos por filtros
-- Melhorar a visualização dos dados com um front-end mais limpo e profissional
+- ✅ Cadastrar e organizar produtos
+- ✅ Controlar a quantidade disponível em estoque
+- ✅ Definir estoque mínimo e máximo por produto
+- ✅ Registrar entradas de estoque
+- ✅ Registrar saídas de estoque
+- ✅ Manter histórico de movimentações
+- ✅ Exibir alertas de reabastecimento
+- ✅ Facilitar consultas através de filtros
+- ✅ Melhorar a visualização dos dados
+- ✅ Aplicar boas práticas de Engenharia de Software
 
 ---
 
-## Funcionalidades
+# 🚀 Funcionalidades
 
-### Produtos
+## 📦 Produtos
 
 - Cadastro de produtos
 - Listagem de produtos
@@ -47,7 +52,9 @@ Entre os objetivos específicos estão:
 - Visualização em tabela
 - Visualização em catálogo de cards
 
-### Controle de Estoque
+---
+
+## 📊 Controle de Estoque
 
 - Registro de entrada de produtos
 - Registro de saída de produtos
@@ -55,7 +62,9 @@ Entre os objetivos específicos estão:
 - Atualização automática da quantidade disponível
 - Validação para evitar saída maior que o estoque disponível
 
-### Estoque Mínimo e Máximo
+---
+
+## ⚠️ Estoque Mínimo e Máximo
 
 - Definição de estoque mínimo por produto
 - Definição de estoque máximo por produto
@@ -63,7 +72,9 @@ Entre os objetivos específicos estão:
 - Alerta para produtos no limite mínimo
 - Alerta para produtos acima do máximo
 
-### Movimentações
+---
+
+## 🔄 Movimentações
 
 - Histórico de movimentações por produto
 - Registro do tipo de movimentação
@@ -72,7 +83,9 @@ Entre os objetivos específicos estão:
 - Registro de observações
 - Consulta de entradas e saídas realizadas
 
-### Relatórios
+---
+
+## 📈 Relatórios
 
 - Total de produtos cadastrados
 - Total de unidades em estoque
@@ -85,24 +98,26 @@ Entre os objetivos específicos estão:
 
 ---
 
-## Tecnologias Utilizadas
+# 🛠️ Tecnologias Utilizadas
 
-- PHP 8
-- HTML5
-- CSS3
-- MySQL
-- PDO
-- XAMPP
-- Arquitetura MVC
-- Git
-- GitHub
-- GitFlow
+| Tecnologia | Função |
+|---|---|
+| PHP 8 | Backend |
+| HTML5 | Estrutura |
+| CSS3 | Estilização |
+| MySQL | Banco de Dados |
+| PDO | Conexão segura |
+| XAMPP | Ambiente local |
+| MVC | Arquitetura |
+| Git | Versionamento |
+| GitHub | Repositório |
+| GitFlow | Fluxo de desenvolvimento |
 
 ---
 
-## Arquitetura do Projeto
+# 🏗️ Arquitetura do Projeto
 
-O projeto segue o padrão **MVC**, separando responsabilidades em:
+O projeto segue o padrão **MVC (Model-View-Controller)**, separando responsabilidades em:
 
 - **Model:** responsável pelo acesso ao banco de dados e regras de persistência
 - **View:** responsável pelas telas exibidas ao usuário
@@ -110,7 +125,7 @@ O projeto segue o padrão **MVC**, separando responsabilidades em:
 
 ---
 
-## Estrutura de Pastas
+# 📂 Estrutura de Pastas
 
 ```bash
 Eng.Software-Controle-de-Estoque/
@@ -154,7 +169,7 @@ Eng.Software-Controle-de-Estoque/
 
 ---
 
-## Banco de Dados
+# 🗄️ Banco de Dados
 
 O sistema utiliza o banco de dados:
 
@@ -175,7 +190,9 @@ O script de criação do banco e das tabelas está localizado em:
 database/schema.sql
 ```
 
-### Tabela `produtos`
+---
+
+## 📦 Tabela `produtos`
 
 Armazena os dados principais dos produtos cadastrados, como:
 
@@ -190,7 +207,9 @@ Armazena os dados principais dos produtos cadastrados, como:
 - Status
 - Descrição
 
-### Tabela `movimentacoes`
+---
+
+## 🔄 Tabela `movimentacoes`
 
 Armazena o histórico de entradas e saídas dos produtos, contendo:
 
@@ -203,7 +222,7 @@ Armazena o histórico de entradas e saídas dos produtos, contendo:
 
 ---
 
-## Rotas Principais
+# 🔗 Rotas Principais
 
 O sistema utiliza o arquivo `public/index.php` como ponto de entrada.
 
@@ -224,23 +243,27 @@ index.php?acao=detalhes_saida&id=1
 
 ---
 
-## Como Executar o Projeto
+# ⚙️ Como Executar o Projeto
 
-### 1. Clonar o repositório
+## 1️⃣ Clonar o repositório
 
 ```bash
 git clone https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque.git
 ```
 
-### 2. Acessar a pasta do projeto
+---
+
+## 2️⃣ Acessar a pasta do projeto
 
 ```bash
 cd Eng.Software-Controle-de-Estoque
 ```
 
-### 3. Colocar o projeto no XAMPP
+---
 
-Copie a pasta do projeto para o diretório:
+## 3️⃣ Colocar o projeto no XAMPP
+
+Copie a pasta do projeto para:
 
 ```text
 C:\xampp\htdocs\
@@ -252,7 +275,9 @@ O caminho final deve ficar assim:
 C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
 ```
 
-### 4. Iniciar o XAMPP
+---
+
+## 4️⃣ Iniciar o XAMPP
 
 Abra o **XAMPP Control Panel** e inicie os módulos:
 
@@ -261,9 +286,11 @@ Apache
 MySQL
 ```
 
-### 5. Criar o banco de dados
+---
 
-Abra o phpMyAdmin no navegador:
+## 5️⃣ Criar o banco de dados
+
+Abra o phpMyAdmin:
 
 ```text
 http://localhost/phpmyadmin
@@ -275,9 +302,11 @@ Depois execute o script SQL localizado em:
 database/schema.sql
 ```
 
-Esse script cria o banco `controle_estoque` e as tabelas necessárias para o funcionamento do sistema.
+Esse script cria o banco `controle_estoque` e todas as tabelas necessárias para o funcionamento do sistema.
 
-### 6. Configurar a conexão com o banco
+---
+
+## 6️⃣ Configurar conexão com o banco
 
 Verifique o arquivo:
 
@@ -285,7 +314,7 @@ Verifique o arquivo:
 config/Database.php
 ```
 
-Configuração padrão utilizada no XAMPP:
+Configuração padrão utilizada:
 
 ```php
 private $host = '127.0.0.1';
@@ -295,11 +324,11 @@ private $pass = '';
 private $port = '3306';
 ```
 
-Caso o MySQL esteja usando outra porta, altere o valor de `$port`.
+---
 
-### 7. Acessar o sistema
+## 7️⃣ Acessar o sistema
 
-No navegador, acesse:
+No navegador:
 
 ```text
 http://localhost/Eng.Software-Controle-de-Estoque/public/
@@ -307,24 +336,26 @@ http://localhost/Eng.Software-Controle-de-Estoque/public/
 
 ---
 
-## Fluxo de Trabalho com GitFlow
+# 🌿 Fluxo de Trabalho com GitFlow
 
-O projeto utiliza uma organização baseada em GitFlow.
+O projeto utiliza organização baseada em **GitFlow**.
 
-Branches principais:
+## Branches principais
 
 ```text
 main
 develop
 ```
 
-Branches de desenvolvimento:
+## Branches de desenvolvimento
 
 ```text
 feature/nome-da-feature
 ```
 
-Exemplo de criação de uma feature:
+---
+
+## Exemplo de criação de feature
 
 ```bash
 git checkout develop
@@ -332,7 +363,9 @@ git pull origin develop
 git checkout -b feature/nome-da-feature
 ```
 
-Exemplo de commit:
+---
+
+## Exemplo de commit
 
 ```bash
 git add .
@@ -344,29 +377,29 @@ Após finalizar a feature, deve ser aberto um Pull Request para a branch `develo
 
 ---
 
-## Atualizações Recentes
+# 📌 Atualizações Recentes
 
-Nesta versão, foi realizada uma atualização no front-end do sistema.
+Nesta versão, foi realizada uma atualização completa no front-end do sistema.
 
-As principais melhorias foram:
+## Principais melhorias
 
-- Criação de layout base reutilizável
-- Criação de sidebar lateral
-- Criação de topbar
-- Separação de CSS em arquivos organizados
-- Atualização da tela principal de estoque
-- Criação de catálogo visual de produtos
-- Atualização das telas de cadastro e edição
-- Atualização das telas de entrada e saída
-- Atualização da tela de movimentação manual
-- Atualização do histórico de movimentações
-- Criação da tela de relatórios
-- Padronização visual das telas
-- Melhor organização das views com `layouts` e `partials`
+- ✅ Criação de layout base reutilizável
+- ✅ Criação de sidebar lateral
+- ✅ Criação de topbar
+- ✅ Separação de CSS em arquivos organizados
+- ✅ Atualização da tela principal de estoque
+- ✅ Criação de catálogo visual de produtos
+- ✅ Atualização das telas de cadastro e edição
+- ✅ Atualização das telas de entrada e saída
+- ✅ Atualização da tela de movimentação manual
+- ✅ Atualização do histórico de movimentações
+- ✅ Criação da tela de relatórios
+- ✅ Padronização visual das telas
+- ✅ Melhor organização das views com `layouts` e `partials`
 
 ---
 
-## Requisitos Implementados
+# ✅ Requisitos Implementados
 
 - Cadastro de produtos
 - Listagem de produtos
@@ -384,7 +417,7 @@ As principais melhorias foram:
 
 ---
 
-## Informações Acadêmicas
+# 📚 Informações Acadêmicas
 
 Projeto desenvolvido para fins acadêmicos.
 
@@ -397,7 +430,7 @@ Semestre: 2026/1
 
 ---
 
-## Equipe
+# 👨‍💻 Equipe
 
 - João Pedro Rodrigues Bequiman
 - Matheus Sulino Da Silva Costa
@@ -407,17 +440,23 @@ Semestre: 2026/1
 
 ---
 
-## Observações
+# 📌 Observações
 
 - O sistema precisa do Apache e MySQL ativos no XAMPP.
 - O banco de dados deve ser criado antes de acessar o sistema.
-- O projeto utiliza PHP nativo, sem framework.
+- O projeto utiliza PHP nativo sem framework.
 - O sistema segue arquitetura MVC.
 - As movimentações de estoque são registradas na tabela `movimentacoes`.
-- A exclusão de produto remove também suas movimentações por causa do relacionamento com `ON DELETE CASCADE`.
+- A exclusão de produto remove também suas movimentações devido ao relacionamento com `ON DELETE CASCADE`.
 
 ---
 
-## Licença
+# 📄 Licença
 
 Este projeto foi desenvolvido para fins acadêmicos.
+
+---
+
+# ⭐ Status do Projeto
+
+🚧 Projeto em desenvolvimento contínuo.
