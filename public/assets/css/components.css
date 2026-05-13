@@ -180,6 +180,14 @@
     color: #344054;
 }
 
+.form-error {
+    display: block;
+    margin-top: 6px;
+    color: #b42318;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
 .form-group input,
 .form-group select,
 .form-group textarea {

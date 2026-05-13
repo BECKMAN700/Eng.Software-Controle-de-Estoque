@@ -47,6 +47,14 @@ Entre os objetivos específicos estão:
 - Visualização em tabela
 - Visualização em catálogo de cards
 
+### Usuários
+
+- Login com e-mail e senha
+- Usuários com papel `admin` ou `estoquista`
+- Listagem de usuários para administradores
+- Cadastro de novos usuários para administradores
+- Senhas armazenadas com hash
+
 ### Controle de Estoque
 
 - Registro de entrada de produtos
@@ -220,6 +228,8 @@ index.php?acao=saida&id=1
 index.php?acao=movimentar&id=1
 index.php?acao=historico_movimentacoes&id=1
 index.php?acao=detalhes_saida&id=1
+index.php?acao=usuarios
+index.php?acao=usuario_criar
 index.php?acao=api_produtos
 index.php?acao=api_movimentacoes
 ```
@@ -417,6 +427,10 @@ As principais melhorias foram:
 - Alertas de estoque
 - Relatórios gerais
 - Layout visual atualizado
+- Login e sessão PHP
+- Papéis `admin` e `estoquista`
+- Cadastro de novos usuários por administrador
+- Proteção de rotas administrativas
 
 ---
 

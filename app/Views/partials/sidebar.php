@@ -70,6 +70,14 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
             <span class="nav-icon"></span>
             <span>Histórico e ações</span>
         </a>
+        <?php if (Auth::isAdmin()): ?>
+        <span class="nav-section-title">AdministraÃ§Ã£o</span>
+
+        <a class="nav-link <?= menuAtivo(['usuarios', 'usuario_criar']) ?>" href="index.php?acao=usuarios">
+            <span class="nav-icon"></span>
+            <span>UsuÃ¡rios</span>
+        </a>
+        <?php endif; ?>
     </nav>
 
     <div class="sidebar-footer">

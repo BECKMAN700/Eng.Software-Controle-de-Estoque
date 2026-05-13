@@ -46,8 +46,10 @@ if (!$ehApi) {
 // ─── Rotas protegidas ────────────────────────────────────────────────────────
 
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
+require_once __DIR__ . '/../app/Controllers/UsuarioController.php';
 
 $controller = new ProdutoController();
+$usuarioController = new UsuarioController();
 
 switch ($acao) {
     case 'listar':
@@ -124,6 +126,26 @@ switch ($acao) {
 
     case 'relatorios':
         $controller->relatorios();
+        break;
+
+    case 'usuarios':
+        Auth::exigirAdmin();
+        $usuarioController->listar();
+        break;
+
+    case 'usuario_criar':
+        Auth::exigirAdmin();
+        $usuarioController->mostrarCriar();
+        break;
+
+    case 'usuario_salvar':
+        Auth::exigirAdmin();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $usuarioController->salvar();
+        } else {
+            header('Location: index.php?acao=usuarios');
+            exit;
+        }
         break;
 
     case 'api_produtos':
