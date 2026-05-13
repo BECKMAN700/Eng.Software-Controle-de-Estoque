@@ -5,6 +5,13 @@
  * Acesse: http://localhost/Eng.Software-Controle-de-Estoque/setup.php
  */
 
+$remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+
+if (PHP_SAPI !== 'cli' && !in_array($remoteAddr, ['127.0.0.1', '::1'], true)) {
+    http_response_code(403);
+    exit('Setup permitido apenas em ambiente local.');
+}
+
 try {
     // Ler o arquivo schema.sql
     $schemaPath = __DIR__ . '/database/schema.sql';
@@ -20,10 +27,15 @@ try {
     }
 
     // Conectar sem selecionar banco para permitir que o CREATE DATABASE rode.
+    $host = getenv('DB_HOST') ?: '127.0.0.1';
+    $port = getenv('DB_PORT') ?: '3306';
+    $user = getenv('DB_USER') ?: 'root';
+    $pass = getenv('DB_PASS') ?: '';
+
     $conn = new PDO(
-        'mysql:host=127.0.0.1;port=3306;charset=utf8mb4',
-        'root',
-        ''
+        "mysql:host={$host};port={$port};charset=utf8mb4",
+        $user,
+        $pass
     );
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

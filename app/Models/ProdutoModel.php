@@ -280,7 +280,8 @@ class ProdutoModel
             } else {
                 $sqlProduto = "UPDATE produtos
                                SET quantidade = quantidade - :quantidade
-                               WHERE id = :id";
+                               WHERE id = :id
+                                 AND quantidade >= :quantidade";
             }
 
             $stmtProduto = $this->conn->prepare($sqlProduto);
@@ -288,6 +289,11 @@ class ProdutoModel
                 ':quantidade' => $quantidade,
                 ':id' => (int) $id
             ]);
+
+            if ($stmtProduto->rowCount() !== 1) {
+                $this->conn->rollBack();
+                return false;
+            }
 
             $sqlMov = "INSERT INTO movimentacoes
                        (produto_id, tipo, motivo, quantidade, observacao)
@@ -342,6 +348,11 @@ class ProdutoModel
                 ':id' => (int) $id
             ]);
 
+            if ($stmtProduto->rowCount() !== 1) {
+                $this->conn->rollBack();
+                return false;
+            }
+
             $sqlMov = "INSERT INTO movimentacoes
                        (produto_id, tipo, motivo, quantidade, observacao)
                        VALUES
@@ -390,13 +401,19 @@ class ProdutoModel
 
             $sqlProduto = "UPDATE produtos
                            SET quantidade = quantidade - :quantidade
-                           WHERE id = :id";
+                           WHERE id = :id
+                             AND quantidade >= :quantidade";
 
             $stmtProduto = $this->conn->prepare($sqlProduto);
             $stmtProduto->execute([
                 ':quantidade' => $quantidade,
                 ':id' => (int) $id
             ]);
+
+            if ($stmtProduto->rowCount() !== 1) {
+                $this->conn->rollBack();
+                return false;
+            }
 
             $sqlMov = "INSERT INTO movimentacoes
                        (produto_id, tipo, motivo, quantidade, observacao)

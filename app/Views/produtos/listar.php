@@ -519,9 +519,11 @@ ob_start();
 
                                 <td>
                                     <div class="table-actions">
+                                        <?php if (Auth::isAdmin()): ?>
                                         <a class="btn btn-secondary btn-sm" href="index.php?acao=editar&id=<?= $idProduto ?>">
                                             Editar
                                         </a>
+                                        <?php endif; ?>
 
                                         <a class="btn btn-primary btn-sm" href="index.php?acao=entrada&id=<?= $idProduto ?>">
                                             Entrada
@@ -541,13 +543,18 @@ ob_start();
 
                                         <?php if (Auth::isAdmin()): ?>
 
-                                       <a
-                                        class="btn btn-danger btn-sm"
-                                        href="index.php?acao=excluir&id=<?= $idProduto ?>"
-                                        onclick="return confirm('Tem certeza que deseja excluir este produto?')"
-                                       >
-                                         Excluir
-                                       </a>
+                                        <form
+                                            class="inline-form"
+                                            action="index.php?acao=excluir"
+                                            method="POST"
+                                            onsubmit="return confirm('Tem certeza que deseja excluir este produto?')"
+                                        >
+                                            <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
+                                            <input type="hidden" name="id" value="<?= $idProduto ?>">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                Excluir
+                                            </button>
+                                        </form>
 
                                        <?php endif; ?>
                                     </div>

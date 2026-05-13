@@ -40,6 +40,8 @@ ob_start();
         <?php endif; ?>
 
         <form action="index.php?acao=usuario_salvar" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
+
             <div class="form-grid">
                 <div class="form-group">
                     <label for="nome">Nome</label>
