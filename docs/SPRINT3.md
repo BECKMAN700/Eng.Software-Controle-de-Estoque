@@ -21,6 +21,9 @@ Esta entrega adiciona uma API em PHP nativo para consultar, criar, atualizar, re
 - Protecao por autenticacao nas rotas da API.
 - Protecao por perfil `admin` nas rotas de escrita de produtos.
 - Tratamento de erros com respostas JSON validas, sem expor fatal error ou HTML na API.
+- Helper `app/Helpers/ApiResponse.php` criado para padronizar respostas JSON.
+- Helper `app/Helpers/Validacao.php` criado para validar produtos e movimentacoes.
+- Pasta `tests` criada com testes simples em PHP para autenticacao, permissao, API de produtos e API de movimentacoes.
 - `setup.php` conecta sem selecionar banco antes de importar o schema, permitindo criar o banco quando ele ainda nao existe.
 
 ## Regras validadas
@@ -31,6 +34,29 @@ Esta entrega adiciona uma API em PHP nativo para consultar, criar, atualizar, re
 - Dados invalidos retornam `422` em JSON.
 - `PATCH` atualiza apenas os campos enviados.
 - `GET api_movimentacoes` rejeita `limite` menor ou igual a zero.
+- As respostas JSON seguem o padrao `erro`, `mensagem` e `dados`.
+- Campos obrigatorios de produto e movimentacao sao validados antes da execucao.
+
+## Testes PHP
+
+Os testes ficam na pasta `tests` e podem ser executados pelo terminal:
+
+```bash
+php tests/run_tests.php
+```
+
+Tambem e possivel usar o PHP do XAMPP diretamente:
+
+```bash
+C:\xampp\php\php.exe tests\run_tests.php
+```
+
+Testes incluidos:
+
+- `tests/AuthTest.php`: senha com `password_hash`/`password_verify` e dados de sessao.
+- `tests/PermissaoTest.php`: diferenca entre `admin` e `estoquista`.
+- `tests/ProdutoApiTest.php`: formato padronizado da resposta JSON e validacoes de produto.
+- `tests/MovimentacaoApiTest.php`: validacoes de movimentacao de entrada e saida.
 
 ## Como testar esta parte
 
@@ -41,6 +67,7 @@ Esta entrega adiciona uma API em PHP nativo para consultar, criar, atualizar, re
 5. Enviar `PATCH` para `index.php?acao=api_produtos&id=1` com apenas um campo, confirmando que os demais dados nao sao apagados.
 6. Enviar `GET` para `index.php?acao=api_movimentacoes&limite=-1` e confirmar retorno `422` em JSON.
 7. Enviar `DELETE` para `index.php?acao=api_movimentacoes` e confirmar retorno `405` em JSON.
+8. Rodar `php tests/run_tests.php` e confirmar que todos os testes passam.
 
 ## Observacao
 

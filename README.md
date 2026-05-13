@@ -1,337 +1,197 @@
 # Controle de Estoque
 
-Sistema web desenvolvido para gerenciamento de estoque, permitindo o controle de produtos, entradas, saídas, limites de estoque e histórico de movimentações.
+## Universidade Federal do Tocantins (UFT)
 
-O projeto foi desenvolvido em **PHP nativo**, utilizando **HTML**, **CSS**, **MySQL** e o padrão de arquitetura **MVC**.
+**Professor:** Edeilson Milhomem da Silva<br>
+**Disciplina:** Engenharia de Software<br>
+**Semestre:** 2026.1
+
+**Equipe**
+
+- [Joao Pedro Rodrigues Bequiman](https://github.com/BECKMAN700)
+- [Giordano Bruno](https://github.com/GiordanOBru)
+- [Murillo Fernandes de Oliveira](https://github.com/murillofnandes)
+- [Iagor Lourenco dos Santos](https://github.com/iagorlrnc)
+- [Matheus Sulino da Silva Costa](https://github.com/vrascode)
 
 ---
 
-## Sobre o Projeto
+## Links uteis
 
-O **Controle de Estoque** é uma aplicação web criada com o objetivo de facilitar o gerenciamento de produtos armazenados.
+<small>
+<a href="docs/SPRINT2.md">Documentacao da Sprint 2</a><br>
+<a href="docs/SPRINT3.md">Documentacao da Sprint 3</a><br>
+<a href="docs/API.md">Documentacao da API</a><br>
+<a href="docs/TESTES.md">Como rodar os testes</a><br>
+<a href="database/schema.sql">Script do banco de dados</a>
+</small>
 
-O sistema permite cadastrar produtos, consultar informações do estoque, registrar entradas e saídas, acompanhar movimentações e visualizar alertas quando os produtos estão abaixo do estoque mínimo, no limite mínimo ou acima do estoque máximo.
+---
 
-Inicialmente, o projeto utilizava armazenamento em arquivo JSON. Posteriormente, foi migrado para **MySQL**, tornando a persistência dos dados mais adequada para a proposta do sistema.
+## Sobre o projeto
+
+O **Controle de Estoque** e um sistema web desenvolvido em PHP nativo para gerenciar produtos, entradas, saidas, limites de estoque, historico de movimentacoes e relatorios.
+
+A aplicacao permite cadastrar produtos, acompanhar quantidade disponivel, controlar estoque minimo e maximo, registrar movimentacoes, gerenciar usuarios administradores/estoquistas e expor dados por uma API JSON em PHP nativo.
+
+Entre as principais funcionalidades estao:
+
+- Cadastro, listagem, edicao e exclusao de produtos
+- Registro de entradas e saidas de estoque
+- Historico de movimentacoes por produto
+- Alertas de estoque minimo, limite minimo e estoque maximo
+- Login com sessao PHP
+- Perfis `admin` e `estoquista`
+- Listagem e cadastro de usuarios por administradores
+- Protecao de rotas internas e administrativas
+- API JSON para produtos e movimentacoes
+- Validacoes reutilizaveis e testes simples em PHP
 
 ---
 
 ## Objetivo
 
-O objetivo principal do sistema é oferecer uma solução simples e organizada para controle de estoque.
-
-Entre os objetivos específicos estão:
-
-- Cadastrar e organizar produtos
-- Controlar a quantidade disponível em estoque
-- Definir estoque mínimo e máximo por produto
-- Registrar entradas de estoque
-- Registrar saídas de estoque
-- Manter histórico de movimentações
-- Exibir alertas de reabastecimento
-- Facilitar a consulta de produtos por filtros
-- Melhorar a visualização dos dados com um front-end mais limpo e profissional
+Desenvolver um sistema web simples e organizado para controle de estoque, aplicando conceitos de MVC, persistencia em MySQL, autenticacao, autorizacao por papeis, gerenciamento basico de usuarios, API em PHP nativo, validacoes, testes e fluxo GitFlow.
 
 ---
 
-## Funcionalidades
+## Tecnologias utilizadas
 
-### Produtos
-
-- Cadastro de produtos
-- Listagem de produtos
-- Edição de produtos
-- Exclusão de produtos
-- Consulta por nome ou código
-- Filtros por categoria, unidade e status
-- Visualização em tabela
-- Visualização em catálogo de cards
-
-### Usuários
-
-- Login com e-mail e senha
-- Usuários com papel `admin` ou `estoquista`
-- Listagem de usuários para administradores
-- Cadastro de novos usuários para administradores
-- Senhas armazenadas com hash
-
-### Controle de Estoque
-
-- Registro de entrada de produtos
-- Registro de saída de produtos
-- Movimentação manual de estoque
-- Atualização automática da quantidade disponível
-- Validação para evitar saída maior que o estoque disponível
-
-### Estoque Mínimo e Máximo
-
-- Definição de estoque mínimo por produto
-- Definição de estoque máximo por produto
-- Alerta para produtos abaixo do mínimo
-- Alerta para produtos no limite mínimo
-- Alerta para produtos acima do máximo
-
-### Movimentações
-
-- Histórico de movimentações por produto
-- Registro do tipo de movimentação
-- Registro do motivo da movimentação
-- Registro da quantidade movimentada
-- Registro de observações
-- Consulta de entradas e saídas realizadas
-
-### Relatórios
-
-- Total de produtos cadastrados
-- Total de unidades em estoque
-- Valor estimado do estoque
-- Produtos abaixo do estoque mínimo
-- Produtos no estoque mínimo
-- Produtos acima do estoque máximo
-- Últimas movimentações registradas
-- Produtos com maior quantidade em estoque
+- **Linguagem:** PHP 8.x
+- **Banco de dados:** MySQL
+- **Interface:** HTML5 e CSS3
+- **Persistencia:** PDO
+- **Servidor local:** XAMPP
+- **Arquitetura:** MVC
+- **Versionamento:** Git e GitHub com GitFlow
 
 ---
 
-## Tecnologias Utilizadas
+## Estrutura principal
 
-- PHP 8
-- HTML5
-- CSS3
-- MySQL
-- PDO
-- XAMPP
-- Arquitetura MVC
-- Git
-- GitHub
-- GitFlow
-
----
-
-## Arquitetura do Projeto
-
-O projeto segue o padrão **MVC**, separando responsabilidades em:
-
-- **Model:** responsável pelo acesso ao banco de dados e regras de persistência
-- **View:** responsável pelas telas exibidas ao usuário
-- **Controller:** responsável por intermediar as ações entre o usuário, as views e o model
-
----
-
-## Estrutura de Pastas
-
-```bash
+```text
 Eng.Software-Controle-de-Estoque/
 ├── app/
 │   ├── Controllers/
-│   │   └── ProdutoController.php
+│   ├── Helpers/
 │   ├── Models/
-│   │   └── ProdutoModel.php
 │   └── Views/
-│       ├── layouts/
-│       │   └── main.php
-│       ├── partials/
-│       │   ├── sidebar.php
-│       │   ├── topbar.php
-│       │   └── flash.php
-│       └── produtos/
-│           ├── listar.php
-│           ├── catalogo.php
-│           ├── criar.php
-│           ├── editar.php
-│           ├── entrada.php
-│           ├── saida.php
-│           ├── movimentar.php
-│           ├── historico_movimentacoes.php
-│           ├── detalhes_saida.php
-│           └── relatorios.php
 ├── config/
-│   └── Database.php
 ├── database/
-│   └── schema.sql
+├── docs/
 ├── public/
-│   ├── index.php
+│   ├── api/
 │   └── assets/
-│       └── css/
-│           ├── base.css
-│           ├── layout.css
-│           ├── components.css
-│           └── pages.css
-└── README.md
+├── tests/
+├── README.md
+└── setup.php
 ```
 
 ---
 
-## Banco de Dados
+## Banco de dados
 
-O sistema utiliza o banco de dados:
+O sistema utiliza o banco:
 
 ```text
 controle_estoque
 ```
 
-As principais tabelas são:
+Tabelas principais:
 
-```text
-produtos
-movimentacoes
-```
+- `usuarios`
+- `produtos`
+- `movimentacoes`
 
-O script de criação do banco e das tabelas está localizado em:
+O script completo esta em:
 
 ```bash
 database/schema.sql
 ```
 
-### Tabela `produtos`
+Usuarios de teste:
 
-Armazena os dados principais dos produtos cadastrados, como:
+| Papel | E-mail | Senha |
+| --- | --- | --- |
+| admin | `admin@controleestoque.local` | `admin123` |
+| estoquista | `estoquista@controleestoque.local` | `estoque123` |
 
-- Nome
-- Código
-- Categoria
-- Unidade
-- Quantidade
-- Estoque mínimo
-- Estoque máximo
-- Preço
-- Status
-- Descrição
-
-### Tabela `movimentacoes`
-
-Armazena o histórico de entradas e saídas dos produtos, contendo:
-
-- Produto relacionado
-- Tipo da movimentação
-- Motivo
-- Quantidade
-- Observação
-- Data e hora da movimentação
+As senhas ficam armazenadas como hash no banco.
 
 ---
 
-## Rotas Principais
+## Rotas principais
 
-O sistema utiliza o arquivo `public/index.php` como ponto de entrada.
+- `index.php?acao=listar`
+- `index.php?acao=catalogo`
+- `index.php?acao=relatorios`
+- `index.php?acao=criar`
+- `index.php?acao=usuarios`
+- `index.php?acao=usuario_criar`
+- `index.php?acao=api_produtos`
+- `index.php?acao=api_movimentacoes`
 
-Algumas ações disponíveis são:
+---
 
-```text
-index.php?acao=listar
-index.php?acao=catalogo
-index.php?acao=relatorios
-index.php?acao=criar
-index.php?acao=editar&id=1
-index.php?acao=entrada&id=1
-index.php?acao=saida&id=1
-index.php?acao=movimentar&id=1
-index.php?acao=historico_movimentacoes&id=1
-index.php?acao=detalhes_saida&id=1
-index.php?acao=usuarios
-index.php?acao=usuario_criar
-index.php?acao=api_produtos
-index.php?acao=api_movimentacoes
+## API JSON
+
+As APIs usam `public/index.php` como ponto de entrada e tambem possuem atalhos em `public/api`.
+
+Endpoints principais:
+
+- `GET index.php?acao=api_produtos`
+- `GET index.php?acao=api_produtos&id=1`
+- `POST index.php?acao=api_produtos`
+- `PUT index.php?acao=api_produtos&id=1`
+- `PATCH index.php?acao=api_produtos&id=1`
+- `DELETE index.php?acao=api_produtos&id=1`
+- `GET index.php?acao=api_movimentacoes`
+- `GET index.php?acao=api_movimentacoes&produto_id=1`
+- `POST index.php?acao=api_movimentacoes`
+
+As respostas seguem o padrao:
+
+```json
+{
+  "erro": false,
+  "mensagem": "Mensagem da operacao",
+  "dados": []
+}
 ```
 
-### APIs JSON
-
-As APIs usam `public/index.php` como ponto de entrada principal e também possuem atalhos em `public/api`.
-Todas retornam JSON.
-
-#### Produtos
-
-- `GET index.php?acao=api_produtos` lista produtos, com filtros opcionais `busca`, `categoria`, `unidade` e `status`
-- `GET index.php?acao=api_produtos&id=1` retorna um produto específico com o histórico de movimentações
-- `POST index.php?acao=api_produtos` cria um produto
-- `PUT index.php?acao=api_produtos&id=1` atualiza todos os dados de um produto
-- `PATCH index.php?acao=api_produtos&id=1` atualiza parcialmente um produto, mantendo os campos não enviados
-- `DELETE index.php?acao=api_produtos&id=1` remove um produto
-- Atalhos equivalentes: `api/produtos.php` e `api/produto.php?id=1`
-
-#### Movimentações
-
-- `GET index.php?acao=api_movimentacoes` lista as últimas movimentações
-- `GET index.php?acao=api_movimentacoes&produto_id=1` lista as movimentações de um produto
-- `POST index.php?acao=api_movimentacoes` registra uma movimentação usando `produto_id`, `tipo`, `motivo`, `quantidade` e `observacao`
-- Atalho equivalente: `api/movimentacoes.php`
-
-As rotas de escrita exigem usuário autenticado; operações de produto que alteram dados exigem perfil `admin`.
-
-## Como testar a API
-
-1. Fazer login com um usuario valido no sistema.
-2. Abrir `index.php?acao=api_produtos` ou `api/produtos.php` e confirmar uma resposta JSON com a lista de produtos.
-3. Abrir `index.php?acao=api_produtos&id=1` ou `api/produto.php?id=1` e confirmar a resposta JSON com o produto e o historico de movimentacoes.
-4. Executar `POST index.php?acao=api_produtos` com os campos de produto e conferir se o JSON retorna o produto criado com o `id` correto.
-5. Executar `PATCH index.php?acao=api_produtos&id=1` enviando apenas um campo e confirmar que os demais dados permanecem no banco.
-6. Executar `GET index.php?acao=api_movimentacoes&limite=-1` e confirmar que a API responde `422` em JSON.
-7. Executar `DELETE index.php?acao=api_movimentacoes` e confirmar que a resposta é `405` em JSON.
+Mais detalhes estao em [docs/API.md](docs/API.md).
 
 ---
 
-## Como Executar o Projeto
+## Como rodar o projeto localmente
 
-### 1. Clonar o repositório
+1. Clone o repositorio dentro da pasta `htdocs` do XAMPP:
 
 ```bash
 git clone https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque.git
 ```
 
-### 2. Acessar a pasta do projeto
+2. Acesse a pasta do projeto:
 
 ```bash
-cd Eng.Software-Controle-de-Estoque
+cd C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
 ```
 
-### 3. Colocar o projeto no XAMPP
+3. Inicie o Apache e o MySQL no XAMPP.
 
-Copie a pasta do projeto para o diretório:
+4. Crie o banco pelo phpMyAdmin ou execute:
 
 ```text
-C:\xampp\htdocs\
-```
-
-O caminho final deve ficar assim:
-
-```text
-C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
-```
-
-### 4. Iniciar o XAMPP
-
-Abra o **XAMPP Control Panel** e inicie os módulos:
-
-```text
-Apache
-MySQL
-```
-
-### 5. Criar o banco de dados
-
-Abra o phpMyAdmin no navegador:
-
-```text
-http://localhost/phpmyadmin
-```
-
-Depois execute o script SQL localizado em:
-
-```bash
 database/schema.sql
 ```
 
-Esse script cria o banco `controle_estoque` e as tabelas necessárias para o funcionamento do sistema.
+5. Verifique a conexao em:
 
-### 6. Configurar a conexão com o banco
-
-Verifique o arquivo:
-
-```bash
+```text
 config/Database.php
 ```
 
-Configuração padrão utilizada no XAMPP:
+Configuracao padrao:
 
 ```php
 private $host = '127.0.0.1';
@@ -341,11 +201,7 @@ private $pass = '';
 private $port = '3306';
 ```
 
-Caso o MySQL esteja usando outra porta, altere o valor de `$port`.
-
-### 7. Acessar o sistema
-
-No navegador, acesse:
+6. Acesse no navegador:
 
 ```text
 http://localhost/Eng.Software-Controle-de-Estoque/public/
@@ -353,131 +209,65 @@ http://localhost/Eng.Software-Controle-de-Estoque/public/
 
 ---
 
-## Fluxo de Trabalho com GitFlow
+## Como rodar os testes
 
-O projeto utiliza uma organização baseada em GitFlow.
+Os testes ficam na pasta `tests` e nao exigem Composer.
+
+```bash
+C:\xampp\php\php.exe tests\run_tests.php
+```
+
+Saida esperada:
+
+```text
+Todos os testes passaram. Total de assercoes: 27
+```
+
+Mais detalhes estao em [docs/TESTES.md](docs/TESTES.md).
+
+---
+
+## GitFlow
 
 Branches principais:
 
-```text
-main
-develop
-```
+- `main`
+- `develop`
 
 Branches de desenvolvimento:
 
-```text
-feature/nome-da-feature
-```
+- `feature/nome-da-feature`
+- `release/nome-da-release`
 
-Exemplo de criação de uma feature:
+Fluxo recomendado:
 
 ```bash
 git checkout develop
 git pull origin develop
 git checkout -b feature/nome-da-feature
-```
-
-Exemplo de commit:
-
-```bash
 git add .
-git commit -m "feat: adiciona nova funcionalidade"
+git commit -m "feat: descreve a funcionalidade"
 git push -u origin feature/nome-da-feature
 ```
 
-Após finalizar a feature, deve ser aberto um Pull Request para a branch `develop`.
+Depois, abrir Pull Request para `develop` e solicitar revisao de outro integrante.
 
 ---
 
-## Atualizações Recentes
+## Status das Sprints 2 e 3
 
-Nesta versão, foi realizada uma atualização no front-end do sistema.
-
-As principais melhorias foram:
-
-- Criação de layout base reutilizável
-- Criação de sidebar lateral
-- Criação de topbar
-- Separação de CSS em arquivos organizados
-- Atualização da tela principal de estoque
-- Criação de catálogo visual de produtos
-- Atualização das telas de cadastro e edição
-- Atualização das telas de entrada e saída
-- Atualização da tela de movimentação manual
-- Atualização do histórico de movimentações
-- Criação da tela de relatórios
-- Padronização visual das telas
-- Melhor organização das views com `layouts` e `partials`
+- Base de usuarios, banco e tela de login implementados
+- Gerenciamento basico de usuarios por administradores implementado
+- Autenticacao, logout e sessao PHP implementados
+- Papeis, permissoes e protecao de rotas implementados
+- API em PHP nativo para produtos e movimentacoes implementada
+- Respostas JSON padronizadas com helper
+- Validacoes de produto e movimentacao centralizadas
+- Testes PHP simples adicionados
+- Documentacao tecnica atualizada
 
 ---
 
-## Requisitos Implementados
+## Licenca
 
-- Cadastro de produtos
-- Listagem de produtos
-- Edição de produtos
-- Exclusão de produtos
-- Registro de entrada de estoque
-- Registro de saída de estoque
-- Histórico de movimentações
-- Filtros de busca
-- Estoque mínimo por produto
-- Estoque máximo por produto
-- Alertas de estoque
-- Relatórios gerais
-- Layout visual atualizado
-- Login e sessão PHP
-- Papéis `admin` e `estoquista`
-- Cadastro de novos usuários por administrador
-- Proteção de rotas administrativas
-
----
-
-## Informações Acadêmicas
-
-Projeto desenvolvido para fins acadêmicos.
-
-```text
-Universidade: Universidade Federal do Tocantins
-Curso: Ciência da Computação
-Disciplina: Engenharia de Software
-Semestre: 2026/1
-```
-
----
-
-## Equipe
-
-- João Pedro Rodrigues Bequiman
-- Matheus Sulino Da Silva Costa
-- Murillo Fernandes
-- Iagor Lourenco
-- Giordano Bruno
-
----
-
-## Vídeo de Apresentação
-
-Link do vídeo:
-
-```text
-Adicionar link do vídeo aqui
-```
-
----
-
-## Observações
-
-- O sistema precisa do Apache e MySQL ativos no XAMPP.
-- O banco de dados deve ser criado antes de acessar o sistema.
-- O projeto utiliza PHP nativo, sem framework.
-- O sistema segue arquitetura MVC.
-- As movimentações de estoque são registradas na tabela `movimentacoes`.
-- A exclusão de produto remove também suas movimentações por causa do relacionamento com `ON DELETE CASCADE`.
-
----
-
-## Licença
-
-Este projeto foi desenvolvido para fins acadêmicos.
+Projeto desenvolvido para fins academicos.
