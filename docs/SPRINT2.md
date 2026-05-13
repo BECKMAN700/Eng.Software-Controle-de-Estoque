@@ -28,4 +28,13 @@ As senhas acima sao apenas para teste local. No banco, elas ficam armazenadas co
 3. Conferir se a tela de login aparece com os campos de e-mail e senha.
 4. Conferir no banco se os usuarios `admin` e `estoquista` foram criados.
 
-A validacao do login, criacao de sessao PHP e logout ficam para a feature `feature/auth-sessao`.
+A validacao do login, criacao de sessao PHP e logout foram implementadas na feature `feature/auth-sessao`.
+
+## Complemento de autenticacao e permissoes
+
+- `app/Controllers/AuthController.php` autentica usuario com `password_verify`.
+- `app/Helpers/Sessao.php` centraliza `session_start`, dados do usuario logado e mensagens flash.
+- `app/Helpers/Auth.php` centraliza verificacao de login, papel `admin` e papel `estoquista`.
+- As rotas internas exigem login.
+- As rotas administrativas de produto exigem perfil `admin`.
+- O menu e os botoes administrativos sao ocultados para usuarios sem permissao.
