@@ -1,5 +1,6 @@
 <?php
 $pageTitle = 'Editar produto';
+$erros = $erros ?? [];
 $pageSubtitle = 'Atualize os dados do produto, limites de estoque e informações de controle.';
 
 $produto = $produto ?? [];
@@ -27,7 +28,14 @@ ob_start();
             </a>
         </div>
 
+        <?php if ($erros !== []): ?>
+            <div class="alert alert-danger" role="alert">
+                Revise os campos destacados antes de salvar.
+            </div>
+        <?php endif; ?>
+
         <form action="index.php?acao=atualizar" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
             <input type="hidden" name="id" value="<?= (int) ($produto['id'] ?? 0) ?>">
 
             <div class="form-grid">
@@ -40,6 +48,9 @@ ob_start();
                         value="<?= esc($produto['nome'] ?? '') ?>"
                         required
                     >
+                    <?php if (!empty($erros['nome'])): ?>
+                        <small class="form-error"><?= esc($erros['nome']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -85,6 +96,9 @@ ob_start();
                         value="<?= (int) ($produto['quantidade'] ?? 0) ?>"
                         required
                     >
+                    <?php if (!empty($erros['quantidade'])): ?>
+                        <small class="form-error"><?= esc($erros['quantidade']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -98,6 +112,9 @@ ob_start();
                         value="<?= esc($produto['preco'] ?? '0.00') ?>"
                         required
                     >
+                    <?php if (!empty($erros['preco'])): ?>
+                        <small class="form-error"><?= esc($erros['preco']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -110,6 +127,9 @@ ob_start();
                         value="<?= (int) ($produto['estoque_minimo'] ?? 0) ?>"
                         required
                     >
+                    <?php if (!empty($erros['estoque_minimo'])): ?>
+                        <small class="form-error"><?= esc($erros['estoque_minimo']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -122,6 +142,9 @@ ob_start();
                         value="<?= esc($produto['estoque_maximo'] ?? '') ?>"
                         placeholder="Opcional"
                     >
+                    <?php if (!empty($erros['estoque_maximo'])): ?>
+                        <small class="form-error"><?= esc($erros['estoque_maximo']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -143,6 +166,9 @@ ob_start();
                             Descontinuado
                         </option>
                     </select>
+                    <?php if (!empty($erros['status'])): ?>
+                        <small class="form-error"><?= esc($erros['status']) ?></small>
+                    <?php endif; ?>
                 </div>
             </div>
 

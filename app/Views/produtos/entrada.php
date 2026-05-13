@@ -61,6 +61,7 @@ $estoqueMaximo = $produto['estoque_maximo'] ?? null;
         </div>
 
         <form action="index.php?acao=entrada" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
             <input type="hidden" name="id" value="<?= (int) ($produto['id'] ?? 0) ?>">
 
             <div class="form-grid">

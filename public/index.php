@@ -1,9 +1,77 @@
 <?php
 
+/**
+ * public/index.php — Front Controller
+ *
+ * Ponto único de entrada. Toda sessão é gerenciada pelo helper Sessao,
+ * que é carregado aqui para garantir session_start() em um único lugar.
+ */
+
+require_once __DIR__ . '/../app/Helpers/Auth.php';
+require_once __DIR__ . '/../app/Helpers/Sessao.php';
+require_once __DIR__ . '/../app/Controllers/AuthController.php';
+
+Sessao::iniciar();
+
+$acao = trim($_GET['acao'] ?? 'login');
+$acoesApi = ['api_produtos', 'api_movimentacoes'];
+$ehApi = in_array($acao, $acoesApi, true);
+
+function exigirPostComCsrf(): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Sessao::setFlashErro('Requisicao invalida.');
+        header('Location: index.php?acao=listar');
+        exit;
+    }
+
+    if (!Sessao::validarCsrfToken($_POST['csrf_token'] ?? '')) {
+        Sessao::setFlashErro('Sessao expirada. Tente novamente.');
+        header('Location: index.php?acao=listar');
+        exit;
+    }
+}
+
+// ─── Rotas de autenticação (públicas) ────────────────────────────────────────
+
+$authController = new AuthController();
+
+if ($acao === 'login') {
+    $authController->login();
+    exit;
+}
+
+if ($acao === 'autenticar') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !Sessao::validarCsrfToken($_POST['csrf_token'] ?? '')) {
+        Sessao::setFlashErro('Sessao expirada. Tente novamente.');
+        header('Location: index.php?acao=login');
+        exit;
+    }
+
+    $authController->autenticar();
+    exit;
+}
+
+if ($acao === 'logout') {
+    exigirPostComCsrf();
+    $authController->logout();
+    exit;
+}
+
+// ─── Proteção de sessão: redireciona para login se não estiver autenticado ───
+
+if (!$ehApi) {
+    Auth::exigirLogin();
+}
+
+
+// ─── Rotas protegidas ────────────────────────────────────────────────────────
+
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
+require_once __DIR__ . '/../app/Controllers/UsuarioController.php';
 
 $controller = new ProdutoController();
-$acao = $_GET['acao'] ?? 'listar';
+$usuarioController = new UsuarioController();
 
 switch ($acao) {
     case 'listar':
@@ -11,31 +79,36 @@ switch ($acao) {
         break;
 
     case 'criar':
+        Auth::exigirAdmin();
         $controller->mostrarCriar();
         break;
 
     case 'salvar':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller->salvar();
-        }
+        Auth::exigirAdmin();
+        exigirPostComCsrf();
+        $controller->salvar();
         break;
 
     case 'editar':
+        Auth::exigirAdmin();
         $controller->mostrarEditar();
         break;
 
     case 'atualizar':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller->atualizar();
-        }
+        Auth::exigirAdmin();
+        exigirPostComCsrf();
+        $controller->atualizar();
         break;
 
     case 'excluir':
+        Auth::exigirAdmin();
+        exigirPostComCsrf();
         $controller->excluir();
         break;
 
     case 'movimentar':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            exigirPostComCsrf();
             $controller->movimentar();
         } else {
             $controller->mostrarMovimentar();
@@ -44,6 +117,7 @@ switch ($acao) {
 
     case 'saida':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            exigirPostComCsrf();
             $controller->registrarSaida();
         } else {
             $controller->mostrarSaida();
@@ -60,6 +134,7 @@ switch ($acao) {
 
     case 'entrada':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            exigirPostComCsrf();
             $controller->registrarEntrada();
         } else {
             $controller->mostrarEntrada();
@@ -74,7 +149,31 @@ switch ($acao) {
         $controller->relatorios();
         break;
 
+    case 'usuarios':
+        Auth::exigirAdmin();
+        $usuarioController->listar();
+        break;
+
+    case 'usuario_criar':
+        Auth::exigirAdmin();
+        $usuarioController->mostrarCriar();
+        break;
+
+    case 'usuario_salvar':
+        Auth::exigirAdmin();
+        exigirPostComCsrf();
+        $usuarioController->salvar();
+        break;
+
+    case 'api_produtos':
+        $controller->apiProdutos();
+        break;
+
+    case 'api_movimentacoes':
+        $controller->apiMovimentacoes();
+        break;
+
     default:
-        echo "Ação inválida.";
+        echo 'Ação inválida.';
         break;
 }

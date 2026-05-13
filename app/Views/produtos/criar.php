@@ -1,5 +1,7 @@
 <?php
 $pageTitle = 'Cadastrar produto';
+$dados = $dados ?? [];
+$erros = $erros ?? [];
 $pageSubtitle = 'Adicione um novo produto ao estoque com quantidade, limites e informações principais.';
 
 if (!function_exists('esc')) {
@@ -25,7 +27,15 @@ ob_start();
             </a>
         </div>
 
+        <?php if ($erros !== []): ?>
+            <div class="alert alert-danger" role="alert">
+                Revise os campos destacados antes de salvar.
+            </div>
+        <?php endif; ?>
+
         <form action="index.php?acao=salvar" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
+
             <div class="form-grid">
                 <div class="form-group">
                     <label for="nome">Nome do produto</label>
@@ -34,8 +44,12 @@ ob_start();
                         id="nome"
                         name="nome"
                         placeholder="Ex: Arroz tipo 1"
+                        value="<?= esc($dados['nome'] ?? '') ?>"
                         required
                     >
+                    <?php if (!empty($erros['nome'])): ?>
+                        <small class="form-error"><?= esc($erros['nome']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -45,6 +59,7 @@ ob_start();
                         id="codigo"
                         name="codigo"
                         placeholder="Ex: PROD-001"
+                        value="<?= esc($dados['codigo'] ?? '') ?>"
                     >
                 </div>
 
@@ -55,6 +70,7 @@ ob_start();
                         id="categoria"
                         name="categoria"
                         placeholder="Ex: Alimentos"
+                        value="<?= esc($dados['categoria'] ?? '') ?>"
                     >
                 </div>
 
@@ -65,6 +81,7 @@ ob_start();
                         id="unidade"
                         name="unidade"
                         placeholder="Ex: kg, un, caixa, pacote"
+                        value="<?= esc($dados['unidade'] ?? '') ?>"
                     >
                 </div>
 
@@ -75,9 +92,12 @@ ob_start();
                         id="quantidade"
                         name="quantidade"
                         min="0"
-                        value="0"
+                        value="<?= esc($dados['quantidade'] ?? 0) ?>"
                         required
                     >
+                    <?php if (!empty($erros['quantidade'])): ?>
+                        <small class="form-error"><?= esc($erros['quantidade']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -88,9 +108,12 @@ ob_start();
                         name="preco"
                         min="0"
                         step="0.01"
-                        value="0.00"
+                        value="<?= esc($dados['preco'] ?? '0.00') ?>"
                         required
                     >
+                    <?php if (!empty($erros['preco'])): ?>
+                        <small class="form-error"><?= esc($erros['preco']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -100,9 +123,12 @@ ob_start();
                         id="estoque_minimo"
                         name="estoque_minimo"
                         min="0"
-                        value="0"
+                        value="<?= esc($dados['estoque_minimo'] ?? 0) ?>"
                         required
                     >
+                    <?php if (!empty($erros['estoque_minimo'])): ?>
+                        <small class="form-error"><?= esc($erros['estoque_minimo']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -113,16 +139,24 @@ ob_start();
                         name="estoque_maximo"
                         min="0"
                         placeholder="Opcional"
+                        value="<?= esc($dados['estoque_maximo'] ?? '') ?>"
                     >
+                    <?php if (!empty($erros['estoque_maximo'])): ?>
+                        <small class="form-error"><?= esc($erros['estoque_maximo']) ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
                     <label for="status">Status</label>
                     <select id="status" name="status" required>
-                        <option value="ativo" selected>Ativo</option>
-                        <option value="inativo">Inativo</option>
-                        <option value="descontinuado">Descontinuado</option>
+                        <?php $statusAtual = $dados['status'] ?? 'ativo'; ?>
+                        <option value="ativo" <?= $statusAtual === 'ativo' ? 'selected' : '' ?>>Ativo</option>
+                        <option value="inativo" <?= $statusAtual === 'inativo' ? 'selected' : '' ?>>Inativo</option>
+                        <option value="descontinuado" <?= $statusAtual === 'descontinuado' ? 'selected' : '' ?>>Descontinuado</option>
                     </select>
+                    <?php if (!empty($erros['status'])): ?>
+                        <small class="form-error"><?= esc($erros['status']) ?></small>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -132,7 +166,7 @@ ob_start();
                     id="descricao"
                     name="descricao"
                     placeholder="Adicione uma descrição ou observação sobre o produto."
-                ></textarea>
+                ><?= esc($dados['descricao'] ?? '') ?></textarea>
             </div>
 
             <div class="card mt-3 summary-card-info">

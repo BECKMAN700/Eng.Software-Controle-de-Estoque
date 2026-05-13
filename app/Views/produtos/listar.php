@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../Helpers/Auth.php';
 $pageTitle = 'Painel de estoque';
 $pageSubtitle = 'Acompanhe produtos, alertas de estoque e movimentações principais.';
 
@@ -137,9 +138,22 @@ ob_start();
             </div>
 
             <div class="dashboard-actions">
-                <a href="index.php?acao=criar" class="btn btn-primary">Cadastrar produto</a>
-                <a href="#produtos" class="btn btn-secondary">Ver produtos</a>
-                <a href="#alertas-estoque" class="btn btn-secondary">Ver alertas</a>
+
+                 <?php if (Auth::isAdmin()): ?>
+
+                 <a href="index.php?acao=criar" class="btn btn-primary">
+
+                Cadastrar produto
+          </a>
+
+        <?php endif; ?>
+        <a href="#produtos" class="btn btn-secondary">Ver produtos</a>
+
+    <a href="#alertas-estoque" class="btn btn-secondary">
+        Ver alertas
+    </a>
+
+</div>
             </div>
         </div>
 
@@ -415,6 +429,7 @@ ob_start();
 </section>
 
 <section class="page-section" id="produtos">
+    <span id="movimentacoes" class="anchor-offset"></span>
     <div class="card">
         <div class="card-header">
             <div>
@@ -422,9 +437,11 @@ ob_start();
                 <p>Lista completa dos produtos encontrados no sistema.</p>
             </div>
 
+            <?php if (Auth::isAdmin()): ?>
             <a href="index.php?acao=criar" class="btn btn-primary">
                 Novo produto
             </a>
+            <?php endif; ?>
         </div>
 
         <?php if (empty($produtos)): ?>
@@ -502,9 +519,11 @@ ob_start();
 
                                 <td>
                                     <div class="table-actions">
+                                        <?php if (Auth::isAdmin()): ?>
                                         <a class="btn btn-secondary btn-sm" href="index.php?acao=editar&id=<?= $idProduto ?>">
                                             Editar
                                         </a>
+                                        <?php endif; ?>
 
                                         <a class="btn btn-primary btn-sm" href="index.php?acao=entrada&id=<?= $idProduto ?>">
                                             Entrada
@@ -522,13 +541,22 @@ ob_start();
                                             Histórico
                                         </a>
 
-                                        <a
-                                            class="btn btn-danger btn-sm"
-                                            href="index.php?acao=excluir&id=<?= $idProduto ?>"
-                                            onclick="return confirm('Tem certeza que deseja excluir este produto?')"
+                                        <?php if (Auth::isAdmin()): ?>
+
+                                        <form
+                                            class="inline-form"
+                                            action="index.php?acao=excluir"
+                                            method="POST"
+                                            onsubmit="return confirm('Tem certeza que deseja excluir este produto?')"
                                         >
-                                            Excluir
-                                        </a>
+                                            <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
+                                            <input type="hidden" name="id" value="<?= $idProduto ?>">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                Excluir
+                                            </button>
+                                        </form>
+
+                                       <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>

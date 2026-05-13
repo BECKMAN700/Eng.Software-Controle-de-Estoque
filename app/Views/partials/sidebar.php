@@ -6,9 +6,13 @@ if (!function_exists('menuAtivo')) {
         return in_array($acaoAtual, $acoes, true) ? 'active' : '';
     }
 }
+
+$nomeUsuario = Sessao::getNome();
+$papelUsuario = Sessao::getPapel();
+$papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 ?>
 
-<aside class="sidebar">
+<aside class="sidebar" id="app-sidebar" aria-label="Menu principal">
     <div class="sidebar-brand">
         <div class="brand-mark">CE</div>
 
@@ -16,6 +20,11 @@ if (!function_exists('menuAtivo')) {
             <strong>Controle</strong>
             <span>de Estoque</span>
         </div>
+
+        <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar menu">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </button>
     </div>
 
     <nav class="sidebar-nav">
@@ -38,10 +47,12 @@ if (!function_exists('menuAtivo')) {
 
         <span class="nav-section-title">Produtos</span>
 
+        <?php if (Auth::isAdmin()): ?>
         <a class="nav-link <?= menuAtivo(['criar']) ?>" href="index.php?acao=criar">
             <span class="nav-icon"></span>
             <span>Cadastrar produto</span>
         </a>
+        <?php endif; ?>
 
         <a class="nav-link" href="index.php?acao=listar#produtos">
             <span class="nav-icon"></span>
@@ -57,12 +68,29 @@ if (!function_exists('menuAtivo')) {
 
         <a class="nav-link" href="index.php?acao=listar#movimentacoes">
             <span class="nav-icon"></span>
-            <span>Histórico e ações</span>
+            <span>Acoes de estoque</span>
         </a>
+        <?php if (Auth::isAdmin()): ?>
+        <span class="nav-section-title">Administracao</span>
+
+        <a class="nav-link <?= menuAtivo(['usuarios', 'usuario_criar']) ?>" href="index.php?acao=usuarios">
+            <span class="nav-icon"></span>
+            <span>Usuarios</span>
+        </a>
+        <?php endif; ?>
     </nav>
 
     <div class="sidebar-footer">
-        <span class="sidebar-footer-label">Projeto acadêmico</span>
-        <strong>Engenharia de Software</strong>
+        <div class="sidebar-user">
+            <span class="sidebar-user-nome"><?= htmlspecialchars($nomeUsuario) ?></span>
+            <span class="sidebar-user-papel"><?= htmlspecialchars($papelLabel) ?></span>
+        </div>
+
+        <form class="inline-form" action="index.php?acao=logout" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Sessao::getCsrfToken()) ?>">
+            <button type="submit" class="btn-logout" title="Sair do sistema">
+                Sair
+            </button>
+        </form>
     </div>
 </aside>
