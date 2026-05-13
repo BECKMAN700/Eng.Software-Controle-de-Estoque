@@ -32,7 +32,7 @@
 
 O **Controle de Estoque** e um sistema web desenvolvido em PHP nativo para gerenciar produtos, entradas, saidas, limites de estoque, historico de movimentacoes e relatorios.
 
-A aplicacao permite cadastrar produtos, acompanhar quantidade disponivel, controlar estoque minimo e maximo, registrar movimentacoes e expor dados por uma API JSON em PHP nativo.
+A aplicacao permite cadastrar produtos, acompanhar quantidade disponivel, controlar estoque minimo e maximo, registrar movimentacoes, gerenciar usuarios administradores/estoquistas e expor dados por uma API JSON em PHP nativo.
 
 Entre as principais funcionalidades estao:
 
@@ -42,6 +42,7 @@ Entre as principais funcionalidades estao:
 - Alertas de estoque minimo, limite minimo e estoque maximo
 - Login com sessao PHP
 - Perfis `admin` e `estoquista`
+- Listagem e cadastro de usuarios por administradores
 - Protecao de rotas internas e administrativas
 - API JSON para produtos e movimentacoes
 - Validacoes reutilizaveis e testes simples em PHP
@@ -50,7 +51,7 @@ Entre as principais funcionalidades estao:
 
 ## Objetivo
 
-Desenvolver um sistema web simples e organizado para controle de estoque, aplicando conceitos de MVC, persistencia em MySQL, autenticacao, autorizacao por papeis, API em PHP nativo, validacoes, testes e fluxo GitFlow.
+Desenvolver um sistema web simples e organizado para controle de estoque, aplicando conceitos de MVC, persistencia em MySQL, autenticacao, autorizacao por papeis, gerenciamento basico de usuarios, API em PHP nativo, validacoes, testes e fluxo GitFlow.
 
 ---
 
@@ -116,6 +117,19 @@ Usuarios de teste:
 | estoquista | `estoquista@controleestoque.local` | `estoque123` |
 
 As senhas ficam armazenadas como hash no banco.
+
+---
+
+## Rotas principais
+
+- `index.php?acao=listar`
+- `index.php?acao=catalogo`
+- `index.php?acao=relatorios`
+- `index.php?acao=criar`
+- `index.php?acao=usuarios`
+- `index.php?acao=usuario_criar`
+- `index.php?acao=api_produtos`
+- `index.php?acao=api_movimentacoes`
 
 ---
 
@@ -243,6 +257,7 @@ Depois, abrir Pull Request para `develop` e solicitar revisao de outro integrant
 ## Status das Sprints 2 e 3
 
 - Base de usuarios, banco e tela de login implementados
+- Gerenciamento basico de usuarios por administradores implementado
 - Autenticacao, logout e sessao PHP implementados
 - Papeis, permissoes e protecao de rotas implementados
 - API em PHP nativo para produtos e movimentacoes implementada

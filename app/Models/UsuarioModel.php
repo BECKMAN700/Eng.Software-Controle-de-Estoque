@@ -40,6 +40,18 @@ class UsuarioModel
         return password_hash($senha, PASSWORD_DEFAULT);
     }
 
+    public function listar(): array
+    {
+        $sql = "SELECT id, nome, email, papel, status, criado_em, atualizado_em
+                FROM usuarios
+                ORDER BY nome ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function buscarPorEmail($email)
     {
         $email = trim((string) $email);
@@ -110,7 +122,7 @@ class UsuarioModel
                 ':status' => $status
             ]);
         } catch (PDOException $e) {
-            die('Erro ao criar usuario: ' . $e->getMessage());
+            return false;
         }
     }
 }
