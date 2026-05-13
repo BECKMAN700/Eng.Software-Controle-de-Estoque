@@ -86,8 +86,11 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
             <span class="sidebar-user-papel"><?= htmlspecialchars($papelLabel) ?></span>
         </div>
 
-        <a class="btn-logout" href="index.php?acao=logout" title="Sair do sistema">
-            Sair
-        </a>
+        <form class="inline-form" action="index.php?acao=logout" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Sessao::getCsrfToken()) ?>">
+            <button type="submit" class="btn-logout" title="Sair do sistema">
+                Sair
+            </button>
+        </form>
     </div>
 </aside>

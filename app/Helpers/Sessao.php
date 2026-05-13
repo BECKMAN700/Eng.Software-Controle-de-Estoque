@@ -48,6 +48,23 @@ class Sessao
         return (string) ($_SESSION['usuario_papel'] ?? '');
     }
 
+    public static function getCsrfToken(): string
+    {
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+
+        return (string) $_SESSION['csrf_token'];
+    }
+
+    public static function validarCsrfToken($token): bool
+    {
+        $tokenSessao = (string) ($_SESSION['csrf_token'] ?? '');
+        $tokenRecebido = (string) $token;
+
+        return $tokenSessao !== '' && hash_equals($tokenSessao, $tokenRecebido);
+    }
+
     public static function setFlashSucesso(string $mensagem): void
     {
         $_SESSION['flash_sucesso'] = $mensagem;

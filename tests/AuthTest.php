@@ -21,4 +21,10 @@ function testeAuth(TestCase $teste): void
     $teste->assertEquals('admin@controleestoque.local', Sessao::getEmail(), 'Sessao deve guardar o e-mail do usuario.');
     $teste->assertEquals('admin', Sessao::getPapel(), 'Sessao deve guardar o papel do usuario.');
     $teste->assertFalse(isset($_SESSION['senha']), 'Sessao nao deve armazenar senha.');
+
+    $csrfToken = Sessao::getCsrfToken();
+
+    $teste->assertTrue($csrfToken !== '', 'Sessao deve gerar token CSRF.');
+    $teste->assertTrue(Sessao::validarCsrfToken($csrfToken), 'Token CSRF valido deve ser aceito.');
+    $teste->assertFalse(Sessao::validarCsrfToken('token_invalido'), 'Token CSRF invalido deve ser rejeitado.');
 }

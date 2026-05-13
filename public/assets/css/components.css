@@ -265,6 +265,10 @@
     gap: 8px;
 }
 
+.inline-form {
+    margin: 0;
+}
+
 .empty-state {
     background: #ffffff;
     border: 1px dashed #cbd5e1;

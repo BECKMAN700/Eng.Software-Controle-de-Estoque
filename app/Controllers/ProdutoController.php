@@ -197,7 +197,7 @@ class ProdutoController
         include __DIR__ . '/../Views/produtos/relatorios.php';
     }
 
-    public function mostrarCriar()
+    public function mostrarCriar(array $dados = [], array $erros = []): void
     {
         include __DIR__ . '/../Views/produtos/criar.php';
     }
@@ -208,7 +208,8 @@ class ProdutoController
         $erros = $this->validarDadosProduto($dados);
 
         if ($erros !== []) {
-            die(implode(' ', $erros));
+            $this->mostrarCriar($dados, $erros);
+            return;
         }
 
         $this->model->criar($dados);
@@ -216,10 +217,14 @@ class ProdutoController
         exit;
     }
 
-    public function mostrarEditar()
+    public function mostrarEditar(array $dados = [], array $erros = []): void
     {
-        $id = $_GET['id'] ?? 0;
-        $produto = $this->model->buscarPorId($id);
+        $produto = $dados;
+
+        if ($produto === []) {
+            $id = $_GET['id'] ?? 0;
+            $produto = $this->model->buscarPorId($id);
+        }
 
         if (!$produto) {
             echo "Produto não encontrado.";
@@ -237,7 +242,10 @@ class ProdutoController
         $erros = $this->validarDadosProduto($dados);
 
         if ($erros !== []) {
-            die(implode(' ', $erros));
+            $produtoAtual = $this->model->buscarPorId($id) ?: [];
+            $produto = array_merge($produtoAtual, $dados, ['id' => (int) $id]);
+            $this->mostrarEditar($produto, $erros);
+            return;
         }
 
         $this->model->atualizar($id, $dados);
@@ -247,7 +255,7 @@ class ProdutoController
 
     public function excluir()
     {
-        $id = $_GET['id'] ?? 0;
+        $id = $_POST['id'] ?? 0;
         $this->model->excluir($id);
 
         header('Location: index.php?acao=listar');

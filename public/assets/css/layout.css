@@ -239,6 +239,8 @@ body.sidebar-open .sidebar-overlay {
     color: #d0d5dd;
     font-size: 13px;
     font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
     transition: background 0.18s ease, color 0.18s ease;
     white-space: nowrap;
 }

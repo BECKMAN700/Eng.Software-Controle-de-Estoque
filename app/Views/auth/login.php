@@ -47,6 +47,8 @@ if (!function_exists('esc')) {
             <?php endif; ?>
 
             <form action="index.php?acao=autenticar" method="POST" class="login-form">
+                <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
+
                 <div class="form-group">
                     <label for="email">E-mail</label>
                     <input type="email" id="email" name="email" placeholder="email@exemplo.com" autocomplete="email"
