@@ -47,12 +47,32 @@ ob_start();
                 <p>Informações consolidadas sobre a abertura do inventário.</p>
             </div>
 
-            <div class="dashboard-actions">
-                <a href="index.php?acao=inventarios" class="btn btn-secondary">
-                    Voltar para lista
-                </a>
-            </div>
-        </div>
+                <div class="dashboard-actions">
+        <a href="index.php?acao=inventarios" class="btn btn-secondary">
+            ← Voltar para lista
+        </a>
+        
+        <?php if (in_array($inventario['status'] ?? '', ['aberto', 'em_conferencia'])): ?>
+            <a href="index.php?acao=inventario_contagem&id=<?= (int)($inventario['id'] ?? 0) ?>" 
+               class="btn btn-primary">
+                📋 Iniciar / Continuar Contagem
+            </a>
+        <?php endif; ?>
+
+        <?php if (($inventario['status'] ?? '') === 'em_conferencia'): ?>
+            <a href="index.php?acao=inventario_divergencias&id=<?= (int)($inventario['id'] ?? 0) ?>" 
+               class="btn btn-warning">
+                📊 Ver Divergências
+            </a>
+        <?php endif; ?>
+
+        <?php if (Auth::isAdmin() && ($inventario['status'] ?? '') === 'em_conferencia'): ?>
+            <a href="index.php?acao=inventario_divergencias&id=<?= (int)($inventario['id'] ?? 0) ?>" 
+               class="btn btn-success">
+                ✅ Aprovar Ajustes
+            </a>
+        <?php endif; ?>
+    </div>
 
         <div class="grid grid-4 mt-2">
             <article class="metric-card">

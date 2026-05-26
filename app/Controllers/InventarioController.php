@@ -116,7 +116,122 @@ class InventarioController
             echo "Inventário não encontrado.";
             return;
         }
-
+        
         include __DIR__ . '/../Views/inventarios/detalhar.php';
+    }
+        // ====================== CONTAGEM ======================
+    public function inventario_contagem(): void
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+
+        if ($id <= 0) {
+            Sessao::setFlashErro('ID do inventário inválido.');
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        $inventario = $this->model->buscarPorId($id);
+        if (!$inventario) {
+            Sessao::setFlashErro('Inventário não encontrado.');
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        // Só permite contagem se o inventário estiver aberto ou em conferência
+        if (!in_array($inventario['status'], ['aberto', 'em_conferencia'])) {
+            Sessao::setFlashErro('Este inventário não está mais disponível para contagem.');
+            header('Location: index.php?acao=inventario_detalhar&id=' . $id);
+            exit;
+        }
+
+        $itens = $this->model->listarItens($id);
+
+        include __DIR__ . '/../Views/inventarios/contagem.php';
+    }
+
+    public function inventario_salvar_contagem(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            Sessao::setFlashErro('Método inválido.');
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        $inventarioId = (int) ($_POST['inventario_id'] ?? 0);
+        $contagens = $_POST['contagens'] ?? [];   // nome do campo no formulário
+
+        if ($inventarioId <= 0 || empty($contagens)) {
+            Sessao::setFlashErro('Dados inválidos.');
+            header('Location: index.php?acao=inventario_contagem&id=' . $inventarioId);
+            exit;
+        }
+
+        $resultado = $this->model->salvarContagens($inventarioId, $contagens);
+
+        if ($resultado) {
+            Sessao::setFlashSucesso('Contagens salvas com sucesso!');
+            header('Location: index.php?acao=inventario_detalhar&id=' . $inventarioId);
+        } else {
+            Sessao::setFlashErro('Erro ao salvar as contagens. Verifique os dados.');
+            header('Location: index.php?acao=inventario_contagem&id=' . $inventarioId);
+        }
+        exit;
+    }
+
+    // ====================== DIVERGÊNCIAS ======================
+    public function inventario_divergencias(): void
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+
+        if ($id <= 0) {
+            Sessao::setFlashErro('ID do inventário inválido.');
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        $inventario = $this->model->buscarPorId($id);
+        if (!$inventario) {
+            Sessao::setFlashErro('Inventário não encontrado.');
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        $itens = $this->model->listarItens($id);
+
+        include __DIR__ . '/../Views/inventarios/divergencias.php';
+    }
+
+    // ====================== APROVAÇÃO (RESTRITA A ADMIN) ======================
+    public function inventario_aprovar(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        if (!Auth::isAdmin()) {
+            Sessao::setFlashErro('Apenas administradores podem aprovar ajustes de inventário.');
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        $inventarioId = (int) ($_POST['inventario_id'] ?? 0);
+
+        if ($inventarioId <= 0) {
+            Sessao::setFlashErro('ID do inventário inválido.');
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        $resultado = $this->model->aprovarInventario($inventarioId, Sessao::getId());
+
+        if ($resultado) {
+            Sessao::setFlashSucesso('Inventário aprovado e estoque atualizado com sucesso!');
+        } else {
+            Sessao::setFlashErro('Não foi possível aprovar o inventário.');
+        }
+
+        header('Location: index.php?acao=inventario_detalhar&id=' . $inventarioId);
+        exit;
     }
 }

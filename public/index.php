@@ -76,6 +76,7 @@ $usuarioController = new UsuarioController();
 $inventarioController = new InventarioController();
 
 switch ($acao) {
+    // ====================== ROTAS DE INVENTÁRIO ======================
     case 'inventarios':
         $inventarioController->inventarios();
         break;
@@ -93,6 +94,25 @@ switch ($acao) {
         $inventarioController->inventario_detalhar();
         break;
 
+    case 'inventario_contagem':
+        $inventarioController->inventario_contagem();
+        break;
+
+    case 'inventario_salvar_contagem':
+        exigirPostComCsrf();
+        $inventarioController->inventario_salvar_contagem();
+        break;
+
+    case 'inventario_divergencias':
+        $inventarioController->inventario_divergencias();
+        break;
+
+    case 'inventario_aprovar':
+        exigirPostComCsrf();
+        $inventarioController->inventario_aprovar();
+        break;
+
+    // ====================== OUTRAS ROTAS ======================
     case 'listar':
         $controller->listar();
         break;
