@@ -69,11 +69,30 @@ if (!$ehApi) {
 
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 require_once __DIR__ . '/../app/Controllers/UsuarioController.php';
+require_once __DIR__ . '/../app/Controllers/InventarioController.php';
 
 $controller = new ProdutoController();
 $usuarioController = new UsuarioController();
+$inventarioController = new InventarioController();
 
 switch ($acao) {
+    case 'inventarios':
+        $inventarioController->inventarios();
+        break;
+
+    case 'inventario_criar':
+        $inventarioController->inventario_criar();
+        break;
+
+    case 'inventario_salvar':
+        exigirPostComCsrf();
+        $inventarioController->inventario_salvar();
+        break;
+
+    case 'inventario_detalhar':
+        $inventarioController->inventario_detalhar();
+        break;
+
     case 'listar':
         $controller->listar();
         break;
