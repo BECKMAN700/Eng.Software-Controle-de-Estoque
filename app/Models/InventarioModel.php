@@ -201,4 +201,138 @@ class InventarioModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    // ====================== CONTAGEM ======================
+    
+    /**
+     * Salva múltiplas contagens de uma vez (usado pelo Controller)
+     */
+    public function salvarContagens($inventarioId, array $quantidades): bool
+    {
+        if (empty($quantidades)) {
+            return false;
+        }
+
+        try {
+            $this->conn->beginTransaction();
+
+            foreach ($quantidades as $itemId => $quantidadeContada) {
+                $itemId = (int) $itemId;
+                $quantidadeContada = trim($quantidadeContada);
+
+                $erros = self::validarContagem($quantidadeContada);
+                if ($erros !== []) {
+                    $this->conn->rollBack();
+                    return false;
+                }
+
+                $sqlBuscar = "SELECT quantidade_sistema FROM inventario_itens WHERE id = :id";
+                $stmtBuscar = $this->conn->prepare($sqlBuscar);
+                $stmtBuscar->execute([':id' => $itemId]);
+                $item = $stmtBuscar->fetch(PDO::FETCH_ASSOC);
+
+                if (!$item) {
+                    $this->conn->rollBack();
+                    return false;
+                }
+
+                $quantidadeSistema = (int) $item['quantidade_sistema'];
+                $diferenca = self::calcularDiferenca($quantidadeContada, $quantidadeSistema);
+
+                $sqlUpdate = "
+                    UPDATE inventario_itens 
+                    SET quantidade_contada = :quantidade_contada,
+                        diferenca = :diferenca
+                    WHERE id = :id";
+
+                $stmtUpdate = $this->conn->prepare($sqlUpdate);
+                $stmtUpdate->execute([
+                    ':quantidade_contada' => $quantidadeContada,
+                    ':diferenca' => $diferenca,
+                    ':id' => $itemId
+                ]);
+            }
+
+            // Atualiza status do inventário para em_conferencia
+            $sqlStatus = "UPDATE inventarios SET status = 'em_conferencia' WHERE id = :id";
+            $stmtStatus = $this->conn->prepare($sqlStatus);
+            $stmtStatus->execute([':id' => $inventarioId]);
+
+            $this->conn->commit();
+            return true;
+
+        } catch (Exception $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            return false;
+        }
+    }
+
+    public function aprovarInventario($inventarioId, $adminId): bool
+    {
+        try {
+            $this->conn->beginTransaction();
+
+            $itens = $this->listarItens($inventarioId);
+
+            foreach ($itens as $item) {
+                // Só atualiza itens que tiveram contagem
+                if ($item['quantidade_contada'] === null || $item['quantidade_contada'] === '') {
+                    continue;
+                }
+
+                // Atualiza estoque do produto
+                $sqlProduto = "UPDATE produtos SET quantidade = :quantidade WHERE id = :produto_id";
+                $stmtProduto = $this->conn->prepare($sqlProduto);
+                $stmtProduto->execute([
+                    ':quantidade' => (int) $item['quantidade_contada'],
+                    ':produto_id' => (int) $item['produto_id']
+                ]);
+
+                // Registra auditoria
+                $sqlAuditoria = "
+                    INSERT INTO auditorias_estoque (
+                        inventario_id, produto_id, usuario_id,
+                        quantidade_anterior, quantidade_nova, diferenca, motivo
+                    ) VALUES (
+                        :inventario_id, :produto_id, :usuario_id,
+                        :quantidade_anterior, :quantidade_nova, :diferenca, :motivo
+                    )";
+
+                $stmtAuditoria = $this->conn->prepare($sqlAuditoria);
+                $stmtAuditoria->execute([
+                    ':inventario_id'     => $inventarioId,
+                    ':produto_id'        => $item['produto_id'],
+                    ':usuario_id'        => $adminId,
+                    ':quantidade_anterior' => $item['quantidade_sistema'],
+                    ':quantidade_nova'   => $item['quantidade_contada'],
+                    ':diferenca'         => $item['diferenca'],
+                    ':motivo'            => 'Ajuste aprovado via inventário'
+                ]);
+            }
+
+            // Finaliza inventário
+            $sqlFinalizar = "
+                UPDATE inventarios 
+                SET status = 'aprovado',
+                    aprovado_por = :admin_id,
+                    finalizado_em = NOW()
+                WHERE id = :id";
+
+            $stmtFinalizar = $this->conn->prepare($sqlFinalizar);
+            $stmtFinalizar->execute([
+                ':admin_id' => $adminId,
+                ':id'       => $inventarioId
+            ]);
+
+            $this->conn->commit();
+            return true;
+
+        } catch (Exception $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            return false;
+        }
+    }
 }

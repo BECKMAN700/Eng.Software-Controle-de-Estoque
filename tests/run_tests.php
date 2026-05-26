@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/TestCase.php';
+require_once __DIR__ . '/Unit/InventarioTest.php';
 
 $sessionPath = __DIR__ . '/tmp';
 
