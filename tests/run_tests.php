@@ -16,6 +16,8 @@ require_once __DIR__ . '/ApiResponseTest.php';
 require_once __DIR__ . '/ProdutoApiTest.php';
 require_once __DIR__ . '/MovimentacaoApiTest.php';
 require_once __DIR__ . '/InventarioTest.php';
+require_once __DIR__ . '/Unit/ValidacaoTest.php';
+require_once __DIR__ . '/Feature/ApiProdutosTest.php';
 
 $teste = new TestCase();
 
@@ -25,6 +27,8 @@ testeApiResponse($teste);
 testeProdutoApi($teste);
 testeMovimentacaoApi($teste);
 testeInventario($teste);
+testeUnitValidacao($teste);
+testeFeatureApiProdutos($teste);
 
 if ($teste->falhas() !== []) {
     echo "Falhas encontradas:\n";
