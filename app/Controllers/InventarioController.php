@@ -42,38 +42,17 @@ class InventarioController
 
         $erros = [];
 
-        // 1. Impedir dados obrigatórios vazios
         if ($titulo === '') {
             $erros['titulo'] = 'O titulo do inventario e obrigatorio.';
         }
 
-        // 2. Impedir categorias inválidas
         $categoriasValidas = $this->produtoModel->listarCategorias();
         if ($filtroCategoria !== '' && !in_array($filtroCategoria, $categoriasValidas, true)) {
             $erros['categoria'] = 'A categoria selecionada e invalida ou nao existe.';
         }
 
-        // 3. Impedir inventário sem produtos
-        if ($erros === []) {
-            $categoriaFiltro = $dados['categoria'];
-            
-            // Replicamos a lógica de buscarProdutosParaInventario de forma preventiva
-            // para enviar uma mensagem amigável antes de tentar salvar
-            $db = new Database();
-            $conn = $db->conectar();
-            $sql = "SELECT COUNT(*) FROM produtos WHERE status = 'ativo'";
-            $params = [];
-            if ($categoriaFiltro !== null) {
-                $sql .= " AND categoria = :categoria";
-                $params[':categoria'] = $categoriaFiltro;
-            }
-            $stmt = $conn->prepare($sql);
-            $stmt->execute($params);
-            $totalProdutos = (int) $stmt->fetchColumn();
-
-            if ($totalProdutos === 0) {
-                $erros['produtos'] = 'Nao e possivel abrir um inventario sem produtos ativos cadastrados para o filtro selecionado.';
-            }
+        if ($erros === [] && $this->model->contarProdutosAtivos($dados['categoria']) === 0) {
+            $erros['produtos'] = 'Nao e possivel abrir um inventario sem produtos ativos cadastrados para o filtro selecionado.';
         }
 
         if ($erros !== []) {
@@ -81,7 +60,6 @@ class InventarioController
             return;
         }
 
-        // Set the logged-in user id
         $dados['criado_por'] = Sessao::getId();
 
         try {
@@ -106,40 +84,41 @@ class InventarioController
         $id = (int) ($_GET['id'] ?? 0);
 
         if ($id <= 0) {
-            echo "ID do inventário inválido.";
-            return;
+            Sessao::setFlashErro('ID do inventario invalido.');
+            header('Location: index.php?acao=inventarios');
+            exit;
         }
 
         $inventario = $this->model->buscarPorId($id);
 
         if (!$inventario) {
-            echo "Inventário não encontrado.";
-            return;
+            Sessao::setFlashErro('Inventario nao encontrado.');
+            header('Location: index.php?acao=inventarios');
+            exit;
         }
-        
+
         include __DIR__ . '/../Views/inventarios/detalhar.php';
     }
-        // ====================== CONTAGEM ======================
+
     public function inventario_contagem(): void
     {
         $id = (int) ($_GET['id'] ?? 0);
 
         if ($id <= 0) {
-            Sessao::setFlashErro('ID do inventário inválido.');
+            Sessao::setFlashErro('ID do inventario invalido.');
             header('Location: index.php?acao=inventarios');
             exit;
         }
 
         $inventario = $this->model->buscarPorId($id);
         if (!$inventario) {
-            Sessao::setFlashErro('Inventário não encontrado.');
+            Sessao::setFlashErro('Inventario nao encontrado.');
             header('Location: index.php?acao=inventarios');
             exit;
         }
 
-        // Só permite contagem se o inventário estiver aberto ou em conferência
-        if (!in_array($inventario['status'], ['aberto', 'em_conferencia'])) {
-            Sessao::setFlashErro('Este inventário não está mais disponível para contagem.');
+        if (!in_array($inventario['status'], ['aberto', 'em_conferencia'], true)) {
+            Sessao::setFlashErro('Este inventario nao esta mais disponivel para contagem.');
             header('Location: index.php?acao=inventario_detalhar&id=' . $id);
             exit;
         }
@@ -152,21 +131,22 @@ class InventarioController
     public function inventario_salvar_contagem(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            Sessao::setFlashErro('Método inválido.');
+            Sessao::setFlashErro('Metodo invalido.');
             header('Location: index.php?acao=inventarios');
             exit;
         }
 
         $inventarioId = (int) ($_POST['inventario_id'] ?? 0);
-        $contagens = $_POST['contagens'] ?? [];   // nome do campo no formulário
+        $contagens = $_POST['contagens'] ?? [];
+        $observacoes = $_POST['observacoes'] ?? [];
 
         if ($inventarioId <= 0 || empty($contagens)) {
-            Sessao::setFlashErro('Dados inválidos.');
+            Sessao::setFlashErro('Dados invalidos.');
             header('Location: index.php?acao=inventario_contagem&id=' . $inventarioId);
             exit;
         }
 
-        $resultado = $this->model->salvarContagens($inventarioId, $contagens);
+        $resultado = $this->model->salvarContagens($inventarioId, $contagens, $observacoes);
 
         if ($resultado) {
             Sessao::setFlashSucesso('Contagens salvas com sucesso!');
@@ -178,20 +158,19 @@ class InventarioController
         exit;
     }
 
-    // ====================== DIVERGÊNCIAS ======================
     public function inventario_divergencias(): void
     {
         $id = (int) ($_GET['id'] ?? 0);
 
         if ($id <= 0) {
-            Sessao::setFlashErro('ID do inventário inválido.');
+            Sessao::setFlashErro('ID do inventario invalido.');
             header('Location: index.php?acao=inventarios');
             exit;
         }
 
         $inventario = $this->model->buscarPorId($id);
         if (!$inventario) {
-            Sessao::setFlashErro('Inventário não encontrado.');
+            Sessao::setFlashErro('Inventario nao encontrado.');
             header('Location: index.php?acao=inventarios');
             exit;
         }
@@ -201,7 +180,28 @@ class InventarioController
         include __DIR__ . '/../Views/inventarios/divergencias.php';
     }
 
-    // ====================== APROVAÇÃO (RESTRITA A ADMIN) ======================
+    public function inventario_auditoria(): void
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+
+        if ($id <= 0) {
+            Sessao::setFlashErro('ID do inventario invalido.');
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        $inventario = $this->model->buscarPorId($id);
+        if (!$inventario) {
+            Sessao::setFlashErro('Inventario nao encontrado.');
+            header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        $auditorias = $this->model->listarAuditoria($id);
+
+        include __DIR__ . '/../Views/inventarios/auditoria.php';
+    }
+
     public function inventario_aprovar(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -210,7 +210,7 @@ class InventarioController
         }
 
         if (!Auth::isAdmin()) {
-            Sessao::setFlashErro('Apenas administradores podem aprovar ajustes de inventário.');
+            Sessao::setFlashErro('Apenas administradores podem aprovar ajustes de inventario.');
             header('Location: index.php?acao=inventarios');
             exit;
         }
@@ -218,17 +218,30 @@ class InventarioController
         $inventarioId = (int) ($_POST['inventario_id'] ?? 0);
 
         if ($inventarioId <= 0) {
-            Sessao::setFlashErro('ID do inventário inválido.');
+            Sessao::setFlashErro('ID do inventario invalido.');
             header('Location: index.php?acao=inventarios');
+            exit;
+        }
+
+        $inventario = $this->model->buscarPorId($inventarioId);
+        if (!$inventario || $inventario['status'] !== 'em_conferencia') {
+            Sessao::setFlashErro('Somente inventarios em conferencia podem ser aprovados.');
+            header('Location: index.php?acao=inventario_detalhar&id=' . $inventarioId);
+            exit;
+        }
+
+        if ($this->model->temContagensPendentes($inventarioId)) {
+            Sessao::setFlashErro('Informe a contagem de todos os itens antes de aprovar o inventario.');
+            header('Location: index.php?acao=inventario_divergencias&id=' . $inventarioId);
             exit;
         }
 
         $resultado = $this->model->aprovarInventario($inventarioId, Sessao::getId());
 
         if ($resultado) {
-            Sessao::setFlashSucesso('Inventário aprovado e estoque atualizado com sucesso!');
+            Sessao::setFlashSucesso('Inventario aprovado e estoque atualizado com sucesso!');
         } else {
-            Sessao::setFlashErro('Não foi possível aprovar o inventário.');
+            Sessao::setFlashErro('Nao foi possivel aprovar o inventario.');
         }
 
         header('Location: index.php?acao=inventario_detalhar&id=' . $inventarioId);

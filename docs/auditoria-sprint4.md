@@ -1,84 +1,55 @@
-# Auditoria — Sprint 4
+# Sprint 4 - Inventario e Auditoria
 
 ## Objetivo
-Registrar alterações relacionadas à Sprint 4.
 
----
+Registrar o fluxo de inventario implementado na Sprint 4 e as regras de auditoria usadas quando um administrador aprova ajustes de estoque.
 
-## Funcionalidades adicionadas
+## Fluxo implementado
 
-### Relatório de divergências
-- Criação da tela divergencias.php
-- Identificação de produtos abaixo do estoque mínimo
-- Identificação de produtos acima do estoque máximo
+1. O usuario acessa `index.php?acao=inventarios`.
+2. O usuario abre um inventario informando titulo, observacao e, opcionalmente, categoria.
+3. O sistema grava os produtos ativos do filtro escolhido em `inventario_itens`.
+4. Cada item recebe a `quantidade_sistema` existente no momento da abertura.
+5. O usuario registra a quantidade fisica contada em `inventario_contagem`.
+6. O sistema calcula a diferenca entre quantidade contada e quantidade do sistema.
+7. O relatorio `inventario_divergencias` mostra faltas, sobras, itens conferidos e pendentes.
+8. Apenas administrador pode aprovar os ajustes.
+9. Na aprovacao, o sistema atualiza `produtos.quantidade`.
+10. Cada ajuste aprovado gera registro em `auditorias_estoque`.
 
-### Auditoria de movimentações
-- Validação de entradas e saídas
-- Controle de estoque mínimo e máximo
-- Histórico de movimentações preservado
+## Regras de seguranca
 
-### Melhorias visuais
-- Destaque visual para divergências
-- Separação entre produtos abaixo e acima do limite
+- Todas as rotas de inventario exigem login.
+- Abertura, contagem e consulta podem ser feitas por admin ou estoquista.
+- Aprovacao e consulta de auditoria sao restritas a admin.
+- POSTs de abertura, contagem e aprovacao usam CSRF.
+- Inventario aprovado nao aceita nova contagem.
+- Inventario com item pendente nao pode ser aprovado.
 
----
+## Tabelas da Sprint 4
 
-## Arquivos alterados
+- `inventarios`
+- `inventario_itens`
+- `auditorias_estoque`
 
-### Controllers
-- ProdutoController.php
+## Arquivos principais
 
-### Models
-- ProdutoModel.php
+- `app/Controllers/InventarioController.php`
+- `app/Models/InventarioModel.php`
+- `app/Views/inventarios/listar.php`
+- `app/Views/inventarios/criar.php`
+- `app/Views/inventarios/detalhar.php`
+- `app/Views/inventarios/contagem.php`
+- `app/Views/inventarios/divergencias.php`
+- `app/Views/inventarios/auditoria.php`
+- `database/schema.sql`
 
-### Views
-- listar.php
-- divergencias.php
+## Testes
 
-### Rotas
-- public/index.php
+Execute:
 
----
+```bash
+C:\xampp\php\php.exe tests\run.php
+```
 
-## Data
-Sprint 4 — Controle de Estoque
-
-# Sprint 4 — Relatórios, Auditoria e Testes
-
-## Funcionalidades implementadas
-
-### Relatório de divergências
-Permite visualizar produtos:
-- abaixo do estoque mínimo
-- acima do estoque máximo
-
-### Auditoria
-Foi adicionada documentação de auditoria contendo:
-- arquivos alterados
-- funcionalidades implementadas
-- rastreamento das alterações
-
-### Testes
-Foram criados cenários de testes para:
-- entrada de estoque
-- saída de estoque
-- estoque abaixo do mínimo
-- estoque acima do máximo
-- movimentações inválidas
-
----
-
-## Fluxo
-1. Produto é cadastrado
-2. Estoque mínimo e máximo são definidos
-3. Movimentações alteram quantidade
-4. Sistema verifica divergências
-5. Relatório exibe inconsistências
-
----
-
-## Melhorias futuras
-- Exportação PDF
-- Dashboard gráfico
-- Logs completos de auditoria
-- Controle de usuários
+Os testes cobrem validacoes, permissoes, respostas de API, movimentacoes e regras puras do inventario.

@@ -451,68 +451,72 @@ class ProdutoModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function listarMovimentacoes($produtoId = null, $limite = null): array
-{
-    if ($limite !== null && (int) $limite <= 0) {
-        return [];
+    {
+        if ($limite !== null && (int) $limite <= 0) {
+            return [];
+        }
+
+        $sql = "SELECT
+                    movimentacoes.*,
+                    produtos.nome AS produto_nome,
+                    produtos.codigo AS produto_codigo,
+                    produtos.unidade AS produto_unidade,
+                    produtos.categoria AS produto_categoria
+                FROM movimentacoes
+                INNER JOIN produtos ON produtos.id = movimentacoes.produto_id";
+
+        $params = [];
+
+        if ($produtoId !== null && $produtoId !== '') {
+            $sql .= " WHERE movimentacoes.produto_id = :produto_id";
+            $params[':produto_id'] = (int) $produtoId;
+        }
+
+        $sql .= " ORDER BY movimentacoes.data_hora DESC, movimentacoes.id DESC";
+
+        if ($limite !== null) {
+            $sql .= " LIMIT :limite";
+        }
+
+        $stmt = $this->conn->prepare($sql);
+
+        foreach ($params as $chave => $valor) {
+            $stmt->bindValue($chave, $valor, PDO::PARAM_INT);
+        }
+
+        if ($limite !== null) {
+            $stmt->bindValue(':limite', (int) $limite, PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    $sql = "SELECT
-                movimentacoes.*,
-                produtos.nome AS produto_nome,
-                produtos.codigo AS produto_codigo,
-                produtos.unidade AS produto_unidade,
-                produtos.categoria AS produto_categoria
-            FROM movimentacoes
-            INNER JOIN produtos ON produtos.id = movimentacoes.produto_id";
-
-    $params = [];
-
-    if ($produtoId !== null && $produtoId !== '') {
-        $sql .= " WHERE movimentacoes.produto_id = :produto_id";
-        $params[':produto_id'] = (int) $produtoId;
+    public function buscarUltimasMovimentacoes($limite = 8): array
+    {
+        return $this->listarMovimentacoes(null, $limite);
     }
 
-    $sql .= " ORDER BY movimentacoes.data_hora DESC, movimentacoes.id DESC";
+    public function buscarDivergencias(): array
+    {
+        $sql = "SELECT *
+                FROM produtos
+                WHERE status = 'ativo'
+                  AND (
+                      quantidade < estoque_minimo
+                      OR (
+                          estoque_maximo IS NOT NULL
+                          AND quantidade > estoque_maximo
+                      )
+                  )
+                ORDER BY nome ASC, id ASC";
 
-    if ($limite !== null) {
-        $sql .= " LIMIT :limite";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    $stmt = $this->conn->prepare($sql);
-
-    foreach ($params as $chave => $valor) {
-        $stmt->bindValue($chave, $valor, PDO::PARAM_INT);
-    }
-
-    if ($limite !== null) {
-        $stmt->bindValue(':limite', (int) $limite, PDO::PARAM_INT);
-    }
-
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-public function buscarUltimasMovimentacoes($limite = 8): array
-{
-    return $this->listarMovimentacoes(null, $limite);
-}
-
-public function buscarDivergencias()
-{
-    $sql = "SELECT *
-            FROM produtos
-            WHERE quantidade < estoque_minimo
-            OR (
-                estoque_maximo IS NOT NULL
-                AND quantidade > estoque_maximo
-            )";
-
-    $stmt = $this->conn->prepare($sql);
-
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 }

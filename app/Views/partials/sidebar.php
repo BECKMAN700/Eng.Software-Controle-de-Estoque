@@ -73,7 +73,7 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 
         <span class="nav-section-title">Inventário</span>
 
-        <a class="nav-link <?= menuAtivo(['inventarios', 'inventario_criar', 'inventario_detalhar']) ?>" href="index.php?acao=inventarios">
+        <a class="nav-link <?= menuAtivo(['inventarios', 'inventario_criar', 'inventario_detalhar', 'inventario_contagem', 'inventario_divergencias', 'inventario_auditoria']) ?>" href="index.php?acao=inventarios">
             <span class="nav-icon"></span>
             <span>Inventários</span>
         </a>

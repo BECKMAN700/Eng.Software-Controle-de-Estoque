@@ -106,6 +106,23 @@ class InventarioModel
         }
     }
 
+    public function contarProdutosAtivos($categoria = null): int
+    {
+        $categoria = $this->valorOuNull($categoria);
+        $sql = "SELECT COUNT(*) FROM produtos WHERE status = 'ativo'";
+        $params = [];
+
+        if ($categoria !== null) {
+            $sql .= " AND categoria = :categoria";
+            $params[':categoria'] = $categoria;
+        }
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
     private function buscarProdutosParaInventario($categoria): array
     {
         $sql = "SELECT id, quantidade
@@ -201,23 +218,66 @@ class InventarioModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // ====================== CONTAGEM ======================
-    
-    /**
-     * Salva múltiplas contagens de uma vez (usado pelo Controller)
-     */
-    public function salvarContagens($inventarioId, array $quantidades): bool
+
+    public function listarAuditoria($inventarioId): array
     {
-        if (empty($quantidades)) {
+        $sql = "SELECT
+                    auditorias_estoque.*,
+                    produtos.nome AS produto_nome,
+                    produtos.codigo AS produto_codigo,
+                    usuarios.nome AS usuario_nome
+                FROM auditorias_estoque
+                INNER JOIN produtos ON produtos.id = auditorias_estoque.produto_id
+                INNER JOIN usuarios ON usuarios.id = auditorias_estoque.usuario_id
+                WHERE auditorias_estoque.inventario_id = :inventario_id
+                ORDER BY auditorias_estoque.criado_em DESC, auditorias_estoque.id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':inventario_id', (int) $inventarioId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function temContagensPendentes($inventarioId): bool
+    {
+        $sql = "SELECT COUNT(*)
+                FROM inventario_itens
+                WHERE inventario_id = :inventario_id
+                  AND quantidade_contada IS NULL";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':inventario_id', (int) $inventarioId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    public function salvarContagens($inventarioId, array $quantidades, array $observacoes = []): bool
+    {
+        $inventarioId = (int) $inventarioId;
+
+        if ($inventarioId <= 0 || empty($quantidades)) {
             return false;
         }
 
         try {
             $this->conn->beginTransaction();
 
+            $sqlInventario = "SELECT status FROM inventarios WHERE id = :id FOR UPDATE";
+            $stmtInventario = $this->conn->prepare($sqlInventario);
+            $stmtInventario->execute([':id' => $inventarioId]);
+            $inventario = $stmtInventario->fetch(PDO::FETCH_ASSOC);
+
+            if (!$inventario || !in_array($inventario['status'], ['aberto', 'em_conferencia'], true)) {
+                $this->conn->rollBack();
+                return false;
+            }
+
             foreach ($quantidades as $itemId => $quantidadeContada) {
                 $itemId = (int) $itemId;
-                $quantidadeContada = trim($quantidadeContada);
+                $quantidadeContada = trim((string) $quantidadeContada);
+                $observacao = $this->valorOuNull($observacoes[$itemId] ?? null);
 
                 $erros = self::validarContagem($quantidadeContada);
                 if ($erros !== []) {
@@ -225,9 +285,15 @@ class InventarioModel
                     return false;
                 }
 
-                $sqlBuscar = "SELECT quantidade_sistema FROM inventario_itens WHERE id = :id";
+                $sqlBuscar = "SELECT quantidade_sistema
+                              FROM inventario_itens
+                              WHERE id = :id
+                                AND inventario_id = :inventario_id";
                 $stmtBuscar = $this->conn->prepare($sqlBuscar);
-                $stmtBuscar->execute([':id' => $itemId]);
+                $stmtBuscar->execute([
+                    ':id' => $itemId,
+                    ':inventario_id' => $inventarioId,
+                ]);
                 $item = $stmtBuscar->fetch(PDO::FETCH_ASSOC);
 
                 if (!$item) {
@@ -235,31 +301,31 @@ class InventarioModel
                     return false;
                 }
 
-                $quantidadeSistema = (int) $item['quantidade_sistema'];
-                $diferenca = self::calcularDiferenca($quantidadeContada, $quantidadeSistema);
+                $diferenca = self::calcularDiferenca($quantidadeContada, (int) $item['quantidade_sistema']);
 
-                $sqlUpdate = "
-                    UPDATE inventario_itens 
-                    SET quantidade_contada = :quantidade_contada,
-                        diferenca = :diferenca
-                    WHERE id = :id";
+                $sqlUpdate = "UPDATE inventario_itens
+                              SET quantidade_contada = :quantidade_contada,
+                                  diferenca = :diferenca,
+                                  observacao = :observacao
+                              WHERE id = :id
+                                AND inventario_id = :inventario_id";
 
                 $stmtUpdate = $this->conn->prepare($sqlUpdate);
                 $stmtUpdate->execute([
-                    ':quantidade_contada' => $quantidadeContada,
+                    ':quantidade_contada' => $quantidadeContada === '' ? null : (int) $quantidadeContada,
                     ':diferenca' => $diferenca,
-                    ':id' => $itemId
+                    ':observacao' => $observacao,
+                    ':id' => $itemId,
+                    ':inventario_id' => $inventarioId,
                 ]);
             }
 
-            // Atualiza status do inventário para em_conferencia
             $sqlStatus = "UPDATE inventarios SET status = 'em_conferencia' WHERE id = :id";
             $stmtStatus = $this->conn->prepare($sqlStatus);
             $stmtStatus->execute([':id' => $inventarioId]);
 
             $this->conn->commit();
             return true;
-
         } catch (Exception $e) {
             if ($this->conn->inTransaction()) {
                 $this->conn->rollBack();
@@ -270,64 +336,75 @@ class InventarioModel
 
     public function aprovarInventario($inventarioId, $adminId): bool
     {
+        $inventarioId = (int) $inventarioId;
+        $adminId = (int) $adminId;
+
+        if ($inventarioId <= 0 || $adminId <= 0) {
+            return false;
+        }
+
         try {
             $this->conn->beginTransaction();
 
+            $sqlInventario = "SELECT status FROM inventarios WHERE id = :id FOR UPDATE";
+            $stmtInventario = $this->conn->prepare($sqlInventario);
+            $stmtInventario->execute([':id' => $inventarioId]);
+            $inventario = $stmtInventario->fetch(PDO::FETCH_ASSOC);
+
+            if (!$inventario || $inventario['status'] !== 'em_conferencia') {
+                $this->conn->rollBack();
+                return false;
+            }
+
             $itens = $this->listarItens($inventarioId);
 
-            foreach ($itens as $item) {
-                // Só atualiza itens que tiveram contagem
-                if ($item['quantidade_contada'] === null || $item['quantidade_contada'] === '') {
-                    continue;
-                }
+            if ($itens === [] || $this->temContagensPendentes($inventarioId)) {
+                $this->conn->rollBack();
+                return false;
+            }
 
-                // Atualiza estoque do produto
+            foreach ($itens as $item) {
                 $sqlProduto = "UPDATE produtos SET quantidade = :quantidade WHERE id = :produto_id";
                 $stmtProduto = $this->conn->prepare($sqlProduto);
                 $stmtProduto->execute([
                     ':quantidade' => (int) $item['quantidade_contada'],
-                    ':produto_id' => (int) $item['produto_id']
+                    ':produto_id' => (int) $item['produto_id'],
                 ]);
 
-                // Registra auditoria
-                $sqlAuditoria = "
-                    INSERT INTO auditorias_estoque (
-                        inventario_id, produto_id, usuario_id,
-                        quantidade_anterior, quantidade_nova, diferenca, motivo
-                    ) VALUES (
-                        :inventario_id, :produto_id, :usuario_id,
-                        :quantidade_anterior, :quantidade_nova, :diferenca, :motivo
-                    )";
+                $sqlAuditoria = "INSERT INTO auditorias_estoque (
+                                    inventario_id, produto_id, usuario_id,
+                                    quantidade_anterior, quantidade_nova, diferenca, motivo
+                                ) VALUES (
+                                    :inventario_id, :produto_id, :usuario_id,
+                                    :quantidade_anterior, :quantidade_nova, :diferenca, :motivo
+                                )";
 
                 $stmtAuditoria = $this->conn->prepare($sqlAuditoria);
                 $stmtAuditoria->execute([
-                    ':inventario_id'     => $inventarioId,
-                    ':produto_id'        => $item['produto_id'],
-                    ':usuario_id'        => $adminId,
-                    ':quantidade_anterior' => $item['quantidade_sistema'],
-                    ':quantidade_nova'   => $item['quantidade_contada'],
-                    ':diferenca'         => $item['diferenca'],
-                    ':motivo'            => 'Ajuste aprovado via inventário'
+                    ':inventario_id' => $inventarioId,
+                    ':produto_id' => (int) $item['produto_id'],
+                    ':usuario_id' => $adminId,
+                    ':quantidade_anterior' => (int) $item['quantidade_sistema'],
+                    ':quantidade_nova' => (int) $item['quantidade_contada'],
+                    ':diferenca' => (int) $item['diferenca'],
+                    ':motivo' => 'Ajuste aprovado via inventario',
                 ]);
             }
 
-            // Finaliza inventário
-            $sqlFinalizar = "
-                UPDATE inventarios 
-                SET status = 'aprovado',
-                    aprovado_por = :admin_id,
-                    finalizado_em = NOW()
-                WHERE id = :id";
+            $sqlFinalizar = "UPDATE inventarios
+                             SET status = 'aprovado',
+                                 aprovado_por = :admin_id,
+                                 finalizado_em = NOW()
+                             WHERE id = :id";
 
             $stmtFinalizar = $this->conn->prepare($sqlFinalizar);
             $stmtFinalizar->execute([
                 ':admin_id' => $adminId,
-                ':id'       => $inventarioId
+                ':id' => $inventarioId,
             ]);
 
             $this->conn->commit();
             return true;
-
         } catch (Exception $e) {
             if ($this->conn->inTransaction()) {
                 $this->conn->rollBack();

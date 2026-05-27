@@ -107,6 +107,11 @@ switch ($acao) {
         $inventarioController->inventario_divergencias();
         break;
 
+    case 'inventario_auditoria':
+        Auth::exigirAdmin();
+        $inventarioController->inventario_auditoria();
+        break;
+
     case 'inventario_aprovar':
         exigirPostComCsrf();
         $inventarioController->inventario_aprovar();
@@ -188,6 +193,10 @@ switch ($acao) {
         $controller->relatorios();
         break;
 
+    case 'divergencias':
+        $controller->mostrarDivergencias();
+        break;
+
     case 'usuarios':
         Auth::exigirAdmin();
         $usuarioController->listar();
@@ -215,8 +224,4 @@ switch ($acao) {
     default:
         echo 'Ação inválida.';
         break;
-
-    case 'divergencias':
-    $controller->mostrarDivergencias();
-    break;
 }

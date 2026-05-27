@@ -1,65 +1,23 @@
 <?php
 
-require_once __DIR__ . '/../TestCase.php';
-require_once __DIR__ . '/../../app/Models/InventarioModel.php';
+require_once __DIR__ . '/../app/Models/InventarioModel.php';
 
-class InventarioTest extends TestCase
+function testeInventario(TestCase $teste): void
 {
-    public function deveCalcularDivergenciaPositiva()
-    {
-        $diferenca = InventarioModel::calcularDiferenca(
-            15,
-            10
-        );
+    $teste->assertEquals(5, InventarioModel::calcularDiferenca(15, 10), 'Diferenca positiva deve indicar sobra fisica.');
+    $teste->assertEquals(-3, InventarioModel::calcularDiferenca(7, 10), 'Diferenca negativa deve indicar falta fisica.');
+    $teste->assertEquals(0, InventarioModel::calcularDiferenca(10, 10), 'Diferenca zero deve indicar estoque conferido.');
+    $teste->assertEquals(null, InventarioModel::calcularDiferenca(null, 10), 'Contagem vazia ainda nao deve gerar diferenca.');
 
-        $this->assertEquals(5, $diferenca);
-    }
+    $teste->assertEquals([], InventarioModel::validarContagem(0), 'Contagem zero deve ser valida.');
+    $teste->assertEquals([], InventarioModel::validarContagem('12'), 'Contagem inteira em texto deve ser valida.');
 
-    public function deveCalcularDivergenciaNegativa()
-    {
-        $diferenca = InventarioModel::calcularDiferenca(
-            7,
-            10
-        );
+    $errosTexto = InventarioModel::validarContagem('abc');
+    $teste->assertArrayHasKey('quantidade_contada', $errosTexto, 'Contagem nao numerica deve ser rejeitada.');
 
-        $this->assertEquals(-3, $diferenca);
-    }
+    $errosNegativo = InventarioModel::validarContagem(-1);
+    $teste->assertArrayHasKey('quantidade_contada', $errosNegativo, 'Contagem negativa deve ser rejeitada.');
 
-    public function deveCalcularDivergenciaZero()
-    {
-        $diferenca = InventarioModel::calcularDiferenca(
-            10,
-            10
-        );
-
-        $this->assertEquals(0, $diferenca);
-    }
-
-    public function contagemNegativaDeveSerInvalida()
-    {
-        $erros = InventarioModel::validarContagem(-1);
-
-        $this->assertTrue(
-            isset($erros['quantidade_contada'])
-        );
-    }
-
-    public function contagemInteiraDeveSerValida()
-    {
-        $erros = InventarioModel::validarContagem(10);
-
-        $this->assertEquals([], $erros);
-    }
-
-    public function estoquistaNaoDeveAprovar()
-    {
-        $_SESSION['usuario'] = [
-            'perfil' => 'estoquista'
-        ];
-
-        $this->assertNotEquals(
-            'admin',
-            $_SESSION['usuario']['perfil']
-        );
-    }
+    $errosDecimal = InventarioModel::validarContagem(5.5);
+    $teste->assertArrayHasKey('quantidade_contada', $errosDecimal, 'Contagem decimal deve ser rejeitada.');
 }
