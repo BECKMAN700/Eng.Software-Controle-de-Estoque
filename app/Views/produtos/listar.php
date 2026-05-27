@@ -109,11 +109,23 @@ ob_start();
             <p class="metric-description">Quantidade de produtos exibidos na listagem atual.</p>
         </article>
 
+<<<<<<< Updated upstream
         <article class="metric-card summary-card-danger">
             <p class="metric-label">Abaixo do mínimo</p>
             <strong class="metric-value"><?= $totalAbaixoMinimo ?></strong>
             <p class="metric-description">Produtos que precisam de reabastecimento.</p>
         </article>
+=======
+    <p>
+        <a href="index.php?acao=criar">Cadastrar novo produto</a>
+    </p>
+    
+    <p>
+     <a href="index.php?acao=divergencias">
+            Relatório de divergências
+        </a>
+    </p>
+>>>>>>> Stashed changes
 
         <article class="metric-card summary-card-warning">
             <p class="metric-label">No estoque mínimo</p>

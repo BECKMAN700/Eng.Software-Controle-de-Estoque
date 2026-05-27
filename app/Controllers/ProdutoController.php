@@ -390,6 +390,7 @@ class ProdutoController
         exit;
     }
 
+
     public function apiProdutos(): void
     {
         try {
@@ -551,5 +552,11 @@ class ProdutoController
         } catch (Throwable $e) {
             $this->responderJson(true, 'Erro interno ao processar a requisicao.', null, 500);
         }
+    }
+    public function mostrarDivergencias()
+    {
+        $divergencias = $this->model->buscarDivergencias();
+
+        include __DIR__ . '/../Views/produtos/divergencias.php';
     }
 }
