@@ -52,3 +52,56 @@ CREATE TABLE movimentacoes (
         FOREIGN KEY (produto_id) REFERENCES produtos(id)
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE inventarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    categoria VARCHAR(100) NULL,
+    status ENUM('aberto', 'em_conferencia', 'aprovado', 'cancelado') NOT NULL DEFAULT 'aberto',
+    criado_por INT NOT NULL,
+    aprovado_por INT NULL,
+    observacao TEXT NULL,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+    finalizado_em DATETIME NULL,
+    CONSTRAINT fk_inventarios_criado_por
+        FOREIGN KEY (criado_por) REFERENCES usuarios(id),
+    CONSTRAINT fk_inventarios_aprovado_por
+        FOREIGN KEY (aprovado_por) REFERENCES usuarios(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE inventario_itens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    inventario_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    quantidade_sistema INT NOT NULL,
+    quantidade_contada INT NULL,
+    diferenca INT NULL,
+    observacao TEXT NULL,
+    CONSTRAINT uq_inventario_produto UNIQUE (inventario_id, produto_id),
+    CONSTRAINT fk_inventario_itens_inventario
+        FOREIGN KEY (inventario_id) REFERENCES inventarios(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_inventario_itens_produto
+        FOREIGN KEY (produto_id) REFERENCES produtos(id)
+        ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE auditorias_estoque (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    inventario_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    quantidade_anterior INT NOT NULL,
+    quantidade_nova INT NOT NULL,
+    diferenca INT NOT NULL,
+    motivo VARCHAR(255) NOT NULL,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_auditorias_inventario
+        FOREIGN KEY (inventario_id) REFERENCES inventarios(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_auditorias_produto
+        FOREIGN KEY (produto_id) REFERENCES produtos(id)
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_auditorias_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

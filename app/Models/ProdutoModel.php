@@ -499,4 +499,24 @@ class ProdutoModel
     {
         return $this->listarMovimentacoes(null, $limite);
     }
+
+    public function buscarDivergencias(): array
+    {
+        $sql = "SELECT *
+                FROM produtos
+                WHERE status = 'ativo'
+                  AND (
+                      quantidade < estoque_minimo
+                      OR (
+                          estoque_maximo IS NOT NULL
+                          AND quantidade > estoque_maximo
+                      )
+                  )
+                ORDER BY nome ASC, id ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

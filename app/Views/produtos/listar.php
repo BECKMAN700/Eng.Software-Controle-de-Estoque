@@ -153,6 +153,10 @@ ob_start();
         Ver alertas
     </a>
 
+    <a href="index.php?acao=divergencias" class="btn btn-secondary">
+        Relatorio de limites
+    </a>
+
 </div>
             </div>
         </div>

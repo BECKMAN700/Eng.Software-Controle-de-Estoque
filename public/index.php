@@ -69,11 +69,55 @@ if (!$ehApi) {
 
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 require_once __DIR__ . '/../app/Controllers/UsuarioController.php';
+require_once __DIR__ . '/../app/Controllers/InventarioController.php';
 
 $controller = new ProdutoController();
 $usuarioController = new UsuarioController();
+$inventarioController = new InventarioController();
 
 switch ($acao) {
+    // ====================== ROTAS DE INVENTÁRIO ======================
+    case 'inventarios':
+        $inventarioController->inventarios();
+        break;
+
+    case 'inventario_criar':
+        $inventarioController->inventario_criar();
+        break;
+
+    case 'inventario_salvar':
+        exigirPostComCsrf();
+        $inventarioController->inventario_salvar();
+        break;
+
+    case 'inventario_detalhar':
+        $inventarioController->inventario_detalhar();
+        break;
+
+    case 'inventario_contagem':
+        $inventarioController->inventario_contagem();
+        break;
+
+    case 'inventario_salvar_contagem':
+        exigirPostComCsrf();
+        $inventarioController->inventario_salvar_contagem();
+        break;
+
+    case 'inventario_divergencias':
+        $inventarioController->inventario_divergencias();
+        break;
+
+    case 'inventario_auditoria':
+        Auth::exigirAdmin();
+        $inventarioController->inventario_auditoria();
+        break;
+
+    case 'inventario_aprovar':
+        exigirPostComCsrf();
+        $inventarioController->inventario_aprovar();
+        break;
+
+    // ====================== OUTRAS ROTAS ======================
     case 'listar':
         $controller->listar();
         break;
@@ -147,6 +191,10 @@ switch ($acao) {
 
     case 'relatorios':
         $controller->relatorios();
+        break;
+
+    case 'divergencias':
+        $controller->mostrarDivergencias();
         break;
 
     case 'usuarios':

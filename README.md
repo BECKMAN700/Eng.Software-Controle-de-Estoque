@@ -16,54 +16,62 @@
 
 ---
 
-## Links uteis
+## Sobre o projeto
 
-<small>
-<a href="docs/SPRINT2.md">Documentacao da Sprint 2</a><br>
-<a href="docs/SPRINT3.md">Documentacao da Sprint 3</a><br>
-<a href="docs/API.md">Documentacao da API</a><br>
-<a href="docs/TESTES.md">Como rodar os testes</a><br>
-<a href="database/schema.sql">Script do banco de dados</a>
-</small>
+O Controle de Estoque e um sistema web em PHP nativo para gerenciar produtos, entradas, saidas, limites de estoque, usuarios, movimentacoes, inventarios e auditoria de ajustes.
+
+A aplicacao segue o padrao MVC, usa MySQL com PDO e possui rotas protegidas por sessao, perfis de usuario e tokens CSRF nos POSTs criticos.
 
 ---
 
-## Sobre o projeto
-
-O **Controle de Estoque** e um sistema web desenvolvido em PHP nativo para gerenciar produtos, entradas, saidas, limites de estoque, historico de movimentacoes e relatorios.
-
-A aplicacao permite cadastrar produtos, acompanhar quantidade disponivel, controlar estoque minimo e maximo, registrar movimentacoes, gerenciar usuarios administradores/estoquistas e expor dados por uma API JSON em PHP nativo.
-
-Entre as principais funcionalidades estao:
+## Funcionalidades
 
 - Cadastro, listagem, edicao e exclusao de produtos
 - Registro de entradas e saidas de estoque
 - Historico de movimentacoes por produto
-- Alertas de estoque minimo, limite minimo e estoque maximo
+- Alertas de estoque minimo e maximo
 - Login com sessao PHP
 - Perfis `admin` e `estoquista`
 - Listagem e cadastro de usuarios por administradores
-- Protecao de rotas internas e administrativas
 - API JSON para produtos e movimentacoes
-- Validacoes reutilizaveis e testes simples em PHP
+- Modulo de inventario e auditoria da Sprint 4
+- Testes automatizados simples em PHP nativo
 
 ---
 
-## Objetivo
+## Sprint 4 - Inventario e Auditoria
 
-Desenvolver um sistema web simples e organizado para controle de estoque, aplicando conceitos de MVC, persistencia em MySQL, autenticacao, autorizacao por papeis, gerenciamento basico de usuarios, API em PHP nativo, validacoes, testes e fluxo GitFlow.
+Nesta sprint foi implementado o fluxo de inventario do estoque:
+
+1. Abrir inventario com todos os produtos ativos ou por categoria.
+2. Salvar a quantidade do sistema no momento da abertura.
+3. Registrar contagens fisicas manuais.
+4. Calcular divergencias entre sistema e contagem.
+5. Aprovar ajustes apenas com usuario admin.
+6. Atualizar `produtos.quantidade` apos aprovacao.
+7. Registrar auditoria com usuario, produto, quantidade anterior, quantidade nova, diferenca, motivo e data.
+8. Consultar a auditoria de inventarios aprovados.
+
+Rotas principais:
+
+- `index.php?acao=inventarios`
+- `index.php?acao=inventario_criar`
+- `index.php?acao=inventario_detalhar&id=1`
+- `index.php?acao=inventario_contagem&id=1`
+- `index.php?acao=inventario_divergencias&id=1`
+- `index.php?acao=inventario_auditoria&id=1`
 
 ---
 
-## Tecnologias utilizadas
+## Tecnologias
 
-- **Linguagem:** PHP 8.x
-- **Banco de dados:** MySQL
-- **Interface:** HTML5 e CSS3
-- **Persistencia:** PDO
-- **Servidor local:** XAMPP
-- **Arquitetura:** MVC
-- **Versionamento:** Git e GitHub com GitFlow
+- PHP 8.x
+- MySQL
+- PDO
+- HTML5
+- CSS3
+- XAMPP
+- Git e GitHub com GitFlow
 
 ---
 
@@ -71,27 +79,27 @@ Desenvolver um sistema web simples e organizado para controle de estoque, aplica
 
 ```text
 Eng.Software-Controle-de-Estoque/
-├── app/
-│   ├── Controllers/
-│   ├── Helpers/
-│   ├── Models/
-│   └── Views/
-├── config/
-├── database/
-├── docs/
-├── public/
-│   ├── api/
-│   └── assets/
-├── tests/
-├── README.md
-└── setup.php
++-- app/
+|   +-- Controllers/
+|   +-- Helpers/
+|   +-- Models/
+|   +-- Views/
++-- config/
++-- database/
++-- docs/
++-- public/
+|   +-- api/
+|   +-- assets/
++-- tests/
++-- README.md
++-- setup.php
 ```
 
 ---
 
 ## Banco de dados
 
-O sistema utiliza o banco:
+O sistema usa o banco:
 
 ```text
 controle_estoque
@@ -102,6 +110,9 @@ Tabelas principais:
 - `usuarios`
 - `produtos`
 - `movimentacoes`
+- `inventarios`
+- `inventario_itens`
+- `auditorias_estoque`
 
 O script completo esta em:
 
@@ -116,26 +127,39 @@ Usuarios de teste:
 | admin | `admin@controleestoque.local` | `admin123` |
 | estoquista | `estoquista@controleestoque.local` | `estoque123` |
 
-As senhas ficam armazenadas como hash no banco.
-
 ---
 
-## Rotas principais
+## Como executar
 
-- `index.php?acao=listar`
-- `index.php?acao=catalogo`
-- `index.php?acao=relatorios`
-- `index.php?acao=criar`
-- `index.php?acao=usuarios`
-- `index.php?acao=usuario_criar`
-- `index.php?acao=api_produtos`
-- `index.php?acao=api_movimentacoes`
+1. Clone o repositorio dentro da pasta `htdocs` do XAMPP.
+
+```bash
+git clone https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque.git
+```
+
+2. Acesse a pasta do projeto.
+
+```bash
+cd C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
+```
+
+3. Inicie Apache e MySQL no XAMPP.
+
+4. Crie o banco pelo phpMyAdmin ou execute o script:
+
+```text
+database/schema.sql
+```
+
+5. Acesse no navegador:
+
+```text
+http://localhost/Eng.Software-Controle-de-Estoque/public/
+```
 
 ---
 
 ## API JSON
-
-As APIs usam `public/index.php` como ponto de entrada e tambem possuem atalhos em `public/api`.
 
 Endpoints principais:
 
@@ -149,81 +173,35 @@ Endpoints principais:
 - `GET index.php?acao=api_movimentacoes&produto_id=1`
 - `POST index.php?acao=api_movimentacoes`
 
-As respostas seguem o padrao:
-
-```json
-{
-  "erro": false,
-  "mensagem": "Mensagem da operacao",
-  "dados": []
-}
-```
-
 Mais detalhes estao em [docs/API.md](docs/API.md).
 
 ---
 
-## Como rodar o projeto localmente
-
-1. Clone o repositorio dentro da pasta `htdocs` do XAMPP:
-
-```bash
-git clone https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque.git
-```
-
-2. Acesse a pasta do projeto:
-
-```bash
-cd C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
-```
-
-3. Inicie o Apache e o MySQL no XAMPP.
-
-4. Crie o banco pelo phpMyAdmin ou execute:
-
-```text
-database/schema.sql
-```
-
-5. Verifique a conexao em:
-
-```text
-config/Database.php
-```
-
-Configuracao padrao:
-
-```php
-private $host = '127.0.0.1';
-private $dbname = 'controle_estoque';
-private $user = 'root';
-private $pass = '';
-private $port = '3306';
-```
-
-6. Acesse no navegador:
-
-```text
-http://localhost/Eng.Software-Controle-de-Estoque/public/
-```
-
----
-
-## Como rodar os testes
+## Testes
 
 Os testes ficam na pasta `tests` e nao exigem Composer.
+
+```bash
+C:\xampp\php\php.exe tests\run.php
+```
+
+Ou:
 
 ```bash
 C:\xampp\php\php.exe tests\run_tests.php
 ```
 
-Saida esperada:
+Os testes cobrem autenticacao, permissoes, respostas JSON, validacoes, movimentacoes e regras de inventario.
 
-```text
-Todos os testes passaram. Total de assercoes: 27
-```
+---
 
-Mais detalhes estao em [docs/TESTES.md](docs/TESTES.md).
+## Documentacao
+
+- [docs/API.md](docs/API.md)
+- [docs/TESTES.md](docs/TESTES.md)
+- [docs/auditoria-sprint4.md](docs/auditoria-sprint4.md)
+- [docs/testes-movimentacoes.md](docs/testes-movimentacoes.md)
+- [database/schema.sql](database/schema.sql)
 
 ---
 
@@ -251,20 +229,6 @@ git push -u origin feature/nome-da-feature
 ```
 
 Depois, abrir Pull Request para `develop` e solicitar revisao de outro integrante.
-
----
-
-## Status das Sprints 2 e 3
-
-- Base de usuarios, banco e tela de login implementados
-- Gerenciamento basico de usuarios por administradores implementado
-- Autenticacao, logout e sessao PHP implementados
-- Papeis, permissoes e protecao de rotas implementados
-- API em PHP nativo para produtos e movimentacoes implementada
-- Respostas JSON padronizadas com helper
-- Validacoes de produto e movimentacao centralizadas
-- Testes PHP simples adicionados
-- Documentacao tecnica atualizada
 
 ---
 
