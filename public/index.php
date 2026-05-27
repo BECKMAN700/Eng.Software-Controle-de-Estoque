@@ -215,4 +215,8 @@ switch ($acao) {
     default:
         echo 'Ação inválida.';
         break;
+
+    case 'divergencias':
+    $controller->mostrarDivergencias();
+    break;
 }
