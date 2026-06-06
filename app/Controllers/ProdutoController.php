@@ -132,21 +132,22 @@ class ProdutoController
     {
         $tipo = trim($tipo);
         $motivo = trim($motivo);
+        $usuarioId = Sessao::getId();
 
         if ($tipo === 'entrada') {
             if ($motivo === '') {
-                return $this->model->movimentar($produtoId, 'entrada', $quantidade, $observacao);
+                return $this->model->movimentar($produtoId, 'entrada', $quantidade, $observacao, $usuarioId);
             }
 
-            return $this->model->registrarEntrada($produtoId, $motivo, $quantidade, $observacao);
+            return $this->model->registrarEntrada($produtoId, $motivo, $quantidade, $observacao, $usuarioId);
         }
 
         if ($tipo === 'saida') {
             if ($motivo === '') {
-                return $this->model->movimentar($produtoId, 'saida', $quantidade, $observacao);
+                return $this->model->movimentar($produtoId, 'saida', $quantidade, $observacao, $usuarioId);
             }
 
-            return $this->model->registrarSaida($produtoId, $motivo, $quantidade, $observacao);
+            return $this->model->registrarSaida($produtoId, $motivo, $quantidade, $observacao, $usuarioId);
         }
 
         return false;
@@ -315,7 +316,7 @@ class ProdutoController
         $quantidade = $_POST['quantidade'] ?? 0;
         $observacao = $_POST['observacao'] ?? '';
 
-        $sucesso = $this->model->registrarSaida($id, $motivo, $quantidade, $observacao);
+        $sucesso = $this->model->registrarSaida($id, $motivo, $quantidade, $observacao, Sessao::getId());
 
         if (!$sucesso) {
             echo "Não foi possível registrar a saída de estoque.";
@@ -333,7 +334,7 @@ class ProdutoController
         $quantidade = $_POST['quantidade'] ?? 0;
         $observacao = $_POST['observacao'] ?? '';
 
-        $sucesso = $this->model->movimentar($id, $tipo, $quantidade, $observacao);
+        $sucesso = $this->model->movimentar($id, $tipo, $quantidade, $observacao, Sessao::getId());
 
         if (!$sucesso) {
             echo "Não foi possível realizar a movimentação.";
@@ -379,7 +380,7 @@ class ProdutoController
         $quantidade = $_POST['quantidade'] ?? 0;
         $observacao = $_POST['observacao'] ?? '';
 
-        $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao);
+        $sucesso = $this->model->registrarEntrada($id, $motivo, $quantidade, $observacao, Sessao::getId());
 
         if (!$sucesso) {
             echo "Não foi possível registrar a entrada de estoque.";
