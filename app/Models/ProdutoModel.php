@@ -246,7 +246,7 @@ class ProdutoModel
         }
     }
 
-    public function movimentar($id, $tipo, $quantidade, $observacao = '')
+    public function movimentar($id, $tipo, $quantidade, $observacao = '', $usuarioId = null)
     {
         $quantidade = (int) $quantidade;
 
@@ -296,9 +296,9 @@ class ProdutoModel
             }
 
             $sqlMov = "INSERT INTO movimentacoes
-                       (produto_id, tipo, motivo, quantidade, observacao)
+                       (produto_id, tipo, motivo, quantidade, observacao, usuario_id)
                        VALUES
-                       (:produto_id, :tipo, :motivo, :quantidade, :observacao)";
+                       (:produto_id, :tipo, :motivo, :quantidade, :observacao, :usuario_id)";
 
             $stmtMov = $this->conn->prepare($sqlMov);
             $stmtMov->execute([
@@ -306,7 +306,8 @@ class ProdutoModel
                 ':tipo' => $tipo,
                 ':motivo' => $motivo,
                 ':quantidade' => $quantidade,
-                ':observacao' => trim((string) $observacao)
+                ':observacao' => trim((string) $observacao),
+                ':usuario_id' => $usuarioId
             ]);
 
             $this->conn->commit();
@@ -319,7 +320,7 @@ class ProdutoModel
         }
     }
 
-    public function registrarEntrada($id, $motivo, $quantidade, $observacao = '')
+    public function registrarEntrada($id, $motivo, $quantidade, $observacao = '', $usuarioId = null)
     {
         $motivosValidos = ['compra', 'devolucao', 'transferencia'];
         $quantidade = (int) $quantidade;
@@ -354,16 +355,17 @@ class ProdutoModel
             }
 
             $sqlMov = "INSERT INTO movimentacoes
-                       (produto_id, tipo, motivo, quantidade, observacao)
+                       (produto_id, tipo, motivo, quantidade, observacao, usuario_id)
                        VALUES
-                       (:produto_id, 'entrada', :motivo, :quantidade, :observacao)";
+                       (:produto_id, 'entrada', :motivo, :quantidade, :observacao, :usuario_id)";
 
             $stmtMov = $this->conn->prepare($sqlMov);
             $stmtMov->execute([
                 ':produto_id' => (int) $id,
                 ':motivo' => $motivo,
                 ':quantidade' => $quantidade,
-                ':observacao' => trim((string) $observacao)
+                ':observacao' => trim((string) $observacao),
+                ':usuario_id' => $usuarioId
             ]);
 
             $this->conn->commit();
@@ -376,7 +378,7 @@ class ProdutoModel
         }
     }
 
-    public function registrarSaida($id, $motivo, $quantidade, $observacao = '')
+    public function registrarSaida($id, $motivo, $quantidade, $observacao = '', $usuarioId = null)
     {
         $motivosValidos = ['venda', 'consumo_interno', 'perda', 'avaria'];
         $quantidade = (int) $quantidade;
@@ -416,16 +418,17 @@ class ProdutoModel
             }
 
             $sqlMov = "INSERT INTO movimentacoes
-                       (produto_id, tipo, motivo, quantidade, observacao)
+                       (produto_id, tipo, motivo, quantidade, observacao, usuario_id)
                        VALUES
-                       (:produto_id, 'saida', :motivo, :quantidade, :observacao)";
+                       (:produto_id, 'saida', :motivo, :quantidade, :observacao, :usuario_id)";
 
             $stmtMov = $this->conn->prepare($sqlMov);
             $stmtMov->execute([
                 ':produto_id' => (int) $id,
                 ':motivo' => $motivo,
                 ':quantidade' => $quantidade,
-                ':observacao' => trim((string) $observacao)
+                ':observacao' => trim((string) $observacao),
+                ':usuario_id' => $usuarioId
             ]);
 
             $this->conn->commit();
