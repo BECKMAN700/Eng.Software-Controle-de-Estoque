@@ -29,6 +29,9 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 
     <nav class="sidebar-nav">
         <span class="nav-section-title">Principal</span>
+        <a class="nav-link <?= menuAtivo(['dashboard']) ?>" href="index.php?acao=dashboard">
+            <span class="nav-icon"></span>
+            <span>Dashboard</span>
 
         <a class="nav-link <?= menuAtivo(['listar']) ?>" href="index.php?acao=listar">
             <span class="nav-icon"></span>
