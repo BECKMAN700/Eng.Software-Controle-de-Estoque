@@ -81,4 +81,18 @@ function testeUnitValidacao(TestCase $teste): void
     $teste->assertEquals([], InventarioModel::validarContagem(0), 'Contagem zero deve ser valida.');
     $teste->assertEquals([], InventarioModel::validarContagem(150), 'Contagem inteira positiva deve ser valida.');
     $teste->assertEquals([], InventarioModel::validarContagem('42'), 'Contagem em string numerica inteira deve ser valida.');
+
+    // 6. Testes do período do relatório
+    // Datas vazias
+    $errosDatasVazias = Validacao::periodoRelatorio(['data_inicial' => '', 'data_final' => '']);
+    $teste->assertArrayHasKey('data_inicial', $errosDatasVazias, 'Periodo sem data inicial deve retornar erro.');
+    $teste->assertArrayHasKey('data_final', $errosDatasVazias, 'Periodo sem data final deve retornar erro.');
+
+    // Data final menor que inicial
+    $errosDatasInvertidas = Validacao::periodoRelatorio(['data_inicial' => '2026-06-10', 'data_final' => '2026-06-05']);
+    $teste->assertArrayHasKey('data_final', $errosDatasInvertidas, 'Data final menor que a inicial deve retornar erro.');
+
+    // Datas válidas
+    $errosDatasValidas = Validacao::periodoRelatorio(['data_inicial' => '2026-06-01', 'data_final' => '2026-06-10']);
+    $teste->assertEquals([], $errosDatasValidas, 'Periodo de datas valido nao deve retornar erros.');
 }

@@ -93,4 +93,23 @@ class Validacao
 
         return $erros;
     }
+
+    public static function periodoRelatorio(array $dados): array
+    {
+        $erros = self::camposObrigatorios($dados, [
+            'data_inicial' => 'A data inicial é obrigatória.',
+            'data_final' => 'A data final é obrigatória.',
+        ]);
+
+        $dataInicial = $dados['data_inicial'] ?? '';
+        $dataFinal = $dados['data_final'] ?? '';
+
+        if (!empty($dataInicial) && !empty($dataFinal)) {
+            if (strtotime($dataFinal) < strtotime($dataInicial)) {
+                $erros['data_final'] = 'A data final não pode ser menor que a data inicial.';
+            }
+        }
+
+        return $erros;
+    }
 }

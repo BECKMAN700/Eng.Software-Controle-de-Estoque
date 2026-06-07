@@ -40,7 +40,7 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
             <span>Catálogo de produtos</span>
         </a>
 
-        <a class="nav-link <?= menuAtivo(['relatorios']) ?>" href="index.php?acao=relatorios">
+        <a class="nav-link <?= menuAtivo(['relatorios', 'giro_estoque', 'valorizacao', 'movimentacoes_periodo']) ?>" href="index.php?acao=relatorios">
             <span class="nav-icon"></span>
             <span>Relatórios</span>
         </a>
@@ -68,7 +68,7 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 
         <a class="nav-link" href="index.php?acao=listar#movimentacoes">
             <span class="nav-icon"></span>
-            <span>Acoes de estoque</span>
+            <span>Ações de estoque</span>
         </a>
 
         <span class="nav-section-title">Inventário</span>
@@ -82,7 +82,7 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 
         <a class="nav-link <?= menuAtivo(['usuarios', 'usuario_criar']) ?>" href="index.php?acao=usuarios">
             <span class="nav-icon"></span>
-            <span>Usuarios</span>
+            <span>Usuários</span>
         </a>
         <?php endif; ?>
     </nav>

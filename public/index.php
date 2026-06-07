@@ -14,6 +14,16 @@ require_once __DIR__ . '/../app/Controllers/AuthController.php';
 Sessao::iniciar();
 
 $acao = trim($_GET['acao'] ?? 'login');
+
+// Interceptar caminhos sugeridos para exportação de relatórios
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+$pathInfo = $_SERVER['PATH_INFO'] ?? '';
+if (strpos($pathInfo, '/relatorios/exportar-pdf') !== false || strpos($requestUri, '/relatorios/exportar-pdf') !== false) {
+    $acao = 'exportar-pdf';
+} elseif (strpos($pathInfo, '/relatorios/exportar-csv') !== false || strpos($requestUri, '/relatorios/exportar-csv') !== false) {
+    $acao = 'exportar-csv';
+}
+
 $acoesApi = ['api_produtos', 'api_movimentacoes'];
 $ehApi = in_array($acao, $acoesApi, true);
 
@@ -70,10 +80,12 @@ if (!$ehApi) {
 require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 require_once __DIR__ . '/../app/Controllers/UsuarioController.php';
 require_once __DIR__ . '/../app/Controllers/InventarioController.php';
+require_once __DIR__ . '/../app/Controllers/RelatorioController.php';
 
 $controller = new ProdutoController();
 $usuarioController = new UsuarioController();
 $inventarioController = new InventarioController();
+$relatorioController = new RelatorioController();
 
 switch ($acao) {
     // ====================== ROTAS DE INVENTÁRIO ======================
@@ -190,7 +202,27 @@ switch ($acao) {
         break;
 
     case 'relatorios':
-        $controller->relatorios();
+        $relatorioController->index();
+        break;
+
+    case 'giro_estoque':
+        $relatorioController->giroEstoque();
+        break;
+
+    case 'valorizacao':
+        $relatorioController->valorizacao();
+        break;
+
+    case 'movimentacoes_periodo':
+        $relatorioController->movimentacoesPeriodo();
+        break;
+
+    case 'exportar-pdf':
+        $relatorioController->exportarPdf();
+        break;
+
+    case 'exportar-csv':
+        $relatorioController->exportarCsv();
         break;
 
     case 'divergencias':
