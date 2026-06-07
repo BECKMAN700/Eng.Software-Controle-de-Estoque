@@ -122,6 +122,8 @@ ob_start();
     </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <?php
 $content = ob_get_clean();
 
