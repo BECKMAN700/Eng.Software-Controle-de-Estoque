@@ -122,8 +122,119 @@ ob_start();
     </div>
 </section>
 
+
+<section class="page-section">
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Entradas x Saídas</h2>
+                <p>Comparativo das movimentações registradas nos últimos 30 dias.</p>
+            </div>
+        </div>
+
+        <canvas
+            id="graficoEntradasSaidas"
+            height="110"
+            aria-label="Gráfico de entradas e saídas dos últimos 30 dias"
+            role="img"
+        ></canvas>
+    </div>
+</section>
+
+<section class="page-section">
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Produtos Mais Movimentados</h2>
+                <p>Produtos com maior volume de movimentação registrado.</p>
+            </div>
+        </div>
+
+
+        <canvas
+            id="graficoMaisMovimentados"
+            height="120"
+        ></canvas>
+    </div>
+</section>
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script>
+    const entradasSaidasDashboard = {
+        entradas: <?= (int) ($entradasSaidas['entrada'] ?? 0) ?>,
+        saidas: <?= (int) ($entradasSaidas['saida'] ?? 0) ?>
+    };
+
+    const graficoEntradasSaidas = document.getElementById('graficoEntradasSaidas');
+
+    if (graficoEntradasSaidas && typeof Chart !== 'undefined') {
+        new Chart(graficoEntradasSaidas, {
+            type: 'bar',
+            data: {
+                labels: ['Entradas', 'Saídas'],
+                datasets: [{
+                    label: 'Quantidade movimentada',
+                    data: [
+                        entradasSaidasDashboard.entradas,
+                        entradasSaidasDashboard.saidas
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+const produtosMovimentados = <?= json_encode(
+    array_map(
+        fn($produto) => $produto['nome'],
+        $maisMovimentados ?? []
+    )
+) ?>;
+
+const valoresMovimentados = <?= json_encode(
+    array_map(
+        fn($produto) => (int) $produto['total_movimentado'],
+        $maisMovimentados ?? []
+    )
+) ?>;
+
+const graficoMaisMovimentados =
+    document.getElementById('graficoMaisMovimentados');
+
+if (graficoMaisMovimentados && typeof Chart !== 'undefined') {
+
+    new Chart(graficoMaisMovimentados, {
+        type: 'bar',
+        data: {
+            labels: produtosMovimentados,
+            datasets: [{
+                label: 'Movimentações',
+                data: valoresMovimentados
+            }]
+        },
+        options: {
+            responsive: true,
+            indexAxis: 'y'
+        }
+    });
+}
+</script>
 <?php
 $content = ob_get_clean();
 
