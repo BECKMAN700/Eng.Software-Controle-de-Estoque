@@ -63,60 +63,46 @@ ob_start();
 </section>
 
 <section class="page-section">
-    <div class="grid grid-2">
+    <div class="grid grid-4">
 
-        <article class="card">
-            <div class="card-header">
-                <div>
-                    <h2>Movimentações (30 dias)</h2>
-                    <p>Resumo das entradas e saídas recentes.</p>
-                </div>
-            </div>
-
-            <div class="report-list">
-
-                <div class="report-list-item">
-                    <span>Total de entradas</span>
-                    <strong>
-                        <?= (int) ($entradasSaidas['entrada'] ?? 0) ?>
-                    </strong>
-                </div>
-
-                <div class="report-list-item">
-                    <span>Total de saídas</span>
-                    <strong>
-                        <?= (int) ($entradasSaidas['saida'] ?? 0) ?>
-                    </strong>
-                </div>
-
-            </div>
+        <article class="metric-card summary-card-success">
+            <p class="metric-label">Entradas nos últimos 30 dias</p>
+            <strong class="metric-value">
+                <?= (int) ($entradasSaidas['entrada'] ?? 0) ?>
+            </strong>
+            <p class="metric-description">
+                Total de unidades adicionadas ao estoque.
+            </p>
         </article>
 
-        <article class="card">
-            <div class="card-header">
-                <div>
-                    <h2>Status do Dashboard</h2>
-                    <p>Indicadores gerais do estoque.</p>
-                </div>
-            </div>
+        <article class="metric-card summary-card-danger">
+            <p class="metric-label">Saídas nos últimos 30 dias</p>
+            <strong class="metric-value">
+                <?= (int) ($entradasSaidas['saida'] ?? 0) ?>
+            </strong>
+            <p class="metric-description">
+                Total de unidades retiradas do estoque.
+            </p>
+        </article>
 
-            <div class="report-list">
+        <article class="metric-card">
+            <p class="metric-label">Produtos monitorados</p>
+            <strong class="metric-value">
+                <?= (int) ($resumo['total_produtos'] ?? 0) ?>
+            </strong>
+            <p class="metric-description">
+                Produtos considerados nos indicadores.
+            </p>
+        </article>
 
-                <div class="report-list-item">
-                    <span>Produtos monitorados</span>
-                    <strong>
-                        <?= (int) ($resumo['total_produtos'] ?? 0) ?>
-                    </strong>
-                </div>
-
-                <div class="report-list-item">
-                    <span>Itens críticos</span>
-                    <strong>
-                        <?= (int) ($resumo['produtos_criticos'] ?? 0) ?>
-                    </strong>
-                </div>
-
-            </div>
+        <article class="metric-card summary-card-warning">
+            <p class="metric-label">Itens críticos</p>
+            <strong class="metric-value">
+                <?= (int) ($resumo['produtos_criticos'] ?? 0) ?>
+            </strong>
+            <p class="metric-description">
+                Produtos abaixo do mínimo configurado.
+            </p>
         </article>
 
     </div>
@@ -158,8 +144,138 @@ ob_start();
     </div>
 </section>
 
+<section class="page-section">
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Tendência de Movimentações</h2>
+                <p>Evolução de entradas e saídas nos últimos 7 dias.</p>
+            </div>
+        </div>
+
+        <canvas
+            id="graficoTendenciaMovimentacoes"
+            height="120"
+        ></canvas>
+    </div>
+    
+</section>
+
+<section class="page-section">
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Produtos Críticos</h2>
+                <p>Itens abaixo do estoque mínimo que exigem atenção.</p>
+            </div>
+        </div>
+
+        <div class="report-list">
+
+            <?php if (empty($produtosCriticos)): ?>
+
+                <div class="report-list-item">
+                    <span>Nenhum produto crítico encontrado.</span>
+                </div>
+
+            <?php else: ?>
+
+                <?php foreach ($produtosCriticos as $produto): ?>
+
+    <?php if (empty($produtosCriticos)): ?>
+
+    <div class="empty-state">
+        <p>Nenhum produto crítico encontrado.</p>
+    </div>
+
+<?php else: ?>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Atual</th>
+                    <th>Mínimo</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <?php foreach ($produtosCriticos as $produto): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($produto['nome']) ?></td>
+                        <td><?= (int) $produto['quantidade'] ?></td>
+                        <td><?= (int) $produto['estoque_minimo'] ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+<?php endif; ?>
+
+<?php endforeach; ?>
+            <?php endif; ?>
+
+        </div>
+    </div>
+</section>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const tendenciaBruta = <?= json_encode($tendenciaMovimentacoes ?? []) ?>;
+
+const datasTendencia = [...new Set(tendenciaBruta.map(item => item.data))];
+
+const entradasTendencia = datasTendencia.map(data => {
+    const item = tendenciaBruta.find(linha => linha.data === data && linha.tipo === 'entrada');
+    return item ? parseInt(item.total) : 0;
+});
+
+const saidasTendencia = datasTendencia.map(data => {
+    const item = tendenciaBruta.find(linha => linha.data === data && linha.tipo === 'saida');
+    return item ? parseInt(item.total) : 0;
+});
+
+const graficoTendenciaMovimentacoes =
+    document.getElementById('graficoTendenciaMovimentacoes');
+
+if (graficoTendenciaMovimentacoes && typeof Chart !== 'undefined') {
+    new Chart(graficoTendenciaMovimentacoes, {
+        type: 'line',
+        data: {
+            labels: datasTendencia,
+            datasets: [
+                {
+                    label: 'Entradas',
+                    data: entradasTendencia,
+                    tension: 0.3
+                },
+                {
+                    label: 'Saídas',
+                    data: saidasTendencia,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+
+
 
 <script>
     const entradasSaidasDashboard = {
