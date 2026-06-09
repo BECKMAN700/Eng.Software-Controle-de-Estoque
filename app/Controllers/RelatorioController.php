@@ -21,7 +21,23 @@
             if (function_exists('iconv')) {
                 return @iconv('UTF-8', 'windows-1252//TRANSLIT', $str) ?: $str;
             }
-            return utf8_decode($str);
+            // Fallback sem utf8_decode (descontinuado a partir do PHP 8.2)
+            return mb_convert_encoding($str, 'ISO-8859-1', 'UTF-8');
+        }
+
+        /**
+         * Classifica o giro de um produto a partir do total movimentado.
+         * Centraliza a regra usada na tela e nas exportacoes (PDF e CSV).
+         */
+        private function classificarGiro(int $totalMovimentado): string
+        {
+            if ($totalMovimentado >= 50) {
+                return 'alto';
+            }
+            if ($totalMovimentado > 10) {
+                return 'medio';
+            }
+            return 'baixo';
         }
 
         /**
@@ -59,14 +75,7 @@
 
             // Classifica os itens na situação de giro
             $dadosGiro = array_map(function ($item) {
-                $total = (int) $item['total_movimentado'];
-                if ($total >= 50) {
-                    $item['situacao'] = 'alto';
-                } elseif ($total > 10) {
-                    $item['situacao'] = 'medio';
-                } else {
-                    $item['situacao'] = 'baixo';
-                }
+                $item['situacao'] = $this->classificarGiro((int) $item['total_movimentado']);
                 return $item;
             }, $dadosGiro);
 
@@ -172,14 +181,7 @@
 
                 $dados = $this->model->buscarGiroEstoque($busca, $categoria, $dataInicial, $dataFinal);
                 $dados = array_map(function ($item) {
-                    $total = (int) $item['total_movimentado'];
-                    if ($total >= 50) {
-                        $item['situacao'] = 'alto';
-                    } elseif ($total > 10) {
-                        $item['situacao'] = 'medio';
-                    } else {
-                        $item['situacao'] = 'baixo';
-                    }
+                    $item['situacao'] = $this->classificarGiro((int) $item['total_movimentado']);
                     return $item;
                 }, $dados);
 
@@ -361,14 +363,7 @@
 
                 $dados = $this->model->buscarGiroEstoque($busca, $categoria, $dataInicial, $dataFinal);
                 $dados = array_map(function ($item) {
-                    $total = (int) $item['total_movimentado'];
-                    if ($total >= 50) {
-                        $item['situacao'] = 'Alto';
-                    } elseif ($total > 10) {
-                        $item['situacao'] = 'Medio';
-                    } else {
-                        $item['situacao'] = 'Baixo';
-                    }
+                    $item['situacao'] = $this->classificarGiro((int) $item['total_movimentado']);
                     return $item;
                 }, $dados);
 
@@ -404,7 +399,7 @@
                     $pdf->Cell(25, 7, $row['total_entradas'], 1, 0, 'C', $fill);
                     $pdf->Cell(25, 7, $row['total_saidas'], 1, 0, 'C', $fill);
                     $pdf->Cell(25, 7, $row['total_movimentado'], 1, 0, 'C', $fill);
-                    $pdf->Cell(25, 7, $this->conv($row['situacao']), 1, 1, 'C', $fill);
+                    $pdf->Cell(25, 7, $this->conv(ucfirst($row['situacao'])), 1, 1, 'C', $fill);
                     $fill = !$fill;
                 }
 
