@@ -81,11 +81,13 @@ require_once __DIR__ . '/../app/Controllers/ProdutoController.php';
 require_once __DIR__ . '/../app/Controllers/UsuarioController.php';
 require_once __DIR__ . '/../app/Controllers/InventarioController.php';
 require_once __DIR__ . '/../app/Controllers/RelatorioController.php';
+require_once __DIR__ . '/../app/Controllers/DashboardController.php';
 
 $controller = new ProdutoController();
 $usuarioController = new UsuarioController();
 $inventarioController = new InventarioController();
 $relatorioController = new RelatorioController();
+$dashboardController = new DashboardController();   
 
 switch ($acao) {
     // ====================== ROTAS DE INVENTÁRIO ======================
@@ -130,6 +132,10 @@ switch ($acao) {
         break;
 
     // ====================== OUTRAS ROTAS ======================
+    case 'dashboard':
+        $dashboardController->index();
+        break;
+
     case 'listar':
         $controller->listar();
         break;
