@@ -6,13 +6,14 @@
 **Disciplina:** Engenharia de Software<br>
 **Semestre:** 2026.1
 
-**Equipe**
+**Equipe atual**
 
-- [Joao Pedro Rodrigues Bequiman](https://github.com/BECKMAN700)
-- [Giordano Bruno](https://github.com/GiordanOBru)
-- [Murillo Fernandes de Oliveira](https://github.com/murillofnandes)
-- [Iagor Lourenco dos Santos](https://github.com/iagorlrnc)
-- [Matheus Sulino da Silva Costa](https://github.com/vrascode)
+- [Joao Pedro Rodrigues Bequiman](https://github.com/BECKMAN700) - repositorio, documentacao, testes e verificacao final
+- [Giordano Bruno](https://github.com/GiordanOBru) - relatorios e exportacao
+- [Murillo Fernandes de Oliveira](https://github.com/murillofnandes) - dashboard e graficos
+- [Matheus Sulino da Silva Costa](https://github.com/vrascode) - filtros avancados e refinamento
+
+> [Iagor Lourenco dos Santos](https://github.com/iagorlrnc) participou de sprints anteriores e nao integra mais a equipe.
 
 ---
 
@@ -35,6 +36,10 @@ A aplicacao segue o padrao MVC, usa MySQL com PDO e possui rotas protegidas por 
 - Listagem e cadastro de usuarios por administradores
 - API JSON para produtos e movimentacoes
 - Modulo de inventario e auditoria da Sprint 4
+- Relatorios gerenciais: giro de estoque, valorizacao e movimentacoes por periodo (Sprint 5)
+- Exportacao de relatorios em PDF e CSV (Sprint 5)
+- Dashboard gerencial com cards e graficos (Sprint 5)
+- Filtros avancados por periodo e categoria (Sprint 5)
 - Testes automatizados simples em PHP nativo
 
 ---
@@ -63,6 +68,44 @@ Rotas principais:
 
 ---
 
+## Sprint 5 - Relatorios e Dashboard Gerencial
+
+Esta sprint transforma os dados do estoque em informacao gerencial, com relatorios, dashboard, filtros e exportacoes usando dados reais do banco.
+
+**Relatorios:**
+
+- Giro de estoque: produtos mais e menos movimentados, classificados em alto, medio e baixo giro.
+- Valorizacao do estoque: valor financeiro por produto (quantidade x preco) e total geral.
+- Movimentacoes por periodo: entradas e saidas em um intervalo de datas, com totais.
+
+**Exportacao:**
+
+- Cada relatorio pode ser exportado em PDF (FPDF) e em CSV.
+
+**Dashboard gerencial:**
+
+- Cards de produtos cadastrados, unidades, valor do estoque, produtos criticos, entradas e saidas.
+- Graficos (Chart.js): entradas x saidas, produtos mais movimentados e tendencia de movimentacoes.
+
+**Filtros e refinamento:**
+
+- Filtros por periodo e categoria nos produtos e relatorios, com bloqueio de datas invalidas.
+- Padronizacao visual de tabelas, botoes e mensagens.
+
+Rotas principais:
+
+- `index.php?acao=dashboard`
+- `index.php?acao=relatorios`
+- `index.php?acao=giro_estoque`
+- `index.php?acao=valorizacao`
+- `index.php?acao=movimentacoes_periodo`
+- `index.php?acao=exportar-pdf&relatorio=giro_estoque|valorizacao|movimentacoes`
+- `index.php?acao=exportar-csv&relatorio=giro_estoque|valorizacao|movimentacoes`
+
+Documentacao detalhada em [docs/sprint-5/](docs/sprint-5/).
+
+---
+
 ## Tecnologias
 
 - PHP 8.x
@@ -70,6 +113,9 @@ Rotas principais:
 - PDO
 - HTML5
 - CSS3
+- JavaScript
+- Chart.js (graficos do dashboard)
+- FPDF (exportacao de relatorios em PDF)
 - XAMPP
 - Git e GitHub com GitFlow
 
@@ -145,11 +191,13 @@ cd C:\xampp\htdocs\Eng.Software-Controle-de-Estoque
 
 3. Inicie Apache e MySQL no XAMPP.
 
-4. Crie o banco pelo phpMyAdmin ou execute o script:
+4. Crie o banco executando o script de setup no navegador:
 
 ```text
-database/schema.sql
+http://localhost/Eng.Software-Controle-de-Estoque/setup.php
 ```
+
+   Ou importe manualmente o arquivo `database/schema.sql` pelo phpMyAdmin.
 
 5. Acesse no navegador:
 
@@ -199,6 +247,8 @@ Os testes cobrem autenticacao, permissoes, respostas JSON, validacoes, movimenta
 
 - [docs/API.md](docs/API.md)
 - [docs/TESTES.md](docs/TESTES.md)
+- [docs/sprint-5/planejamento-sprint-5.md](docs/sprint-5/planejamento-sprint-5.md)
+- [docs/sprint-5/relatorio-sprint-5.md](docs/sprint-5/relatorio-sprint-5.md)
 - [docs/auditoria-sprint4.md](docs/auditoria-sprint4.md)
 - [docs/testes-movimentacoes.md](docs/testes-movimentacoes.md)
 - [database/schema.sql](database/schema.sql)
