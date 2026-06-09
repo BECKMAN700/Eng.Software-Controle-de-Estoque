@@ -34,7 +34,7 @@ class Relatorio
     /**
      * Relatório de Giro de Estoque
      */
-    public function buscarGiroEstoque($busca = ''): array
+    public function buscarGiroEstoque($busca = '', $categoria = '', $dataInicial = '', $dataFinal = ''): array
     {
         try {
             $sql = "SELECT
@@ -53,9 +53,24 @@ class Relatorio
             
             $params = [];
             $busca = trim((string) $busca);
+            $categoria = trim((string) $categoria);
+            $dataInicial = trim((string) $dataInicial);
+            $dataFinal = trim((string) $dataFinal);
+
             if ($busca !== '') {
                 $sql .= " AND (p.nome LIKE :busca OR p.codigo LIKE :busca)";
                 $params[':busca'] = '%' . $busca . '%';
+            }
+
+            if ($categoria !== '') {
+                $sql .= " AND p.categoria = :categoria";
+                $params[':categoria'] = $categoria;
+            }
+
+            if ($dataInicial !== '' && $dataFinal !== '') {
+                $sql .= " AND m.data_hora BETWEEN :data_inicial AND :data_final";
+                $params[':data_inicial'] = $dataInicial . ' 00:00:00';
+                $params[':data_final'] = $dataFinal . ' 23:59:59';
             }
 
             $sql .= " GROUP BY p.id, p.nome, p.codigo, p.categoria

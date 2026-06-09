@@ -38,9 +38,24 @@
         public function giroEstoque(): void
         {
             $busca = $_GET['busca'] ?? '';
+            $categoria = $_GET['categoria'] ?? '';
+            $dataInicial = $_GET['data_inicial'] ?? '';
+            $dataFinal = $_GET['data_final'] ?? '';
             $situacao = $_GET['situacao'] ?? ''; // 'alto', 'medio', 'baixo'
+            $categorias = $this->model->listarCategorias();
+            $erros = [];
+            $filtroPeriodoAtivo = $dataInicial !== '' || $dataFinal !== '';
 
-            $dadosGiro = $this->model->buscarGiroEstoque($busca);
+            if ($filtroPeriodoAtivo) {
+                $erros = Validacao::periodoRelatorio([
+                    'data_inicial' => $dataInicial,
+                    'data_final' => $dataFinal
+                ]);
+            }
+
+            $dadosGiro = empty($erros)
+                ? $this->model->buscarGiroEstoque($busca, $categoria, $dataInicial, $dataFinal)
+                : [];
 
             // Classifica os itens na situação de giro
             $dadosGiro = array_map(function ($item) {
@@ -56,7 +71,7 @@
             }, $dadosGiro);
 
             // Filtra por situação se especificado
-            if ($situacao !== '') {
+            if ($situacao !== '' && empty($erros)) {
                 $dadosGiro = array_filter($dadosGiro, function ($item) use ($situacao) {
                     return $item['situacao'] === $situacao;
                 });
@@ -137,9 +152,25 @@
             
             if ($relatorio === 'giro_estoque') {
                 $busca = $_GET['busca'] ?? '';
+                $categoria = $_GET['categoria'] ?? '';
+                $dataInicial = $_GET['data_inicial'] ?? '';
+                $dataFinal = $_GET['data_final'] ?? '';
                 $situacao = $_GET['situacao'] ?? '';
+                $erros = [];
                 
-                $dados = $this->model->buscarGiroEstoque($busca);
+                if ($dataInicial !== '' || $dataFinal !== '') {
+                    $erros = Validacao::periodoRelatorio([
+                        'data_inicial' => $dataInicial,
+                        'data_final' => $dataFinal
+                    ]);
+                }
+
+                if ($erros !== []) {
+                    echo 'Filtros de periodo invalidos para exportacao.';
+                    exit;
+                }
+
+                $dados = $this->model->buscarGiroEstoque($busca, $categoria, $dataInicial, $dataFinal);
                 $dados = array_map(function ($item) {
                     $total = (int) $item['total_movimentado'];
                     if ($total >= 50) {
@@ -230,8 +261,13 @@
                 $produtoId = $_GET['produto_id'] ?? '';
                 $categoria = $_GET['categoria'] ?? '';
 
-                if (empty($dataInicial) || empty($dataFinal)) {
-                    echo 'Filtros de data inicial e final são obrigatórios.';
+                $erros = Validacao::periodoRelatorio([
+                    'data_inicial' => $dataInicial,
+                    'data_final' => $dataFinal
+                ]);
+
+                if ($erros !== []) {
+                    echo 'Filtros de data inicial e final sao obrigatorios e devem formar um periodo valido.';
                     exit;
                 }
 
@@ -305,9 +341,25 @@
 
             if ($relatorio === 'giro_estoque') {
                 $busca = $_GET['busca'] ?? '';
+                $categoria = $_GET['categoria'] ?? '';
+                $dataInicial = $_GET['data_inicial'] ?? '';
+                $dataFinal = $_GET['data_final'] ?? '';
                 $situacao = $_GET['situacao'] ?? '';
+                $erros = [];
                 
-                $dados = $this->model->buscarGiroEstoque($busca);
+                if ($dataInicial !== '' || $dataFinal !== '') {
+                    $erros = Validacao::periodoRelatorio([
+                        'data_inicial' => $dataInicial,
+                        'data_final' => $dataFinal
+                    ]);
+                }
+
+                if ($erros !== []) {
+                    echo 'Filtros de periodo invalidos para exportacao.';
+                    exit;
+                }
+
+                $dados = $this->model->buscarGiroEstoque($busca, $categoria, $dataInicial, $dataFinal);
                 $dados = array_map(function ($item) {
                     $total = (int) $item['total_movimentado'];
                     if ($total >= 50) {
@@ -411,8 +463,13 @@
                 $produtoId = $_GET['produto_id'] ?? '';
                 $categoria = $_GET['categoria'] ?? '';
 
-                if (empty($dataInicial) || empty($dataFinal)) {
-                    echo 'Filtros de data inicial e final são obrigatórios.';
+                $erros = Validacao::periodoRelatorio([
+                    'data_inicial' => $dataInicial,
+                    'data_final' => $dataFinal
+                ]);
+
+                if ($erros !== []) {
+                    echo 'Filtros de data inicial e final sao obrigatorios e devem formar um periodo valido.';
                     exit;
                 }
 
