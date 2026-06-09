@@ -245,11 +245,18 @@ Os testes cobrem autenticacao, permissoes, respostas JSON, validacoes, movimenta
 
 ## Documentacao
 
+Documentacao por sprint:
+
+- Sprint 1 - Produtos e movimentacoes: [planejamento](docs/sprint-1/planejamento-sprint-1.md) | [relatorio](docs/sprint-1/relatorio-sprint-1.md)
+- Sprint 2 - Autenticacao e papeis: [planejamento](docs/sprint-2/planejamento-sprint-2.md) | [relatorio](docs/sprint-2/relatorio-sprint-2.md)
+- Sprint 3 - API JSON e testes: [planejamento](docs/sprint-3/planejamento-sprint-3.md) | [relatorio](docs/sprint-3/relatorio-sprint-3.md)
+- Sprint 4 - Inventario e auditoria: [planejamento](docs/sprint-4/planejamento-sprint-4.md) | [relatorio](docs/sprint-4/relatorio-sprint-4.md)
+- Sprint 5 - Relatorios e dashboard: [planejamento](docs/sprint-5/planejamento-sprint-5.md) | [relatorio](docs/sprint-5/relatorio-sprint-5.md)
+
+Documentacao tecnica:
+
 - [docs/API.md](docs/API.md)
 - [docs/TESTES.md](docs/TESTES.md)
-- [docs/sprint-5/planejamento-sprint-5.md](docs/sprint-5/planejamento-sprint-5.md)
-- [docs/sprint-5/relatorio-sprint-5.md](docs/sprint-5/relatorio-sprint-5.md)
-- [docs/auditoria-sprint4.md](docs/auditoria-sprint4.md)
 - [docs/testes-movimentacoes.md](docs/testes-movimentacoes.md)
 - [database/schema.sql](database/schema.sql)
 
