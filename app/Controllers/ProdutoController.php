@@ -159,8 +159,20 @@ class ProdutoController
         $categoria = trim($_GET['categoria'] ?? '');
         $unidade = trim($_GET['unidade'] ?? '');
         $status = trim($_GET['status'] ?? '');
+        $dataInicial = trim($_GET['data_inicial'] ?? '');
+        $dataFinal = trim($_GET['data_final'] ?? '');
+        $erros = [];
 
-        $produtos = $this->model->listarFiltrados($busca, $categoria, $unidade, $status);
+        if ($dataInicial !== '' || $dataFinal !== '') {
+            $erros = Validacao::periodoRelatorio([
+                'data_inicial' => $dataInicial,
+                'data_final' => $dataFinal
+            ]);
+        }
+
+        $produtos = empty($erros)
+            ? $this->model->listarFiltrados($busca, $categoria, $unidade, $status, $dataInicial, $dataFinal)
+            : [];
         $categorias = $this->model->listarCategorias();
         $unidades = $this->model->listarUnidades();
         $statusOptions = ['ativo', 'inativo', 'descontinuado'];

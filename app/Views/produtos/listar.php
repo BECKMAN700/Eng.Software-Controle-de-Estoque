@@ -7,6 +7,7 @@ $produtos = $produtos ?? [];
 $categorias = $categorias ?? [];
 $unidades = $unidades ?? [];
 $statusOptions = $statusOptions ?? [];
+$erros = $erros ?? [];
 
 $produtosAbaixoDoMinimo = $produtosAbaixoDoMinimo ?? [];
 $produtosNoMinimo = $produtosNoMinimo ?? [];
@@ -16,6 +17,9 @@ $busca = $busca ?? ($_GET['busca'] ?? '');
 $categoria = $categoria ?? ($_GET['categoria'] ?? '');
 $unidade = $unidade ?? ($_GET['unidade'] ?? '');
 $status = $status ?? ($_GET['status'] ?? '');
+$dataInicial = $dataInicial ?? ($_GET['data_inicial'] ?? '');
+$dataFinal = $dataFinal ?? ($_GET['data_final'] ?? '');
+$filtrosAtivos = $busca !== '' || $categoria !== '' || $unidade !== '' || $status !== '' || $dataInicial !== '' || $dataFinal !== '';
 
 $totalProdutos = count($produtos);
 $totalAbaixoMinimo = count($produtosAbaixoDoMinimo);
@@ -370,9 +374,19 @@ ob_start();
         <div class="card-header">
             <div>
                 <h2>Filtros</h2>
-                <p>Encontre produtos por nome, código, categoria, unidade ou status.</p>
+                <p>Encontre produtos por nome, codigo, categoria, unidade, status ou periodo de cadastro.</p>
             </div>
         </div>
+
+        <?php if (!empty($erros)): ?>
+            <div class="alert alert-danger" role="alert">
+                Revise as datas informadas para filtrar os produtos.
+            </div>
+        <?php elseif ($filtrosAtivos): ?>
+            <div class="alert alert-success" role="alert">
+                Filtros aplicados. A listagem abaixo mostra somente os produtos encontrados.
+            </div>
+        <?php endif; ?>
 
         <form class="filters-form" action="index.php" method="GET">
             <input type="hidden" name="acao" value="listar">
@@ -424,9 +438,37 @@ ob_start();
                 </select>
             </div>
 
+            <div class="form-group">
+                <label for="data_inicial">Data inicial</label>
+                <input
+                    type="date"
+                    id="data_inicial"
+                    name="data_inicial"
+                    value="<?= esc($dataInicial) ?>"
+                    class="<?= isset($erros['data_inicial']) ? 'field-invalid' : '' ?>"
+                >
+                <?php if (isset($erros['data_inicial'])): ?>
+                    <span class="form-error"><?= esc($erros['data_inicial']) ?></span>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label for="data_final">Data final</label>
+                <input
+                    type="date"
+                    id="data_final"
+                    name="data_final"
+                    value="<?= esc($dataFinal) ?>"
+                    class="<?= isset($erros['data_final']) ? 'field-invalid' : '' ?>"
+                >
+                <?php if (isset($erros['data_final'])): ?>
+                    <span class="form-error"><?= esc($erros['data_final']) ?></span>
+                <?php endif; ?>
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
-                <a href="index.php?acao=listar" class="btn btn-secondary">Limpar</a>
+                <a href="index.php?acao=listar" class="btn btn-secondary">Limpar filtros</a>
             </div>
         </form>
     </div>
@@ -450,7 +492,7 @@ ob_start();
 
         <?php if (empty($produtos)): ?>
             <div class="empty-state">
-                Nenhum produto encontrado com os filtros informados.
+                <?= !empty($erros) ? 'Corrija os filtros de data para visualizar os produtos.' : 'Nenhum produto encontrado com os filtros informados.' ?>
             </div>
         <?php else: ?>
             <div class="table-wrapper">

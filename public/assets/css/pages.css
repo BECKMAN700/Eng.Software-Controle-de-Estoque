@@ -22,7 +22,7 @@
 
 .filters-form {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 12px;
     align-items: end;
 }
@@ -103,9 +103,57 @@
     gap: 10px;
 }
 
+.grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.filter-panel {
+    margin-bottom: 22px;
+}
+
+.report-filter-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    align-items: end;
+}
+
+.report-filter-form-compact {
+    grid-template-columns: minmax(220px, 1fr) auto;
+}
+
+.report-filter-actions {
+    align-self: end;
+    margin-top: 0;
+}
+
+.field-invalid {
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 0 3px var(--danger-soft) !important;
+}
+
+.required,
+.text-danger {
+    color: var(--danger);
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.table-total-row {
+    background: #f8fafc;
+    font-weight: 800;
+}
+
 .summary-card-warning {
     border-color: #fed7aa;
     background: #fffbeb;
+}
+
+.summary-card-success {
+    border-color: #bbf7d0;
+    background: #ecfdf3;
 }
 
 .summary-card-danger {

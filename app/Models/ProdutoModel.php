@@ -37,7 +37,7 @@ class ProdutoModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function listarFiltrados($busca = '', $categoria = '', $unidade = '', $status = '')
+    public function listarFiltrados($busca = '', $categoria = '', $unidade = '', $status = '', $dataInicial = '', $dataFinal = '')
     {
         $sql = "SELECT * FROM produtos WHERE 1=1";
         $params = [];
@@ -46,6 +46,8 @@ class ProdutoModel
         $categoria = trim((string) $categoria);
         $unidade = trim((string) $unidade);
         $status = trim((string) $status);
+        $dataInicial = trim((string) $dataInicial);
+        $dataFinal = trim((string) $dataFinal);
 
         if ($busca !== '') {
             $sql .= " AND (nome LIKE :busca OR codigo LIKE :busca)";
@@ -65,6 +67,12 @@ class ProdutoModel
         if ($status !== '') {
             $sql .= " AND status = :status";
             $params[':status'] = $status;
+        }
+
+        if ($dataInicial !== '' && $dataFinal !== '') {
+            $sql .= " AND criado_em BETWEEN :data_inicial AND :data_final";
+            $params[':data_inicial'] = $dataInicial . ' 00:00:00';
+            $params[':data_final'] = $dataFinal . ' 23:59:59';
         }
 
         $sql .= " ORDER BY id DESC";
