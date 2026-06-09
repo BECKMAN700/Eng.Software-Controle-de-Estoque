@@ -170,54 +170,32 @@ ob_start();
             </div>
         </div>
 
-        <div class="report-list">
-
-            <?php if (empty($produtosCriticos)): ?>
-
-                <div class="report-list-item">
-                    <span>Nenhum produto crítico encontrado.</span>
-                </div>
-
-            <?php else: ?>
-
-                <?php foreach ($produtosCriticos as $produto): ?>
-
-    <?php if (empty($produtosCriticos)): ?>
-
-    <div class="empty-state">
-        <p>Nenhum produto crítico encontrado.</p>
-    </div>
-
-<?php else: ?>
-
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Produto</th>
-                    <th>Atual</th>
-                    <th>Mínimo</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <?php foreach ($produtosCriticos as $produto): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($produto['nome']) ?></td>
-                        <td><?= (int) $produto['quantidade'] ?></td>
-                        <td><?= (int) $produto['estoque_minimo'] ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-
-<?php endif; ?>
-
-<?php endforeach; ?>
-            <?php endif; ?>
-
-        </div>
+        <?php if (empty($produtosCriticos)): ?>
+            <div class="empty-state">
+                <p>Nenhum produto crítico encontrado.</p>
+            </div>
+        <?php else: ?>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Atual</th>
+                            <th>Mínimo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($produtosCriticos as $produto): ?>
+                            <tr>
+                                <td><?= htmlspecialchars((string) ($produto['nome'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><?= (int) $produto['quantidade'] ?></td>
+                                <td><?= (int) $produto['estoque_minimo'] ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
