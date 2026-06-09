@@ -32,6 +32,7 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
         <a class="nav-link <?= menuAtivo(['dashboard']) ?>" href="index.php?acao=dashboard">
             <span class="nav-icon"></span>
             <span>Dashboard</span>
+        </a>
 
         <a class="nav-link <?= menuAtivo(['listar']) ?>" href="index.php?acao=listar">
             <span class="nav-icon"></span>
