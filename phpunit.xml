@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheResultFile=".phpunit.cache/test-results">
+    <testsuites>
+        <testsuite name="Unitarios">
+            <directory>tests/Unit</directory>
+            <file>tests/AuthTest.php</file>
+            <file>tests/PermissaoTest.php</file>
+            <file>tests/ApiResponseTest.php</file>
+            <file>tests/ProdutoApiTest.php</file>
+            <file>tests/MovimentacaoApiTest.php</file>
+            <file>tests/InventarioTest.php</file>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

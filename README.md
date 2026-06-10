@@ -227,19 +227,29 @@ Mais detalhes estao em [docs/API.md](docs/API.md).
 
 ## Testes
 
-Os testes ficam na pasta `tests` e nao exigem Composer.
+Os testes usam **PHPUnit 9.6** (framework de testes do PHP), gerenciado pelo Composer. A aplicacao continua em PHP nativo; o PHPUnit e apenas dependencia de desenvolvimento (`require-dev`).
+
+> Use um PHP com a extensao `mbstring` habilitada (o PHP do XAMPP ja vem com ela). O `composer.phar` esta incluido para quem nao tem o Composer instalado.
+
+Instalar as dependencias de teste (apenas na primeira vez):
 
 ```bash
-C:\xampp\php\php.exe tests\run.php
+C:\xampp\php\php.exe composer.phar install
 ```
 
-Ou:
+Rodar todos os testes:
 
 ```bash
-C:\xampp\php\php.exe tests\run_tests.php
+C:\xampp\php\php.exe composer.phar test
 ```
 
-Os testes cobrem autenticacao, permissoes, respostas JSON, validacoes, movimentacoes e regras de inventario.
+Saida detalhada, com cada teste listado:
+
+```bash
+C:\xampp\php\php.exe vendor\phpunit\phpunit\phpunit --testdox
+```
+
+Cobertura: autenticacao, sessao, permissoes, respostas JSON, validacoes, movimentacoes e regras de inventario (25 testes, 97 assercoes).
 
 ---
 

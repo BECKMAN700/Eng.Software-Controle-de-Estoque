@@ -1,47 +1,62 @@
 # Testes
 
-Os testes do projeto usam PHP puro, sem Composer ou framework externo. O runner central fica em `tests/run_tests.php`, e `tests/run.php` funciona como atalho.
+Os testes do projeto usam o **PHPUnit 9.6**, framework de testes padrao do PHP, gerenciado pelo **Composer**. A aplicacao continua em PHP nativo; o PHPUnit entra apenas como dependencia de desenvolvimento (`require-dev`).
+
+## Requisitos
+
+- PHP 8.0+ com a extensao `mbstring` (o PHP do XAMPP ja inclui).
+- Composer. O arquivo `composer.phar` esta incluido no projeto para quem nao tem o Composer instalado globalmente.
+
+## Instalacao
+
+Na primeira vez, instale as dependencias de teste:
+
+```bash
+C:\xampp\php\php.exe composer.phar install
+```
+
+Isso cria a pasta `vendor/` (ignorada no Git) com o PHPUnit.
 
 ## Como executar
 
-Na raiz do projeto, rode:
+Todos os testes:
 
 ```bash
-C:\xampp\php\php.exe tests\run.php
+C:\xampp\php\php.exe composer.phar test
 ```
 
-Tambem e possivel usar:
+Saida detalhada (cada teste como uma frase):
 
 ```bash
-C:\xampp\php\php.exe tests\run_tests.php
+C:\xampp\php\php.exe vendor\phpunit\phpunit\phpunit --testdox
+```
+
+Por grupo:
+
+```bash
+C:\xampp\php\php.exe composer.phar test-unit      # testes unitarios
+C:\xampp\php\php.exe composer.phar test-feature   # testes de feature
 ```
 
 ## Saida esperada
 
 ```text
-Todos os testes passaram. Total de assercoes: 93
+OK (25 tests, 97 assertions)
 ```
 
-## Arquivos de teste
+## Estrutura dos testes
 
-- `tests/AuthTest.php`: valida hash de senha e dados basicos de sessao.
-- `tests/PermissaoTest.php`: valida diferenca entre `admin` e `estoquista`.
-- `tests\ApiResponseTest.php`: valida formato padrao de respostas JSON.
-- `tests/ProdutoApiTest.php`: valida regras de produto e contratos de API.
-- `tests/MovimentacaoApiTest.php`: valida entrada, saida e bloqueios de movimentacao.
-- `tests/InventarioTest.php`: valida calculo de divergencia e contagem invalida.
-- `tests/Unit/ValidacaoTest.php`: valida regras de produto e contagem.
-- `tests/Feature/ApiProdutosTest.php`: valida cenarios de API de produtos.
-- `tests/TestCase.php`: helper simples de assercoes.
-- `tests/run_tests.php`: executor principal dos testes.
+- `phpunit.xml` - configuracao do PHPUnit e dos grupos de teste.
+- `tests/bootstrap.php` - preparo do ambiente (sessao em modo CLI).
+- `tests/Unit/ValidacaoTest.php` - validacao de produto, contagem de inventario e periodo de relatorio.
+- `tests/AuthTest.php` - hash de senha, sessao e token CSRF.
+- `tests/PermissaoTest.php` - papeis admin e estoquista.
+- `tests/ApiResponseTest.php` - formato padrao das respostas JSON.
+- `tests/ProdutoApiTest.php` - contratos e validacoes da API de produtos.
+- `tests/MovimentacaoApiTest.php` - validacoes de entrada e saida.
+- `tests/InventarioTest.php` - calculo de divergencia e contagem.
+- `tests/Feature/ApiProdutosTest.php` - cenarios da API de produtos (GET, POST, PUT/PATCH, DELETE, 401, 403).
 
-## O que os testes cobrem
+## Cobertura
 
-- Autenticacao e dados de sessao.
-- Permissoes de admin e estoquista.
-- Estrutura padrao de respostas JSON.
-- Validacoes de produto.
-- Validacoes de movimentacao.
-- Regras de contagem de inventario.
-- Calculo de falta, sobra e divergencia zerada.
-- Cenarios de erro `401`, `403`, `404` e `422` simulados na API.
+Autenticacao, sessao, permissoes, respostas JSON, validacoes de produto e movimentacao, regras de inventario e contratos da API. Os testes nao dependem de banco de dados, rodando de forma rapida e isolada.
