@@ -30,8 +30,22 @@ $dataAtual = date('d/m/Y');
                 value="<?= htmlspecialchars($buscaAtual) ?>"
             >
 
-            <button type="submit">Buscar</button>
+            <button type="submit">
+                <?= uiIcon('search', 'btn-icon') ?>
+                <span>Buscar</span>
+            </button>
         </form>
+
+        <button
+            type="button"
+            class="theme-toggle"
+            data-theme-toggle
+            aria-label="Ativar tema escuro"
+            title="Ativar tema escuro"
+        >
+            <span data-theme-icon="light"><?= uiIcon('moon', 'icon') ?></span>
+            <span data-theme-icon="dark"><?= uiIcon('sun', 'icon') ?></span>
+        </button>
 
         <div class="topbar-status">
             <span>Hoje</span>
@@ -39,7 +53,8 @@ $dataAtual = date('d/m/Y');
         </div>
 
         <a class="btn btn-primary" href="index.php?acao=criar">
-            Novo produto
+            <?= uiIcon('plus', 'btn-icon') ?>
+            <span>Novo produto</span>
         </a>
     </div>
 </header>
