@@ -48,7 +48,8 @@
     min-width: 44px;
     border-radius: 999px;
     padding: 5px 10px;
-    background: #f2f4f7;
+    background: var(--bg-muted);
+    color: var(--text-main);
     font-weight: 800;
 }
 
@@ -78,7 +79,7 @@
 }
 
 .alert-item {
-    background: #ffffff;
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 14px;
@@ -101,6 +102,55 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+.report-menu-card {
+    min-height: 220px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.report-menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(16, 24, 40, 0.12);
+}
+
+.report-menu-card-success {
+    border-top: 4px solid var(--success);
+}
+
+.report-menu-card-primary {
+    border-top: 4px solid var(--primary);
+}
+
+.report-menu-card-warning {
+    border-top: 4px solid var(--warning);
+}
+
+.report-card-title {
+    margin-bottom: 8px;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.report-card-description {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.report-card-actions {
+    margin-top: 20px;
+}
+
+.report-card-link {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
 }
 
 .grid-2 {
@@ -142,28 +192,32 @@
 }
 
 .table-total-row {
-    background: #f8fafc;
+    background: var(--bg-soft);
     font-weight: 800;
 }
 
 .summary-card-warning {
     border-color: #fed7aa;
-    background: #fffbeb;
+    border-color: color-mix(in srgb, var(--warning) 34%, transparent);
+    background: var(--warning-soft);
 }
 
 .summary-card-success {
     border-color: #bbf7d0;
-    background: #ecfdf3;
+    border-color: color-mix(in srgb, var(--success) 34%, transparent);
+    background: var(--success-soft);
 }
 
 .summary-card-danger {
     border-color: #fecaca;
-    background: #fef2f2;
+    border-color: color-mix(in srgb, var(--danger) 34%, transparent);
+    background: var(--danger-soft);
 }
 
 .summary-card-info {
     border-color: #bfdbfe;
-    background: #eff6ff;
+    border-color: color-mix(in srgb, var(--primary) 34%, transparent);
+    background: var(--primary-soft);
 }
 
 .product-card-grid {
@@ -173,7 +227,7 @@
 }
 
 .product-card {
-    background: #ffffff;
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 18px;

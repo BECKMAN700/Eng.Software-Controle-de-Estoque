@@ -10,7 +10,7 @@
     height: 44px;
     border: 1px solid var(--border);
     border-radius: 12px;
-    background: #ffffff;
+    background: var(--bg-card);
     color: var(--text-main);
     display: flex;
     flex-direction: column;
@@ -23,8 +23,8 @@
 }
 
 .menu-toggle:hover {
-    background: #f9fafb;
-    border-color: #cbd5e1;
+    background: var(--bg-soft);
+    border-color: var(--border);
 }
 
 .menu-toggle span {
@@ -38,7 +38,7 @@
 .sidebar-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(16, 24, 40, 0.48);
+    background: var(--bg-overlay);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
@@ -191,11 +191,25 @@ body.sidebar-open .sidebar-overlay {
 }
 
 .nav-icon {
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
-    background: currentColor;
-    opacity: 0.75;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+    opacity: 0.82;
+}
+
+.nav-icon svg {
+    width: 19px;
+    height: 19px;
+    stroke-width: 2;
+}
+
+.nav-link:hover .nav-icon,
+.nav-link.active .nav-icon {
+    opacity: 1;
 }
 
 .sidebar-footer {
@@ -241,6 +255,9 @@ body.sidebar-open .sidebar-overlay {
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     transition: background 0.18s ease, color 0.18s ease;
     white-space: nowrap;
 }
@@ -259,7 +276,7 @@ body.sidebar-open .sidebar-overlay {
 
 .topbar {
     min-height: var(--topbar-height);
-    background: rgba(255, 255, 255, 0.88);
+    background: var(--bg-topbar);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     padding: 20px 32px 20px 84px;
@@ -299,6 +316,7 @@ body.sidebar-open .sidebar-overlay {
 .topbar-actions {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 12px;
 }
 
@@ -318,20 +336,24 @@ body.sidebar-open .sidebar-overlay {
     border: none;
     outline: none;
     background: transparent;
+    color: var(--text-main);
     padding: 8px 10px;
 }
 
 .topbar-search button {
     border: none;
     background: var(--text-main);
-    color: #ffffff;
+    color: var(--bg-card);
     padding: 8px 14px;
     border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
 }
 
 .topbar-status {
     min-height: 42px;
-    background: #ffffff;
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 7px 12px;
@@ -352,6 +374,37 @@ body.sidebar-open .sidebar-overlay {
     font-size: 13px;
     line-height: 1.2;
     margin-top: 3px;
+}
+
+.theme-toggle {
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg-card);
+    color: var(--text-main);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background: var(--bg-soft);
+    border-color: var(--border);
+}
+
+.theme-toggle [data-theme-icon="dark"] {
+    display: none;
+}
+
+html[data-theme="dark"] .theme-toggle [data-theme-icon="light"] {
+    display: none;
+}
+
+html[data-theme="dark"] .theme-toggle [data-theme-icon="dark"] {
+    display: inline-flex;
 }
 
 .content-area {
