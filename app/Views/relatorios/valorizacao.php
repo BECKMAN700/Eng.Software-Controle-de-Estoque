@@ -109,9 +109,9 @@ ob_start();
                         <tr>
                             <th>Produto</th>
                             <th>Categoria</th>
-                            <th>Quantidade atual</th>
-                            <th>Preco unitario</th>
-                            <th>Valor em estoque</th>
+                            <th class="numeric">Quantidade atual</th>
+                            <th class="numeric">Preco unitario</th>
+                            <th class="numeric">Valor em estoque</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -122,16 +122,16 @@ ob_start();
                                     <div class="product-code"><?= esc($row['codigo'] ?: 'Sem codigo') ?></div>
                                 </td>
                                 <td><?= esc($row['categoria'] ?: '-') ?></td>
-                                <td><span class="stock-pill"><?= (int) $row['quantidade'] ?></span></td>
-                                <td><?= formatarDinheiro($row['preco']) ?></td>
-                                <td><strong><?= formatarDinheiro($row['valor_total_produto']) ?></strong></td>
+                                <td class="numeric"><span class="stock-pill"><?= (int) $row['quantidade'] ?></span></td>
+                                <td class="numeric"><?= formatarDinheiro($row['preco']) ?></td>
+                                <td class="numeric"><strong><?= formatarDinheiro($row['valor_total_produto']) ?></strong></td>
                             </tr>
                         <?php endforeach; ?>
                         <tr class="table-total-row">
                             <td colspan="2">TOTAL GERAL</td>
-                            <td><?= (int) $totalItens ?></td>
-                            <td>-</td>
-                            <td><?= formatarDinheiro($valorTotalGeral) ?></td>
+                            <td class="numeric"><?= (int) $totalItens ?></td>
+                            <td class="numeric">-</td>
+                            <td class="numeric"><?= formatarDinheiro($valorTotalGeral) ?></td>
                         </tr>
                     </tbody>
                 </table>

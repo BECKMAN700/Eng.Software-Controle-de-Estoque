@@ -135,9 +135,9 @@ ob_start();
                         <tr>
                             <th>Produto</th>
                             <th>Categoria</th>
-                            <th>Entradas</th>
-                            <th>Saidas</th>
-                            <th>Total movimentado</th>
+                            <th class="numeric">Entradas</th>
+                            <th class="numeric">Saidas</th>
+                            <th class="numeric">Total movimentado</th>
                             <th>Ultima movimentacao</th>
                             <th>Situacao</th>
                         </tr>
@@ -163,9 +163,9 @@ ob_start();
                                     <div class="product-code"><?= esc($row['codigo'] ?: 'Sem codigo') ?></div>
                                 </td>
                                 <td><?= esc($row['categoria'] ?: '-') ?></td>
-                                <td><strong class="text-success"><?= (int) $row['total_entradas'] ?></strong></td>
-                                <td><strong class="text-danger"><?= (int) $row['total_saidas'] ?></strong></td>
-                                <td><strong><?= (int) $row['total_movimentado'] ?></strong></td>
+                                <td class="numeric"><strong class="text-success"><?= (int) $row['total_entradas'] ?></strong></td>
+                                <td class="numeric"><strong class="text-danger"><?= (int) $row['total_saidas'] ?></strong></td>
+                                <td class="numeric"><strong><?= (int) $row['total_movimentado'] ?></strong></td>
                                 <td><?= $row['ultima_movimentacao'] ? date('d/m/Y H:i', strtotime($row['ultima_movimentacao'])) : '-' ?></td>
                                 <td><span class="badge <?= $badgeClass ?>"><?= $label ?></span></td>
                             </tr>

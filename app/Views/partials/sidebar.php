@@ -14,7 +14,14 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 
 <aside class="sidebar" id="app-sidebar" aria-label="Menu principal">
     <div class="sidebar-brand">
-        <div class="brand-mark">CE</div>
+        <div class="brand-mark" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21 8-9-5-9 5 9 5 9-5Z"></path>
+                <path d="m3 8 9 5 9-5"></path>
+                <path d="M3 8v8l9 5 9-5V8"></path>
+                <path d="M12 13v8"></path>
+            </svg>
+        </div>
 
         <div class="brand-text">
             <strong>Controle</strong>

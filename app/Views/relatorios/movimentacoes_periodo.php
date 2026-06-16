@@ -176,7 +176,7 @@ ob_start();
                                 <th>Produto</th>
                                 <th>Categoria</th>
                                 <th>Tipo</th>
-                                <th>Quantidade</th>
+                                <th class="numeric">Quantidade</th>
                                 <th>Motivo</th>
                                 <th>Responsavel</th>
                             </tr>
@@ -195,7 +195,7 @@ ob_start();
                                     </td>
                                     <td><?= esc($row['produto_categoria'] ?: '-') ?></td>
                                     <td><span class="badge <?= $badgeClass ?>"><?= esc($row['tipo']) ?></span></td>
-                                    <td><strong><?= ($row['tipo'] === 'entrada' ? '+' : '-') . (int) $row['quantidade'] ?></strong></td>
+                                    <td class="numeric"><strong><?= ($row['tipo'] === 'entrada' ? '+' : '-') . (int) $row['quantidade'] ?></strong></td>
                                     <td>
                                         <div><?= esc(formatarMotivo($row['motivo'])) ?></div>
                                         <?php if (!empty($row['observacao'])): ?>

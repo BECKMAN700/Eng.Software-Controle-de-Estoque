@@ -63,7 +63,7 @@ ob_start();
 </section>
 
 <section class="page-section">
-    <div class="grid grid-4">
+    <div class="grid grid-2">
 
         <article class="metric-card summary-card-success">
             <p class="metric-label">Entradas nos últimos 30 dias</p>
@@ -82,26 +82,6 @@ ob_start();
             </strong>
             <p class="metric-description">
                 Total de unidades retiradas do estoque.
-            </p>
-        </article>
-
-        <article class="metric-card">
-            <p class="metric-label">Produtos monitorados</p>
-            <strong class="metric-value">
-                <?= (int) ($resumo['total_produtos'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Produtos considerados nos indicadores.
-            </p>
-        </article>
-
-        <article class="metric-card summary-card-warning">
-            <p class="metric-label">Itens críticos</p>
-            <strong class="metric-value">
-                <?= (int) ($resumo['produtos_criticos'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Produtos abaixo do mínimo configurado.
             </p>
         </article>
 
