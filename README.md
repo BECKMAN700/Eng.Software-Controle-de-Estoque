@@ -28,7 +28,7 @@ A aplicacao segue o padrao MVC, usa MySQL com PDO e possui rotas protegidas por 
 | Item | Link |
 | --- | --- |
 | Landing page | <https://beckman700.github.io/Eng.Software-Controle-de-Estoque/> |
-| Versao final do produto | <https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque> |
+| Versao final do produto | <https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque/releases/tag/v1.2.0> |
 | Video do produto | <https://drive.google.com/drive/folders/1Bfi4XMicCtl6MGLH_07c-TtiNZGw6KKB?usp=drive_link> |
 | Apresentacao final | [PDF](docs/apresentacao/Apresentacao-Final-Sistema-de-Controle-de-Estoque.pdf) / [PPTX](docs/apresentacao/Apresentacao-Final-Sistema-de-Controle-de-Estoque.pptx) |
 
