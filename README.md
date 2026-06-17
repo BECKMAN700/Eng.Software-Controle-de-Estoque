@@ -23,6 +23,16 @@ O Controle de Estoque e um sistema web em PHP nativo para gerenciar produtos, en
 
 A aplicacao segue o padrao MVC, usa MySQL com PDO e possui rotas protegidas por sessao, perfis de usuario e tokens CSRF nos POSTs criticos.
 
+Landing page do produto:
+
+```text
+https://beckman700.github.io/Eng.Software-Controle-de-Estoque/
+```
+
+Guia de instalacao e configuracao: [INSTALACAO.md](INSTALACAO.md).
+
+Para publicar a landing page no GitHub Pages, use a pasta `docs/` como origem da publicacao nas configuracoes do repositorio.
+
 ---
 
 ## Funcionalidades
@@ -176,6 +186,8 @@ Usuarios de teste:
 ---
 
 ## Como executar
+
+Para um passo a passo completo de instalacao, configuracao de banco, execucao e usuarios de teste, consulte [INSTALACAO.md](INSTALACAO.md).
 
 1. Clone o repositorio dentro da pasta `htdocs` do XAMPP.
 
