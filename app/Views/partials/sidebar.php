@@ -29,19 +29,23 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 
     <nav class="sidebar-nav">
         <span class="nav-section-title">Principal</span>
+        <a class="nav-link <?= menuAtivo(['dashboard']) ?>" href="index.php?acao=dashboard">
+            <?= uiIcon('dashboard', 'nav-icon') ?>
+            <span>Dashboard</span>
+        </a>
 
         <a class="nav-link <?= menuAtivo(['listar']) ?>" href="index.php?acao=listar">
-            <span class="nav-icon"></span>
+            <?= uiIcon('box', 'nav-icon') ?>
             <span>Painel de estoque</span>
         </a>
 
         <a class="nav-link <?= menuAtivo(['catalogo']) ?>" href="index.php?acao=catalogo">
-            <span class="nav-icon"></span>
+            <?= uiIcon('catalog', 'nav-icon') ?>
             <span>Catálogo de produtos</span>
         </a>
 
-        <a class="nav-link <?= menuAtivo(['relatorios']) ?>" href="index.php?acao=relatorios">
-            <span class="nav-icon"></span>
+        <a class="nav-link <?= menuAtivo(['relatorios', 'giro_estoque', 'valorizacao', 'movimentacoes_periodo']) ?>" href="index.php?acao=relatorios">
+            <?= uiIcon('reports', 'nav-icon') ?>
             <span>Relatórios</span>
         </a>
 
@@ -49,40 +53,40 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 
         <?php if (Auth::isAdmin()): ?>
         <a class="nav-link <?= menuAtivo(['criar']) ?>" href="index.php?acao=criar">
-            <span class="nav-icon"></span>
+            <?= uiIcon('package-plus', 'nav-icon') ?>
             <span>Cadastrar produto</span>
         </a>
         <?php endif; ?>
 
         <a class="nav-link" href="index.php?acao=listar#produtos">
-            <span class="nav-icon"></span>
+            <?= uiIcon('list', 'nav-icon') ?>
             <span>Lista completa</span>
         </a>
 
         <a class="nav-link" href="index.php?acao=listar#alertas-estoque">
-            <span class="nav-icon"></span>
+            <?= uiIcon('alert', 'nav-icon') ?>
             <span>Alertas de estoque</span>
         </a>
 
         <span class="nav-section-title">Movimentações</span>
 
         <a class="nav-link" href="index.php?acao=listar#movimentacoes">
-            <span class="nav-icon"></span>
-            <span>Acoes de estoque</span>
+            <?= uiIcon('movement', 'nav-icon') ?>
+            <span>Ações de estoque</span>
         </a>
 
         <span class="nav-section-title">Inventário</span>
 
         <a class="nav-link <?= menuAtivo(['inventarios', 'inventario_criar', 'inventario_detalhar', 'inventario_contagem', 'inventario_divergencias', 'inventario_auditoria']) ?>" href="index.php?acao=inventarios">
-            <span class="nav-icon"></span>
+            <?= uiIcon('inventory', 'nav-icon') ?>
             <span>Inventários</span>
         </a>
         <?php if (Auth::isAdmin()): ?>
         <span class="nav-section-title">Administracao</span>
 
         <a class="nav-link <?= menuAtivo(['usuarios', 'usuario_criar']) ?>" href="index.php?acao=usuarios">
-            <span class="nav-icon"></span>
-            <span>Usuarios</span>
+            <?= uiIcon('users', 'nav-icon') ?>
+            <span>Usuários</span>
         </a>
         <?php endif; ?>
     </nav>
@@ -96,7 +100,8 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
         <form class="inline-form" action="index.php?acao=logout" method="POST">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Sessao::getCsrfToken()) ?>">
             <button type="submit" class="btn-logout" title="Sair do sistema">
-                Sair
+                <?= uiIcon('logout', 'btn-icon') ?>
+                <span>Sair</span>
             </button>
         </form>
     </div>

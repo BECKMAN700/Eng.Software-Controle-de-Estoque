@@ -85,19 +85,19 @@ ob_start();
 
             <article class="metric-card">
                 <p class="metric-label">Responsavel pela abertura</p>
-                <strong class="metric-value" style="font-size: 1.2rem;"><?= esc($inventario['criado_por_nome'] ?? 'Desconhecido') ?></strong>
+                <strong class="metric-value metric-value-sm"><?= esc($inventario['criado_por_nome'] ?? 'Desconhecido') ?></strong>
                 <p class="metric-description">Usuario que realizou a abertura do processo.</p>
             </article>
 
             <article class="metric-card">
                 <p class="metric-label">Data de abertura</p>
-                <strong class="metric-value" style="font-size: 1.2rem;"><?= date('d/m/Y H:i', strtotime($inventario['criado_em'] ?? 'now')) ?></strong>
+                <strong class="metric-value metric-value-sm"><?= date('d/m/Y H:i', strtotime($inventario['criado_em'] ?? 'now')) ?></strong>
                 <p class="metric-description">Data e hora do registro inicial.</p>
             </article>
 
             <article class="metric-card">
                 <p class="metric-label">Filtro de categoria</p>
-                <strong class="metric-value" style="font-size: 1.2rem;"><?= esc($inventario['categoria'] ?? 'Todos os produtos') ?></strong>
+                <strong class="metric-value metric-value-sm"><?= esc($inventario['categoria'] ?? 'Todos os produtos') ?></strong>
                 <p class="metric-description">Restricao aplicada ao inventario.</p>
             </article>
         </div>
@@ -105,7 +105,7 @@ ob_start();
         <?php if (!empty($inventario['observacao'])): ?>
             <div class="form-group mt-2">
                 <label><strong>Observacoes / Notas do Inventario:</strong></label>
-                <p class="form-help" style="background-color: var(--card-bg-subtle, #f8f9fa); padding: 10px; border-radius: 4px; border-left: 4px solid var(--primary); margin-top: 5px;">
+                <p class="form-help note-panel">
                     <?= nl2br(esc($inventario['observacao'])) ?>
                 </p>
             </div>

@@ -41,7 +41,7 @@ ob_start();
             <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
 
             <div class="form-grid">
-                <div class="form-group" style="grid-column: span 2;">
+                <div class="form-group form-group-full">
                     <label for="titulo">Título do inventário</label>
                     <input
                         type="text"
@@ -56,7 +56,7 @@ ob_start();
                     <?php endif; ?>
                 </div>
 
-                <div class="form-group" style="grid-column: span 2;">
+                <div class="form-group form-group-full">
                     <label for="categoria">Produtos incluídos</label>
                     <select id="categoria" name="categoria">
                         <option value="">Todos os produtos ativos</option>

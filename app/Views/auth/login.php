@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'Login';
 $flashErro = Sessao::getFlashErro();
-$assetVersion = '20260504-menu';
+$assetVersion = '20260609-ui-polish';
 
 if (!function_exists('esc')) {
     function esc($valor): string
@@ -19,6 +19,7 @@ if (!function_exists('esc')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($pageTitle) ?> | Controle de Estoque</title>
 
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg?v=<?= $assetVersion ?>">
     <link rel="stylesheet" href="assets/css/base.css?v=<?= $assetVersion ?>">
     <link rel="stylesheet" href="assets/css/components.css?v=<?= $assetVersion ?>">
     <link rel="stylesheet" href="assets/css/auth.css?v=<?= $assetVersion ?>">

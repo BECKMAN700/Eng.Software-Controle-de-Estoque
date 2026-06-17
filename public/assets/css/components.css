@@ -11,6 +11,21 @@
     transition: 0.2s ease;
 }
 
+.icon,
+.btn-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    display: inline-flex;
+}
+
+.icon svg,
+.btn-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke-width: 2;
+}
+
 .btn-primary {
     background: var(--primary);
     color: #ffffff;
@@ -21,13 +36,23 @@
 }
 
 .btn-secondary {
-    background: #ffffff;
+    background: var(--bg-card);
     color: var(--text-main);
     border-color: var(--border);
 }
 
 .btn-secondary:hover {
-    background: #f9fafb;
+    background: var(--bg-soft);
+}
+
+.btn-success {
+    background: var(--success);
+    color: #ffffff;
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: #ffffff;
 }
 
 .btn-danger {
@@ -166,8 +191,13 @@
 }
 
 .badge-muted {
-    background: #f2f4f7;
+    background: var(--bg-muted);
     color: var(--text-muted);
+}
+
+.badge-info {
+    background: var(--primary-soft);
+    color: var(--primary);
 }
 
 .form-grid {
@@ -184,13 +214,13 @@
 
 .form-group label {
     font-weight: 700;
-    color: #344054;
+    color: var(--text-main);
 }
 
 .form-error {
     display: block;
     margin-top: 6px;
-    color: #b42318;
+    color: var(--danger);
     font-size: 0.86rem;
     font-weight: 700;
 }
@@ -200,10 +230,15 @@
 .form-group textarea {
     width: 100%;
     border: 1px solid var(--border);
-    background: #ffffff;
+    background: var(--bg-card);
+    color: var(--text-main);
     border-radius: 12px;
     padding: 11px 12px;
     outline: none;
+}
+
+.form-group-full {
+    grid-column: 1 / -1;
 }
 
 .form-group textarea {
@@ -225,12 +260,13 @@
     margin-top: 22px;
 }
 
-.table-wrapper {
+.table-wrapper,
+.table-responsive {
     width: 100%;
     overflow-x: auto;
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    background: #ffffff;
+    background: var(--bg-card);
 }
 
 .table {
@@ -248,15 +284,33 @@
 }
 
 .table th {
-    background: #f9fafb;
-    color: #475467;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bg-soft);
+    color: var(--text-muted);
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
 
+.table tbody tr:nth-child(even) {
+    background: var(--bg-soft);
+}
+
+.table tbody tr:hover {
+    background: var(--primary-soft);
+}
+
 .table tr:last-child td {
     border-bottom: none;
+}
+
+.table .numeric,
+.table th.numeric,
+.table td.numeric {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
 }
 
 .table-actions {
@@ -270,12 +324,25 @@
 }
 
 .empty-state {
-    background: #ffffff;
-    border: 1px dashed #cbd5e1;
+    background: var(--bg-card);
+    border: 1px dashed var(--border);
     border-radius: var(--radius-lg);
     padding: 32px;
     text-align: center;
     color: var(--text-muted);
+}
+
+.metric-value-sm {
+    font-size: 1.2rem;
+    letter-spacing: 0;
+}
+
+.note-panel {
+    background: var(--bg-soft);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--primary);
+    margin-top: 5px;
 }
 
 @media (max-width: 900px) {

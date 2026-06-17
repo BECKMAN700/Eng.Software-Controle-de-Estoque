@@ -93,4 +93,44 @@ class Validacao
 
         return $erros;
     }
+
+    public static function periodoRelatorio(array $dados): array
+    {
+        $erros = self::camposObrigatorios($dados, [
+            'data_inicial' => 'Informe a data inicial.',
+            'data_final' => 'Informe a data final.',
+        ]);
+
+        $dataInicial = $dados['data_inicial'] ?? '';
+        $dataFinal = $dados['data_final'] ?? '';
+        $dataInicialValida = self::validarData($dataInicial);
+        $dataFinalValida = self::validarData($dataFinal);
+
+        if ($dataInicial !== '' && !$dataInicialValida) {
+            $erros['data_inicial'] = 'Informe uma data inicial valida.';
+        }
+
+        if ($dataFinal !== '' && !$dataFinalValida) {
+            $erros['data_final'] = 'Informe uma data final valida.';
+        }
+
+        if ($dataInicialValida && $dataFinalValida && strtotime($dataFinal) < strtotime($dataInicial)) {
+            $erros['data_final'] = 'A data final nao pode ser menor que a data inicial.';
+        }
+
+        return $erros;
+    }
+
+    private static function validarData($data): bool
+    {
+        $data = trim((string) $data);
+
+        if ($data === '') {
+            return false;
+        }
+
+        $objetoData = DateTime::createFromFormat('Y-m-d', $data);
+
+        return $objetoData instanceof DateTime && $objetoData->format('Y-m-d') === $data;
+    }
 }
