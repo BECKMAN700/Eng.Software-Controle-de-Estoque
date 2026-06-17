@@ -3,7 +3,7 @@ $pageTitle = $pageTitle ?? 'Controle de Estoque';
 $pageSubtitle = $pageSubtitle ?? 'Gerencie produtos, entradas, saídas e alertas de estoque.';
 $content = $content ?? '';
 $currentAction = $_GET['acao'] ?? 'listar';
-$assetVersion = '20260617-nav';
+$assetVersion = '20260617-nav2';
 ?>
 
 <!DOCTYPE html>
@@ -22,10 +22,6 @@ $assetVersion = '20260617-nav';
                 var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
                 var theme = savedTheme || (prefersDark ? 'dark' : 'light');
                 document.documentElement.setAttribute('data-theme', theme);
-
-                if (localStorage.getItem('ce-rail') === '1') {
-                    document.documentElement.classList.add('rail-collapsed');
-                }
             } catch (error) {
                 document.documentElement.setAttribute('data-theme', 'light');
             }
@@ -124,14 +120,10 @@ $assetVersion = '20260617-nav';
 
             setTheme(document.documentElement.getAttribute('data-theme') || 'light');
 
-            function toggleRail() {
-                var collapsed = document.documentElement.classList.toggle('rail-collapsed');
+            var docEl = document.documentElement;
 
-                try {
-                    localStorage.setItem('ce-rail', collapsed ? '1' : '0');
-                } catch (error) {
-                    // Estado do rail ainda funciona sem persistência.
-                }
+            function setNavExpanded(expanded) {
+                docEl.classList.toggle('nav-expanded', expanded);
             }
 
             document.addEventListener('click', function (event) {
@@ -147,7 +139,8 @@ $assetVersion = '20260617-nav';
                 }
 
                 if (railTarget) {
-                    toggleRail();
+                    // Expande/recolhe o trilho no desktop (sobreposto, transitório)
+                    setNavExpanded(!docEl.classList.contains('nav-expanded'));
                     return;
                 }
 
@@ -158,12 +151,20 @@ $assetVersion = '20260617-nav';
 
                 if (closeTarget) {
                     setMenuState(false);
+                    setNavExpanded(false);
+                    return;
+                }
+
+                // Clique fora do menu expandido recolhe o trilho
+                if (docEl.classList.contains('nav-expanded') && !event.target.closest('.sidebar')) {
+                    setNavExpanded(false);
                 }
             });
 
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape') {
                     setMenuState(false);
+                    setNavExpanded(false);
                 }
             });
         }());

@@ -83,23 +83,36 @@ body.sidebar-open .sidebar-overlay {
     box-shadow: 18px 0 44px rgba(2, 6, 23, 0.24);
 }
 
-.sidebar-collapse {
+.rail-toggle {
     display: none;
-    width: 36px;
-    height: 36px;
-    margin-left: auto;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 10px;
-    background: var(--bg-sidebar-soft);
-    color: #d0d5dd;
     align-items: center;
-    justify-content: center;
-    transition: background 0.18s ease, color 0.18s ease, transform 0.2s ease;
+    gap: 12px;
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 12px;
+    background: transparent;
+    color: #d0d5dd;
+    transition: background 0.18s ease, color 0.18s ease;
 }
 
-.sidebar-collapse:hover {
-    background: #344054;
+.rail-toggle:hover {
+    background: var(--bg-sidebar-soft);
     color: #ffffff;
+}
+
+.rail-toggle .icon {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    transition: transform 0.2s ease;
+}
+
+.rail-toggle-label {
+    font-size: 13px;
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
 }
 
 .sidebar-brand {
@@ -299,7 +312,6 @@ body.sidebar-open .sidebar-overlay {
     width: 100%;
     min-height: 100vh;
     margin-left: 0;
-    transition: margin-left 0.2s ease;
 }
 
 .topbar {
@@ -497,12 +509,14 @@ html[data-theme="dark"] .theme-toggle [data-theme-icon="dark"] {
     padding: 32px;
 }
 
-/* ── Desktop: sidebar persistente + rail recolhível ─────────────────────── */
+/* ── Desktop: trilho fixo + menu sobreposto ao expandir ─────────────────── */
 @media (min-width: 901px) {
     .sidebar {
         transform: none;
         box-shadow: none;
         border-right: 1px solid rgba(255, 255, 255, 0.06);
+        z-index: 40;
+        transition: width 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
     }
 
     .menu-toggle,
@@ -511,58 +525,66 @@ html[data-theme="dark"] .theme-toggle [data-theme-icon="dark"] {
         display: none;
     }
 
-    .sidebar-collapse {
-        display: inline-flex;
+    .rail-toggle {
+        display: flex;
     }
 
+    /* Conteúdo tem margem CONSTANTE (= trilho): nunca muda de tamanho */
     .app-main {
-        margin-left: var(--sidebar-width);
+        margin-left: var(--rail-width);
+        width: auto;
     }
 
     .topbar {
         padding-left: 32px;
     }
 
-    /* Estado recolhido (mini-rail só com ícones) */
-    html.rail-collapsed .sidebar {
+    /* Estado expandido: menu flutua por cima do conteúdo */
+    html.nav-expanded .sidebar {
+        box-shadow: 18px 0 44px rgba(2, 6, 23, 0.28);
+    }
+
+    html.nav-expanded .rail-toggle .icon {
+        transform: rotate(180deg);
+    }
+
+    /* Estado de repouso (trilho fino, só ícones) */
+    html:not(.nav-expanded) .sidebar {
         width: var(--rail-width);
         padding-left: 12px;
         padding-right: 12px;
     }
 
-    html.rail-collapsed .app-main {
-        margin-left: var(--rail-width);
-    }
-
-    html.rail-collapsed .brand-text,
-    html.rail-collapsed .nav-link span,
-    html.rail-collapsed .nav-section-title,
-    html.rail-collapsed .sidebar-user,
-    html.rail-collapsed .btn-logout span {
+    html:not(.nav-expanded) .sidebar .brand-text,
+    html:not(.nav-expanded) .sidebar .nav-link span,
+    html:not(.nav-expanded) .sidebar .nav-section-title,
+    html:not(.nav-expanded) .sidebar .sidebar-user,
+    html:not(.nav-expanded) .sidebar .btn-logout span,
+    html:not(.nav-expanded) .sidebar .rail-toggle-label {
         display: none;
     }
 
-    html.rail-collapsed .sidebar-brand {
+    html:not(.nav-expanded) .sidebar-brand {
         justify-content: center;
         padding: 8px 0 20px;
     }
 
-    html.rail-collapsed .sidebar-collapse {
-        margin-left: 0;
-        transform: rotate(180deg);
+    html:not(.nav-expanded) .rail-toggle {
+        justify-content: center;
+        margin-top: 10px;
     }
 
-    html.rail-collapsed .nav-link {
+    html:not(.nav-expanded) .nav-link {
         justify-content: center;
         padding: 11px 0;
     }
 
-    html.rail-collapsed .sidebar-footer {
+    html:not(.nav-expanded) .sidebar-footer {
         justify-content: center;
         padding: 12px;
     }
 
-    html.rail-collapsed .btn-logout {
+    html:not(.nav-expanded) .btn-logout {
         padding: 9px;
     }
 }

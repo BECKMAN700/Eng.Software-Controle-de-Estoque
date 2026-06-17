@@ -23,15 +23,16 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
             <span>de Estoque</span>
         </div>
 
-        <button type="button" class="sidebar-collapse" data-rail-toggle aria-label="Recolher menu" title="Recolher menu">
-            <?= uiIcon('chevron-left', 'btn-icon') ?>
-        </button>
-
         <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar menu">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
         </button>
     </div>
+
+    <button type="button" class="rail-toggle" data-rail-toggle aria-label="Expandir ou recolher o menu" title="Expandir ou recolher o menu">
+        <?= uiIcon('chevron-right', 'icon') ?>
+        <span class="rail-toggle-label">Recolher menu</span>
+    </button>
 
     <nav class="sidebar-nav">
         <span class="nav-section-title">Geral</span>
