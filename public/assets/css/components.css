@@ -96,7 +96,7 @@
 
 .card-header h2,
 .card-header h3 {
-    font-size: 19px;
+    font-size: var(--text-h2);
     letter-spacing: -0.3px;
 }
 
@@ -133,8 +133,8 @@
 }
 
 .metric-value {
-    font-size: 30px;
-    font-weight: 800;
+    font-size: var(--text-display);
+    font-weight: var(--weight-black);
     letter-spacing: -0.8px;
 }
 

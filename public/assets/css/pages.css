@@ -7,7 +7,7 @@
 }
 
 .page-header h2 {
-    font-size: 24px;
+    font-size: var(--text-h1);
     letter-spacing: -0.5px;
 }
 
@@ -115,7 +115,9 @@
 
 .report-menu-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(16, 24, 40, 0.12);
+    /* Elevação padronizada: sombra via token + no dark eleva por cor (bg mais claro) */
+    box-shadow: var(--shadow-md);
+    background: var(--bg-elevated);
 }
 
 .report-menu-card-success {
@@ -133,8 +135,8 @@
 .report-card-title {
     margin-bottom: 8px;
     color: var(--text-main);
-    font-size: 1.25rem;
-    font-weight: 800;
+    font-size: var(--text-h2);
+    font-weight: var(--weight-black);
 }
 
 .report-card-description {

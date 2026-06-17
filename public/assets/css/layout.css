@@ -95,12 +95,20 @@ body.sidebar-open .sidebar-overlay {
     width: 44px;
     height: 44px;
     border-radius: 14px;
-    background: var(--primary);
+    flex: 0 0 auto;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
     letter-spacing: 0;
+}
+
+.brand-mark img,
+.brand-mark svg {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 .brand-text {
@@ -303,7 +311,7 @@ body.sidebar-open .sidebar-overlay {
 }
 
 .topbar-title h1 {
-    font-size: 25px;
+    font-size: var(--text-h1);
     line-height: 1.2;
     letter-spacing: 0;
 }

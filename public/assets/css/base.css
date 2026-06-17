@@ -21,6 +21,11 @@
     --primary-dark: #1d4ed8;
     --primary-soft: #eff6ff;
 
+    /* Cor de destaque secundária (teal) — gráficos e estados ativos */
+    --accent: #14b8a6;
+    --accent-dark: #0d9488;
+    --accent-soft: #f0fdfa;
+
     --success: #16a34a;
     --success-soft: #ecfdf3;
 
@@ -38,6 +43,20 @@
     --radius-sm: 8px;
     --radius-md: 14px;
     --radius-lg: 20px;
+
+    /* Escala tipográfica */
+    --text-display: 30px;
+    --text-h1: 25px;
+    --text-h2: 19px;
+    --text-body: 15px;
+    --text-caption: 13px;
+
+    /* Pesos */
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+    --weight-black: 800;
 
     --space-1: 4px;
     --space-2: 8px;
@@ -71,6 +90,10 @@ html[data-theme="dark"] {
     --primary-dark: #3b82f6;
     --primary-soft: rgba(96, 165, 250, 0.16);
 
+    --accent: #2dd4bf;
+    --accent-dark: #14b8a6;
+    --accent-soft: rgba(45, 212, 191, 0.16);
+
     --success: #4ade80;
     --success-soft: rgba(74, 222, 128, 0.14);
 
@@ -101,9 +124,60 @@ body {
     background: var(--bg-page);
     color: var(--text-main);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: var(--text-body);
     line-height: 1.5;
     transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Escala tipográfica — defaults por elemento (classes específicas podem sobrepor) */
+h1 {
+    font-size: var(--text-h1);
+    font-weight: var(--weight-bold);
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: var(--text-h2);
+    font-weight: var(--weight-bold);
+    line-height: 1.25;
+}
+
+h3 {
+    font-size: var(--text-h2);
+    font-weight: var(--weight-semibold);
+    line-height: 1.3;
+}
+
+/* Utilitários da escala tipográfica */
+.text-display {
+    font-size: var(--text-display);
+    font-weight: var(--weight-black);
+    line-height: 1.15;
+    letter-spacing: -0.6px;
+}
+
+.text-h1 {
+    font-size: var(--text-h1);
+    font-weight: var(--weight-bold);
+    line-height: 1.2;
+}
+
+.text-h2 {
+    font-size: var(--text-h2);
+    font-weight: var(--weight-bold);
+    line-height: 1.25;
+}
+
+.text-body {
+    font-size: var(--text-body);
+    font-weight: var(--weight-regular);
+    line-height: 1.5;
+}
+
+.text-caption {
+    font-size: var(--text-caption);
+    font-weight: var(--weight-medium);
+    line-height: 1.4;
 }
 
 a {

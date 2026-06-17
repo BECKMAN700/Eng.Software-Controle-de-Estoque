@@ -14,7 +14,9 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 
 <aside class="sidebar" id="app-sidebar" aria-label="Menu principal">
     <div class="sidebar-brand">
-        <div class="brand-mark">CE</div>
+        <div class="brand-mark">
+            <img src="assets/img/logo.svg" alt="Controle de Estoque" width="44" height="44">
+        </div>
 
         <div class="brand-text">
             <strong>Controle</strong>
