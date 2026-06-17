@@ -23,19 +23,33 @@ O Controle de Estoque e um sistema web em PHP nativo para gerenciar produtos, en
 
 A aplicacao segue o padrao MVC, usa MySQL com PDO e possui rotas protegidas por sessao, perfis de usuario e tokens CSRF nos POSTs criticos.
 
-Landing page do produto:
+## Links finais do projeto
+
+Landing page:
 
 ```text
 https://beckman700.github.io/Eng.Software-Controle-de-Estoque/
 ```
 
-Guia de instalacao e configuracao: [INSTALACAO.md](INSTALACAO.md).
+Versao final do produto:
 
-Video demonstrativo do produto:
+```text
+https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque
+```
+
+Video do produto:
 
 ```text
 https://drive.google.com/drive/folders/1Bfi4XMicCtl6MGLH_07c-TtiNZGw6KKB?usp=drive_link
 ```
+
+Apresentacao final do grupo:
+
+- [PDF](docs/apresentacao/Apresentacao-Final-Sistema-de-Controle-de-Estoque.pdf)
+- [PPTX](docs/apresentacao/Apresentacao-Final-Sistema-de-Controle-de-Estoque.pptx)
+- [Detalhes da apresentacao](docs/APRESENTACAO.md)
+
+Guia de instalacao e configuracao: [INSTALACAO.md](INSTALACAO.md).
 
 Detalhes do video: [docs/VIDEO.md](docs/VIDEO.md).
 
@@ -286,6 +300,7 @@ Documentacao por sprint:
 Documentacao tecnica:
 
 - [docs/API.md](docs/API.md)
+- [docs/APRESENTACAO.md](docs/APRESENTACAO.md)
 - [docs/TESTES.md](docs/TESTES.md)
 - [docs/VIDEO.md](docs/VIDEO.md)
 - [docs/testes-movimentacoes.md](docs/testes-movimentacoes.md)
