@@ -17,6 +17,7 @@
       --brand-dark: #0c4636;
       --accent: #2f7dd3;
       --warn: #c06f18;
+      --danger: #a9403a;
       --shadow: 0 18px 45px rgba(23, 32, 42, 0.12);
     }
 
@@ -360,6 +361,44 @@
       font-weight: 700;
     }
 
+    .video-panel {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 28px;
+      align-items: center;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .video-frame {
+      display: grid;
+      min-height: 260px;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(12, 70, 54, 0.92), rgba(47, 125, 211, 0.82)),
+        var(--brand-dark);
+    }
+
+    .play-mark {
+      display: grid;
+      width: 82px;
+      height: 82px;
+      place-items: center;
+      border: 2px solid rgba(255, 255, 255, 0.72);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .play-mark svg {
+      width: 34px;
+      height: 34px;
+      margin-left: 4px;
+    }
+
     .footer {
       padding: 32px 0;
       color: #e6f0ec;
@@ -379,7 +418,8 @@
       }
 
       .hero-grid,
-      .split {
+      .split,
+      .video-panel {
         grid-template-columns: 1fr;
       }
 
@@ -432,6 +472,7 @@
       <nav class="nav" aria-label="Navegacao principal">
         <a href="#recursos">Recursos</a>
         <a href="#tecnologias">Tecnologias</a>
+        <a href="#video">Video</a>
         <a href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque">GitHub</a>
       </nav>
     </div>
@@ -451,6 +492,7 @@
           <div class="actions">
             <a class="button primary" href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque">Ver repositorio</a>
             <a class="button" href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque/blob/main/INSTALACAO.md">Instalacao</a>
+            <a class="button" href="https://drive.google.com/drive/folders/1Bfi4XMicCtl6MGLH_07c-TtiNZGw6KKB?usp=drive_link">Video</a>
           </div>
         </div>
 
@@ -544,6 +586,31 @@
           <li>API JSON para produtos e movimentacoes</li>
           <li>Documentacao por sprint e rastreabilidade dos requisitos</li>
         </ul>
+      </div>
+    </section>
+
+    <section id="video" aria-labelledby="video-titulo">
+      <div class="section-inner video-panel">
+        <div class="video-frame" aria-hidden="true">
+          <span class="play-mark">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7L8 5Z"/>
+            </svg>
+          </span>
+        </div>
+        <div>
+          <p class="eyebrow">Demonstracao do produto</p>
+          <h2 class="section-title" id="video-titulo">Video com o sistema funcionando</h2>
+          <p class="lead">
+            O video apresenta os principais fluxos do Controle de Estoque, incluindo
+            login, cadastro, listagem, edicao, exclusao, movimentacoes, historico,
+            estoque minimo e maximo, relatorios e validacoes do projeto.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://drive.google.com/drive/folders/1Bfi4XMicCtl6MGLH_07c-TtiNZGw6KKB?usp=drive_link">Assistir no Drive</a>
+            <a class="button" href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque/blob/main/docs/VIDEO.md">Detalhes</a>
+          </div>
+        </div>
       </div>
     </section>
   </main>

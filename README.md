@@ -31,6 +31,14 @@ https://beckman700.github.io/Eng.Software-Controle-de-Estoque/
 
 Guia de instalacao e configuracao: [INSTALACAO.md](INSTALACAO.md).
 
+Video demonstrativo do produto:
+
+```text
+https://drive.google.com/drive/folders/1Bfi4XMicCtl6MGLH_07c-TtiNZGw6KKB?usp=drive_link
+```
+
+Detalhes do video: [docs/VIDEO.md](docs/VIDEO.md).
+
 Para publicar a landing page no GitHub Pages, use a pasta `docs/` como origem da publicacao nas configuracoes do repositorio.
 
 ---
@@ -279,6 +287,7 @@ Documentacao tecnica:
 
 - [docs/API.md](docs/API.md)
 - [docs/TESTES.md](docs/TESTES.md)
+- [docs/VIDEO.md](docs/VIDEO.md)
 - [docs/testes-movimentacoes.md](docs/testes-movimentacoes.md)
 - [database/schema.sql](database/schema.sql)
 
