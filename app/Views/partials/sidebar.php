@@ -23,6 +23,10 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
             <span>de Estoque</span>
         </div>
 
+        <button type="button" class="sidebar-collapse" data-rail-toggle aria-label="Recolher menu" title="Recolher menu">
+            <?= uiIcon('chevron-left', 'btn-icon') ?>
+        </button>
+
         <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar menu">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
@@ -30,63 +34,56 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
     </div>
 
     <nav class="sidebar-nav">
-        <span class="nav-section-title">Principal</span>
-        <a class="nav-link <?= menuAtivo(['dashboard']) ?>" href="index.php?acao=dashboard">
+        <span class="nav-section-title">Geral</span>
+        <a class="nav-link <?= menuAtivo(['dashboard']) ?>" href="index.php?acao=dashboard" title="Dashboard">
             <?= uiIcon('dashboard', 'nav-icon') ?>
             <span>Dashboard</span>
         </a>
 
-        <a class="nav-link <?= menuAtivo(['listar']) ?>" href="index.php?acao=listar">
+        <span class="nav-section-title">Estoque</span>
+        <a class="nav-link <?= menuAtivo(['listar']) ?>" href="index.php?acao=listar" title="Painel de estoque">
             <?= uiIcon('box', 'nav-icon') ?>
             <span>Painel de estoque</span>
         </a>
 
-        <a class="nav-link <?= menuAtivo(['catalogo']) ?>" href="index.php?acao=catalogo">
+        <a class="nav-link <?= menuAtivo(['catalogo']) ?>" href="index.php?acao=catalogo" title="Catálogo de produtos">
             <?= uiIcon('catalog', 'nav-icon') ?>
             <span>Catálogo de produtos</span>
         </a>
 
-        <a class="nav-link <?= menuAtivo(['relatorios', 'giro_estoque', 'valorizacao', 'movimentacoes_periodo']) ?>" href="index.php?acao=relatorios">
-            <?= uiIcon('reports', 'nav-icon') ?>
-            <span>Relatórios</span>
-        </a>
-
-        <span class="nav-section-title">Produtos</span>
-
         <?php if (Auth::isAdmin()): ?>
-        <a class="nav-link <?= menuAtivo(['criar']) ?>" href="index.php?acao=criar">
+        <a class="nav-link <?= menuAtivo(['criar']) ?>" href="index.php?acao=criar" title="Cadastrar produto">
             <?= uiIcon('package-plus', 'nav-icon') ?>
             <span>Cadastrar produto</span>
         </a>
         <?php endif; ?>
 
-        <a class="nav-link" href="index.php?acao=listar#produtos">
-            <?= uiIcon('list', 'nav-icon') ?>
-            <span>Lista completa</span>
-        </a>
-
-        <a class="nav-link" href="index.php?acao=listar#alertas-estoque">
+        <a class="nav-link" href="index.php?acao=listar#alertas-estoque" title="Alertas de estoque">
             <?= uiIcon('alert', 'nav-icon') ?>
             <span>Alertas de estoque</span>
         </a>
 
         <span class="nav-section-title">Movimentações</span>
-
-        <a class="nav-link" href="index.php?acao=listar#movimentacoes">
+        <a class="nav-link" href="index.php?acao=listar#movimentacoes" title="Ações de estoque">
             <?= uiIcon('movement', 'nav-icon') ?>
             <span>Ações de estoque</span>
         </a>
 
         <span class="nav-section-title">Inventário</span>
-
-        <a class="nav-link <?= menuAtivo(['inventarios', 'inventario_criar', 'inventario_detalhar', 'inventario_contagem', 'inventario_divergencias', 'inventario_auditoria']) ?>" href="index.php?acao=inventarios">
+        <a class="nav-link <?= menuAtivo(['inventarios', 'inventario_criar', 'inventario_detalhar', 'inventario_contagem', 'inventario_divergencias', 'inventario_auditoria']) ?>" href="index.php?acao=inventarios" title="Inventários">
             <?= uiIcon('inventory', 'nav-icon') ?>
             <span>Inventários</span>
         </a>
-        <?php if (Auth::isAdmin()): ?>
-        <span class="nav-section-title">Administracao</span>
 
-        <a class="nav-link <?= menuAtivo(['usuarios', 'usuario_criar']) ?>" href="index.php?acao=usuarios">
+        <span class="nav-section-title">Relatórios</span>
+        <a class="nav-link <?= menuAtivo(['relatorios', 'giro_estoque', 'valorizacao', 'movimentacoes_periodo']) ?>" href="index.php?acao=relatorios" title="Relatórios">
+            <?= uiIcon('reports', 'nav-icon') ?>
+            <span>Relatórios</span>
+        </a>
+
+        <?php if (Auth::isAdmin()): ?>
+        <span class="nav-section-title">Administração</span>
+        <a class="nav-link <?= menuAtivo(['usuarios', 'usuario_criar']) ?>" href="index.php?acao=usuarios" title="Usuários">
             <?= uiIcon('users', 'nav-icon') ?>
             <span>Usuários</span>
         </a>
