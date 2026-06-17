@@ -5,14 +5,14 @@ Os testes do projeto usam o **PHPUnit 9.6**, framework de testes padrao do PHP, 
 ## Requisitos
 
 - PHP 8.0+ com a extensao `mbstring` (o PHP do XAMPP ja inclui).
-- Composer. O arquivo `composer.phar` esta incluido no projeto para quem nao tem o Composer instalado globalmente.
+- Composer. O arquivo `tools/composer.phar` esta incluido no projeto para quem nao tem o Composer instalado globalmente.
 
 ## Instalacao
 
 Na primeira vez, instale as dependencias de teste:
 
 ```bash
-C:\xampp\php\php.exe composer.phar install
+C:\xampp\php\php.exe tools\composer.phar install
 ```
 
 Isso cria a pasta `vendor/` (ignorada no Git) com o PHPUnit.
@@ -22,7 +22,7 @@ Isso cria a pasta `vendor/` (ignorada no Git) com o PHPUnit.
 Todos os testes:
 
 ```bash
-C:\xampp\php\php.exe composer.phar test
+C:\xampp\php\php.exe tools\composer.phar test
 ```
 
 Saida detalhada (cada teste como uma frase):
@@ -34,8 +34,8 @@ C:\xampp\php\php.exe vendor\phpunit\phpunit\phpunit --testdox
 Por grupo:
 
 ```bash
-C:\xampp\php\php.exe composer.phar test-unit      # testes unitarios
-C:\xampp\php\php.exe composer.phar test-feature   # testes de feature
+C:\xampp\php\php.exe tools\composer.phar test-unit      # testes unitarios
+C:\xampp\php\php.exe tools\composer.phar test-feature   # testes de feature
 ```
 
 ## Saida esperada

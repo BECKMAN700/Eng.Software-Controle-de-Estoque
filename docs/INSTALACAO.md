@@ -128,13 +128,13 @@ Use o usuario `admin` para acessar todas as funcionalidades, incluindo usuarios,
 Instale as dependencias de desenvolvimento:
 
 ```bash
-C:\xampp\php\php.exe composer.phar install
+C:\xampp\php\php.exe tools\composer.phar install
 ```
 
 Rode todos os testes:
 
 ```bash
-C:\xampp\php\php.exe composer.phar test
+C:\xampp\php\php.exe tools\composer.phar test
 ```
 
 Saida esperada:
@@ -166,4 +166,3 @@ http://localhost/Eng.Software-Controle-de-Estoque/public/
 ### Login nao funciona
 
 Reimporte o arquivo `database/schema.sql` ou execute novamente o `setup.php` para recriar os usuarios de teste.
-
