@@ -19,6 +19,7 @@ if (!function_exists('uiIcon')) {
             'chevron-left' => '<path d="m15 18-6-6 6-6"></path>',
             'chevron-right' => '<path d="m9 18 6-6-6-6"></path>',
             'corner-down-left' => '<polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path>',
+            'more' => '<circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"></circle><circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none"></circle>',
             'moon' => '<path d="M12 3a6 6 0 0 0 9 7.35A9 9 0 1 1 12 3Z"></path>',
             'sun' => '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>',
         ];
