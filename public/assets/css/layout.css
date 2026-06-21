@@ -80,6 +80,7 @@ body.sidebar-open .sidebar-overlay {
     transform: translateX(-105%);
     transition: transform 0.24s ease, width 0.2s ease, padding 0.2s ease;
     overflow-y: auto;
+    overflow-x: hidden;
     box-shadow: 18px 0 44px rgba(2, 6, 23, 0.24);
 }
 
@@ -556,7 +557,7 @@ html[data-theme="dark"] .theme-toggle [data-theme-icon="dark"] {
     }
 
     html:not(.nav-expanded) .sidebar .brand-text,
-    html:not(.nav-expanded) .sidebar .nav-link span,
+    html:not(.nav-expanded) .sidebar .nav-link span:not(.nav-icon),
     html:not(.nav-expanded) .sidebar .nav-section-title,
     html:not(.nav-expanded) .sidebar .sidebar-user,
     html:not(.nav-expanded) .sidebar .btn-logout span,

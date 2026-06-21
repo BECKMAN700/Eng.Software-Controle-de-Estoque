@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "xampp",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "localhost:8088", "-t", "public"],
+      "port": 8088
+    }
+  ]
+}

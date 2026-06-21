@@ -184,7 +184,6 @@ ob_start();
                 <p class="metric-description">Tipos de unidade usados nos produtos.</p>
             </article>
         </div>
-    </div>
 </section>
 
 <section class="page-section" id="alertas-estoque">
