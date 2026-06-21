@@ -82,12 +82,14 @@ require_once __DIR__ . '/../app/Controllers/UsuarioController.php';
 require_once __DIR__ . '/../app/Controllers/InventarioController.php';
 require_once __DIR__ . '/../app/Controllers/RelatorioController.php';
 require_once __DIR__ . '/../app/Controllers/DashboardController.php';
+require_once __DIR__ . '/../app/Controllers/BuscaController.php';
 
 $controller = new ProdutoController();
 $usuarioController = new UsuarioController();
 $inventarioController = new InventarioController();
 $relatorioController = new RelatorioController();
-$dashboardController = new DashboardController();   
+$dashboardController = new DashboardController();
+$buscaController = new BuscaController();
 
 switch ($acao) {
     // ====================== ROTAS DE INVENTÁRIO ======================
@@ -257,6 +259,10 @@ switch ($acao) {
 
     case 'api_movimentacoes':
         $controller->apiMovimentacoes();
+        break;
+
+    case 'busca_global':
+        $buscaController->global();
         break;
 
     default:

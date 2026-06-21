@@ -23,6 +23,21 @@ O Controle de Estoque e um sistema web em PHP nativo para gerenciar produtos, en
 
 A aplicacao segue o padrao MVC, usa MySQL com PDO e possui rotas protegidas por sessao, perfis de usuario e tokens CSRF nos POSTs criticos.
 
+## Links finais do projeto
+
+| Item | Link |
+| --- | --- |
+| Landing page | <https://beckman700.github.io/Eng.Software-Controle-de-Estoque/> |
+| Versao final do produto | <https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque/releases/tag/v1.2.0> |
+| Video do produto | <https://drive.google.com/drive/folders/1Bfi4XMicCtl6MGLH_07c-TtiNZGw6KKB?usp=drive_link> |
+| Apresentacao final | [PDF](docs/apresentacao/Apresentacao-Final-Sistema-de-Controle-de-Estoque.pdf) / [PPTX](docs/apresentacao/Apresentacao-Final-Sistema-de-Controle-de-Estoque.pptx) |
+
+Detalhes da entrega final: [docs/ENTREGA-FINAL.md](docs/ENTREGA-FINAL.md).
+
+Guia de instalacao e configuracao: [docs/INSTALACAO.md](docs/INSTALACAO.md).
+
+Para publicar a landing page no GitHub Pages, use a pasta `docs/` como origem da publicacao nas configuracoes do repositorio.
+
 ---
 
 ## Funcionalidades
@@ -177,6 +192,8 @@ Usuarios de teste:
 
 ## Como executar
 
+Para um passo a passo completo de instalacao, configuracao de banco, execucao e usuarios de teste, consulte [docs/INSTALACAO.md](docs/INSTALACAO.md).
+
 1. Clone o repositorio dentro da pasta `htdocs` do XAMPP.
 
 ```bash
@@ -229,18 +246,18 @@ Mais detalhes estao em [docs/API.md](docs/API.md).
 
 Os testes usam **PHPUnit 9.6** (framework de testes do PHP), gerenciado pelo Composer. A aplicacao continua em PHP nativo; o PHPUnit e apenas dependencia de desenvolvimento (`require-dev`).
 
-> Use um PHP com a extensao `mbstring` habilitada (o PHP do XAMPP ja vem com ela). O `composer.phar` esta incluido para quem nao tem o Composer instalado.
+> Use um PHP com a extensao `mbstring` habilitada (o PHP do XAMPP ja vem com ela). O `tools/composer.phar` esta incluido para quem nao tem o Composer instalado.
 
 Instalar as dependencias de teste (apenas na primeira vez):
 
 ```bash
-C:\xampp\php\php.exe composer.phar install
+C:\xampp\php\php.exe tools\composer.phar install
 ```
 
 Rodar todos os testes:
 
 ```bash
-C:\xampp\php\php.exe composer.phar test
+C:\xampp\php\php.exe tools\composer.phar test
 ```
 
 Saida detalhada, com cada teste listado:
@@ -266,7 +283,12 @@ Documentacao por sprint:
 Documentacao tecnica:
 
 - [docs/API.md](docs/API.md)
+- [docs/APRESENTACAO.md](docs/APRESENTACAO.md)
+- [docs/ENTREGA-FINAL.md](docs/ENTREGA-FINAL.md)
+- [docs/INSTALACAO.md](docs/INSTALACAO.md)
+- [docs/README.md](docs/README.md)
 - [docs/TESTES.md](docs/TESTES.md)
+- [docs/VIDEO.md](docs/VIDEO.md)
 - [docs/testes-movimentacoes.md](docs/testes-movimentacoes.md)
 - [database/schema.sql](database/schema.sql)
 

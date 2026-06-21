@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'Login';
 $flashErro = Sessao::getFlashErro();
-$assetVersion = '20260609-ui-polish';
+$assetVersion = '20260617-design';
 
 if (!function_exists('esc')) {
     function esc($valor): string
@@ -29,7 +29,9 @@ if (!function_exists('esc')) {
     <main class="login-shell">
         <section class="login-card" aria-labelledby="login-title">
             <div class="login-brand">
-                <div class="brand-mark">CE</div>
+                <div class="brand-mark">
+                    <img src="assets/img/logo.svg?v=<?= $assetVersion ?>" alt="Controle de Estoque" width="44" height="44">
+                </div>
                 <div>
                     <strong>Controle de Estoque</strong>
                     <span>Acesso ao sistema</span>

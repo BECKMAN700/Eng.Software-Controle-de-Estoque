@@ -3,6 +3,5 @@
     <rect width="64" height="64" rx="16" fill="#2563eb"/>
     <path d="M16 22 32 13l16 9-16 9-16-9Z" fill="#dbeafe"/>
     <path d="M16 22v18l16 9V31L16 22Z" fill="#bfdbfe"/>
-    <path d="M48 22v18l-16 9V31l16-9Z" fill="#93c5fd"/>
-    <path d="M22 43h20" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+    <path d="M48 22v18l-16 9V31l16-9Z" fill="#5eead4"/>
 </svg>

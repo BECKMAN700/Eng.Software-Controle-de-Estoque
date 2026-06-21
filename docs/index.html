@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controle de Estoque | UFT</title>
+  <meta name="description" content="Sistema web em PHP nativo para controle de produtos, movimentacoes, inventario, relatorios e dashboard gerencial.">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #5d6977;
+      --line: #d9e1ea;
+      --paper: #f7fafc;
+      --surface: #ffffff;
+      --brand: #116149;
+      --brand-dark: #0c4636;
+      --accent: #2f7dd3;
+      --warn: #c06f18;
+      --danger: #a9403a;
+      --shadow: 0 18px 45px rgba(23, 32, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img,
+    svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(217, 225, 234, 0.85);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner,
+    .section-inner {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 72px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--brand);
+      box-shadow: 0 10px 26px rgba(17, 97, 73, 0.25);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .nav a:hover {
+      color: var(--brand);
+    }
+
+    .hero {
+      min-height: calc(100vh - 72px);
+      padding: 56px 0 44px;
+      display: grid;
+      align-items: center;
+      background:
+        linear-gradient(135deg, rgba(17, 97, 73, 0.12), rgba(47, 125, 211, 0.08) 48%, rgba(192, 111, 24, 0.08)),
+        var(--paper);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+      gap: 44px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--brand);
+      font-size: 0.86rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.6rem, 6vw, 5.2rem);
+      line-height: 0.98;
+      letter-spacing: 0;
+      color: var(--ink);
+    }
+
+    .lead {
+      max-width: 640px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: 1.16rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border: 1px solid var(--brand);
+      border-radius: 8px;
+      font-weight: 800;
+      color: var(--brand);
+      background: #fff;
+    }
+
+    .button.primary {
+      color: #fff;
+      background: var(--brand);
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .product-shot {
+      overflow: hidden;
+      border: 1px solid rgba(23, 32, 42, 0.12);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .window-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 42px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line);
+      background: #eef4f8;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d76767;
+    }
+
+    .dot:nth-child(2) {
+      background: #d8a83a;
+    }
+
+    .dot:nth-child(3) {
+      background: #4cae70;
+    }
+
+    .dashboard-preview {
+      display: grid;
+      gap: 18px;
+      padding: 22px;
+      background: #fbfdff;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .preview-title {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .preview-badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: var(--brand-dark);
+      font-size: 0.82rem;
+      font-weight: 800;
+      background: rgba(17, 97, 73, 0.12);
+      white-space: nowrap;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 94px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .chart {
+      display: grid;
+      align-items: end;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 8px;
+      min-height: 170px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .bar {
+      min-height: 36px;
+      border-radius: 6px 6px 0 0;
+      background: var(--accent);
+    }
+
+    .bar:nth-child(3n) {
+      background: var(--brand);
+    }
+
+    .bar:nth-child(4n) {
+      background: var(--warn);
+    }
+
+    section {
+      padding: 76px 0;
+      background: var(--surface);
+    }
+
+    section:nth-of-type(odd) {
+      background: #f1f6f9;
+    }
+
+    .section-title {
+      max-width: 720px;
+      margin: 0 0 30px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      min-height: 210px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .card svg {
+      width: 34px;
+      height: 34px;
+      color: var(--brand);
+    }
+
+    .card h3 {
+      margin: 18px 0 8px;
+      font-size: 1.18rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .feature-list li {
+      padding: 14px 16px;
+      border-left: 4px solid var(--brand);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .video-panel {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 28px;
+      align-items: center;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .video-frame {
+      display: grid;
+      min-height: 260px;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(12, 70, 54, 0.92), rgba(47, 125, 211, 0.82)),
+        var(--brand-dark);
+    }
+
+    .play-mark {
+      display: grid;
+      width: 82px;
+      height: 82px;
+      place-items: center;
+      border: 2px solid rgba(255, 255, 255, 0.72);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .play-mark svg {
+      width: 34px;
+      height: 34px;
+      margin-left: 4px;
+    }
+
+    .footer {
+      padding: 32px 0;
+      color: #e6f0ec;
+      background: var(--brand-dark);
+    }
+
+    .footer .section-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    @media (max-width: 920px) {
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-grid,
+      .split,
+      .video-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .cards {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 14px 0;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .hero {
+        padding-top: 36px;
+      }
+
+      .metric-grid,
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-header,
+      .footer .section-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#inicio" aria-label="Controle de Estoque">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 12 4.5 7.8M12 12l7.5-4.2M12 12v8.5" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </span>
+        <span>Controle de Estoque</span>
+      </a>
+      <nav class="nav" aria-label="Navegacao principal">
+        <a href="#recursos">Recursos</a>
+        <a href="#tecnologias">Tecnologias</a>
+        <a href="#video">Video</a>
+        <a href="#apresentacao">Apresentacao</a>
+        <a href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <section class="hero" aria-labelledby="titulo">
+      <div class="section-inner hero-grid">
+        <div>
+          <p class="eyebrow">Projeto de Engenharia de Software - UFT 2026.1</p>
+          <h1 id="titulo">Controle de Estoque</h1>
+          <p class="lead">
+            Sistema web em PHP nativo para administrar produtos, entradas, saidas,
+            inventarios, auditoria, relatorios e indicadores gerenciais em uma
+            rotina simples de estoque.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque">Ver repositorio</a>
+            <a class="button" href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque/blob/main/docs/INSTALACAO.md">Instalacao</a>
+            <a class="button" href="https://drive.google.com/drive/folders/1Bfi4XMicCtl6MGLH_07c-TtiNZGw6KKB?usp=drive_link">Video</a>
+            <a class="button" href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque/blob/main/docs/apresentacao/Apresentacao-Final-Sistema-de-Controle-de-Estoque.pdf">Apresentacao</a>
+          </div>
+        </div>
+
+        <div class="product-shot" aria-label="Previa visual do dashboard gerencial">
+          <div class="window-bar" aria-hidden="true">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <div class="dashboard-preview">
+            <div class="preview-header">
+              <p class="preview-title">Dashboard gerencial</p>
+              <span class="preview-badge">Sprint 5</span>
+            </div>
+            <div class="metric-grid">
+              <div class="metric">
+                <span>Produtos</span>
+                <strong>128</strong>
+              </div>
+              <div class="metric">
+                <span>Valor</span>
+                <strong>R$ 42k</strong>
+              </div>
+              <div class="metric">
+                <span>Criticos</span>
+                <strong>9</strong>
+              </div>
+            </div>
+            <div class="chart" aria-hidden="true">
+              <span class="bar" style="height: 42%"></span>
+              <span class="bar" style="height: 68%"></span>
+              <span class="bar" style="height: 52%"></span>
+              <span class="bar" style="height: 84%"></span>
+              <span class="bar" style="height: 60%"></span>
+              <span class="bar" style="height: 74%"></span>
+              <span class="bar" style="height: 48%"></span>
+              <span class="bar" style="height: 92%"></span>
+              <span class="bar" style="height: 63%"></span>
+              <span class="bar" style="height: 78%"></span>
+              <span class="bar" style="height: 55%"></span>
+              <span class="bar" style="height: 70%"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="recursos" aria-labelledby="recursos-titulo">
+      <div class="section-inner">
+        <h2 class="section-title" id="recursos-titulo">Recursos principais</h2>
+        <div class="cards">
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h3>Gestao de produtos</h3>
+            <p>Cadastro, edicao, listagem, filtros avancados e controle de limites de estoque minimo e maximo.</p>
+          </article>
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 20V10M12 20V4M18 20v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h3>Dashboard gerencial</h3>
+            <p>Cards e graficos para acompanhar valor em estoque, produtos criticos, entradas, saidas e movimentacoes.</p>
+          </article>
+          <article class="card">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 3h7l5 5v13H7V3Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M14 3v6h5M10 14h6M10 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h3>Relatorios</h3>
+            <p>Relatorios de giro, valorizacao e movimentacoes por periodo, com exportacao em PDF e CSV.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="tecnologias" aria-labelledby="tecnologias-titulo">
+      <div class="section-inner split">
+        <div>
+          <h2 class="section-title" id="tecnologias-titulo">Base tecnica simples e organizada</h2>
+          <p class="lead">
+            A aplicacao segue MVC em PHP nativo, usa MySQL com PDO, rotas protegidas
+            por sessao e testes automatizados com PHPUnit.
+          </p>
+        </div>
+        <ul class="feature-list">
+          <li>PHP 8.x, MySQL, PDO e XAMPP</li>
+          <li>Autenticacao com perfis admin e estoquista</li>
+          <li>Inventario, divergencias e auditoria de ajustes</li>
+          <li>API JSON para produtos e movimentacoes</li>
+          <li>Documentacao por sprint e rastreabilidade dos requisitos</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="video" aria-labelledby="video-titulo">
+      <div class="section-inner video-panel">
+        <div class="video-frame" aria-hidden="true">
+          <span class="play-mark">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7L8 5Z"/>
+            </svg>
+          </span>
+        </div>
+        <div>
+          <p class="eyebrow">Demonstracao do produto</p>
+          <h2 class="section-title" id="video-titulo">Video com o sistema funcionando</h2>
+          <p class="lead">
+            O video apresenta os principais fluxos do Controle de Estoque, incluindo
+            login, cadastro, listagem, edicao, exclusao, movimentacoes, historico,
+            estoque minimo e maximo, relatorios e validacoes do projeto.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://drive.google.com/drive/folders/1Bfi4XMicCtl6MGLH_07c-TtiNZGw6KKB?usp=drive_link">Assistir no Drive</a>
+            <a class="button" href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque/blob/main/docs/VIDEO.md">Detalhes</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="apresentacao" aria-labelledby="apresentacao-titulo">
+      <div class="section-inner video-panel">
+        <div>
+          <p class="eyebrow">Entrega final</p>
+          <h2 class="section-title" id="apresentacao-titulo">Apresentacao final do grupo</h2>
+          <p class="lead">
+            Os slides oficiais da apresentacao final estao versionados no repositorio
+            em PDF e PPTX, junto com a documentacao do produto e os links de apoio.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque/blob/main/docs/apresentacao/Apresentacao-Final-Sistema-de-Controle-de-Estoque.pdf">Abrir PDF</a>
+            <a class="button" href="https://github.com/BECKMAN700/Eng.Software-Controle-de-Estoque/blob/main/docs/apresentacao/Apresentacao-Final-Sistema-de-Controle-de-Estoque.pptx">Baixar PPTX</a>
+            <a class="button" href="https://gamma.app/docs/Apresentacao-Final-Sistema-de-Controle-de-Estoque-fl5qal1oen7vhwg">Gamma</a>
+          </div>
+        </div>
+        <div class="video-frame" aria-hidden="true">
+          <span class="play-mark">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M14 3v5h5M9 13h6M9 17h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="section-inner">
+      <strong>Controle de Estoque</strong>
+      <span>Universidade Federal do Tocantins - Engenharia de Software</span>
+    </div>
+  </footer>
+</body>
+</html>
