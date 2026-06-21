@@ -10,6 +10,17 @@ if (!function_exists('menuAtivo')) {
 $nomeUsuario = Sessao::getNome();
 $papelUsuario = Sessao::getPapel();
 $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
+
+// Iniciais para o avatar da conta (1ª letra do primeiro e do último nome)
+$partesNome = preg_split('/\s+/', trim((string) $nomeUsuario), -1, PREG_SPLIT_NO_EMPTY);
+$iniciais = '';
+if (!empty($partesNome)) {
+    $iniciais .= mb_substr($partesNome[0], 0, 1);
+    if (count($partesNome) > 1) {
+        $iniciais .= mb_substr($partesNome[count($partesNome) - 1], 0, 1);
+    }
+}
+$iniciais = mb_strtoupper($iniciais !== '' ? $iniciais : 'U');
 ?>
 
 <aside class="sidebar" id="app-sidebar" aria-label="Menu principal">
@@ -93,8 +104,11 @@ $papelLabel   = $papelUsuario === 'admin' ? 'Administrador' : 'Estoquista';
 
     <div class="sidebar-footer">
         <div class="sidebar-user">
-            <span class="sidebar-user-nome"><?= htmlspecialchars($nomeUsuario) ?></span>
-            <span class="sidebar-user-papel"><?= htmlspecialchars($papelLabel) ?></span>
+            <span class="user-avatar" aria-hidden="true" title="<?= htmlspecialchars($nomeUsuario) ?>"><?= htmlspecialchars($iniciais) ?></span>
+            <div class="sidebar-user-info">
+                <span class="sidebar-user-nome"><?= htmlspecialchars($nomeUsuario) ?></span>
+                <span class="sidebar-user-papel"><?= htmlspecialchars($papelLabel) ?></span>
+            </div>
         </div>
 
         <form class="inline-form" action="index.php?acao=logout" method="POST">

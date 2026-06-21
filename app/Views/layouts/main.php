@@ -3,7 +3,7 @@ $pageTitle = $pageTitle ?? 'Controle de Estoque';
 $pageSubtitle = $pageSubtitle ?? 'Gerencie produtos, entradas, saídas e alertas de estoque.';
 $content = $content ?? '';
 $currentAction = $_GET['acao'] ?? 'listar';
-$assetVersion = '20260617-nav3';
+$assetVersion = '20260617-nav4';
 ?>
 
 <!DOCTYPE html>

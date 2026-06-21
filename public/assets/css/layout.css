@@ -81,7 +81,14 @@ body.sidebar-open .sidebar-overlay {
     transition: transform 0.24s ease, width 0.2s ease, padding 0.2s ease;
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-width: none;          /* Firefox: esconde a barra de rolagem */
+    -ms-overflow-style: none;        /* Edge legado */
     box-shadow: 18px 0 44px rgba(2, 6, 23, 0.24);
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .rail-toggle {
@@ -265,6 +272,29 @@ body.sidebar-open .sidebar-overlay {
 }
 
 .sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.user-avatar {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(2, 6, 23, 0.35);
+}
+
+.sidebar-user-info {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -559,10 +589,14 @@ html[data-theme="dark"] .theme-toggle [data-theme-icon="dark"] {
     html:not(.nav-expanded) .sidebar .brand-text,
     html:not(.nav-expanded) .sidebar .nav-link span:not(.nav-icon),
     html:not(.nav-expanded) .sidebar .nav-section-title,
-    html:not(.nav-expanded) .sidebar .sidebar-user,
-    html:not(.nav-expanded) .sidebar .btn-logout span,
+    html:not(.nav-expanded) .sidebar .sidebar-user-info,
+    html:not(.nav-expanded) .sidebar .inline-form,
     html:not(.nav-expanded) .sidebar .rail-toggle-label {
         display: none;
+    }
+
+    html:not(.nav-expanded) .sidebar-user {
+        justify-content: center;
     }
 
     html:not(.nav-expanded) .sidebar-brand {
