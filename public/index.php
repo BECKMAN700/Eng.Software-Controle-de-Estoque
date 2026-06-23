@@ -13,7 +13,7 @@ require_once __DIR__ . '/../app/Controllers/AuthController.php';
 
 Sessao::iniciar();
 
-$acao = trim($_GET['acao'] ?? 'login');
+$acao = trim($_GET['acao'] ?? ($_GET['rota'] ?? 'login'));
 
 // Interceptar caminhos sugeridos para exportação de relatórios
 $requestUri = $_SERVER['REQUEST_URI'] ?? '';
@@ -65,6 +65,17 @@ if ($acao === 'autenticar') {
 if ($acao === 'logout') {
     exigirPostComCsrf();
     $authController->logout();
+    exit;
+}
+
+// Rotas públicas para cadastro
+if ($acao === 'cadastro') {
+    $authController->cadastro();
+    exit;
+}
+
+if ($acao === 'cadastro_salvar') {
+    $authController->registrarCadastro();
     exit;
 }
 

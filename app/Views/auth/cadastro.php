@@ -1,8 +1,7 @@
 <?php
-$pageTitle = 'Login';
-$flashErro = Sessao::getFlashErro();
-$flashSucesso = Sessao::getFlashSucesso();
+$pageTitle = 'Cadastro';
 $assetVersion = '20260617-design';
+$flashErro = Sessao::getFlashErro();
 
 if (!function_exists('esc')) {
     function esc($valor): string
@@ -28,27 +27,21 @@ if (!function_exists('esc')) {
 
 <body class="login-page">
     <main class="login-shell">
-        <section class="login-card" aria-labelledby="login-title">
+        <section class="login-card" aria-labelledby="cadastro-title">
             <div class="login-brand">
                 <div class="brand-mark">
                     <img src="assets/img/logo.svg?v=<?= $assetVersion ?>" alt="Controle de Estoque" width="44" height="44">
                 </div>
                 <div>
                     <strong>Controle de Estoque</strong>
-                    <span>Acesso ao sistema</span>
+                    <span>Cadastro de usuário</span>
                 </div>
             </div>
 
             <header class="login-header">
-                <h1 id="login-title">Entrar</h1>
-                <p>Use seu e-mail e senha cadastrados.</p>
+                <h1 id="cadastro-title">Criar conta</h1>
+                <p>Preencha os dados para criar sua conta.</p>
             </header>
-
-            <?php if ($flashSucesso !== ''): ?>
-                <div class="alert alert-success" role="alert">
-                    <?= esc($flashSucesso) ?>
-                </div>
-            <?php endif; ?>
 
             <?php if ($flashErro !== ''): ?>
                 <div class="alert alert-danger" role="alert">
@@ -56,26 +49,33 @@ if (!function_exists('esc')) {
                 </div>
             <?php endif; ?>
 
-            <form action="index.php?acao=autenticar" method="POST" class="login-form">
+            <form action="index.php?acao=cadastro_salvar" method="POST" class="login-form">
                 <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
 
                 <div class="form-group">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+                </div>
+
+                <div class="form-group">
                     <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" placeholder="email@exemplo.com" autocomplete="email"
-                        required>
+                    <input type="email" id="email" name="email" placeholder="email@exemplo.com" required>
                 </div>
 
                 <div class="form-group">
                     <label for="senha">Senha</label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha"
-                        autocomplete="current-password" required>
+                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary login-submit">
-                    Entrar
-                </button>
+                <div class="form-group">
+                    <label for="senha_conf">Confirmar senha</label>
+                    <input type="password" id="senha_conf" name="senha_conf" placeholder="Repita a senha" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary login-submit">Cadastrar</button>
             </form>
-            <p style="margin-top:12px; text-align:center;">Ainda não tem conta? <a href="index.php?acao=cadastro">Cadastre-se</a></p>
+
+            <p style="margin-top:12px; text-align:center;">Já tem conta? <a href="index.php?acao=login">Voltar ao login</a></p>
         </section>
     </main>
 </body>
