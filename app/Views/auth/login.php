@@ -71,10 +71,68 @@ if (!function_exists('esc')) {
                         autocomplete="current-password" required>
                 </div>
 
+                <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="lembrar_email" name="lembrar_email" value="1">
+                    <label for="lembrar_email" style="margin: 0; font-size: 14px; cursor: pointer;">Lembrar e-mail</label>
+                </div>
+
                 <button type="submit" class="btn btn-primary login-submit">
                     Entrar
                 </button>
             </form>
+
+            <script>
+                // Restaurar e-mail do cookie ao carregar a página
+                document.addEventListener('DOMContentLoaded', function() {
+                    const emailInput = document.getElementById('email');
+                    const lembrarCheckbox = document.getElementById('lembrar_email');
+                    const emailCookie = getCookie('controle_estoque_email');
+
+                    if (emailCookie) {
+                        emailInput.value = emailCookie;
+                        lembrarCheckbox.checked = true;
+                    }
+
+                    // Salvar ou remover cookie ao submeter o formulário
+                    document.querySelector('.login-form').addEventListener('submit', function() {
+                        if (lembrarCheckbox.checked && emailInput.value) {
+                            setCookie('controle_estoque_email', emailInput.value, 30);
+                        } else {
+                            deleteCookie('controle_estoque_email');
+                        }
+                    });
+
+                    // Atualizar checkbox quando desmarcar
+                    lembrarCheckbox.addEventListener('change', function() {
+                        if (!this.checked) {
+                            deleteCookie('controle_estoque_email');
+                        }
+                    });
+                });
+
+                function getCookie(name) {
+                    const nameEQ = name + "=";
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.indexOf(nameEQ) === 0) {
+                            return decodeURIComponent(cookie.substring(nameEQ.length));
+                        }
+                    }
+                    return null;
+                }
+
+                function setCookie(name, value, days) {
+                    const d = new Date();
+                    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                    const expires = "expires=" + d.toUTCString();
+                    document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
+                }
+
+                function deleteCookie(name) {
+                    setCookie(name, "", -1);
+                }
+            </script>
             <p style="margin-top:12px; text-align:center;">Ainda não tem conta? <a href="index.php?acao=cadastro">Cadastre-se</a></p>
         </section>
     </main>
