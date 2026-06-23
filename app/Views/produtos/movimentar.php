@@ -74,7 +74,7 @@ $estoqueMaximo = $produto['estoque_maximo'] ?? null;
             </div>
         <?php endif; ?>
 
-        <form action="index.php?acao=movimentar" method="POST">
+        <form action="index.php?acao=movimentar" method="POST" data-validate novalidate>
             <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
             <input type="hidden" name="id" value="<?= (int) ($produto['id'] ?? 0) ?>">
 
@@ -124,7 +124,7 @@ $estoqueMaximo = $produto['estoque_maximo'] ?? null;
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" data-loading-text="Registrando…">
                     Confirmar movimentação
                 </button>
 

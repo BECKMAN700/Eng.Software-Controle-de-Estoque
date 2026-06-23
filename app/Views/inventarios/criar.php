@@ -37,7 +37,7 @@ ob_start();
             </div>
         <?php endif; ?>
 
-        <form action="index.php?acao=inventario_salvar" method="POST">
+        <form action="index.php?acao=inventario_salvar" method="POST" data-validate novalidate>
             <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
 
             <div class="form-grid">
@@ -94,7 +94,7 @@ ob_start();
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" data-loading-text="Abrindo…">
                     Abrir inventário
                 </button>
 
