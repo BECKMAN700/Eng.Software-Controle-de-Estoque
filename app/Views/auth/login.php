@@ -67,8 +67,25 @@ if (!function_exists('esc')) {
 
                 <div class="form-group">
                     <label for="senha">Senha</label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha"
-                        autocomplete="current-password" required>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <input type="password" id="senha" name="senha" placeholder="Digite sua senha"
+                            autocomplete="current-password" required style="padding-right: 40px; width: 100%;">
+                        <button type="button" id="toggle-senha" style="
+                            position: absolute;
+                            right: 12px;
+                            background: none;
+                            border: none;
+                            cursor: pointer;
+                            font-size: 18px;
+                            color: #666;
+                            padding: 4px 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 32px;
+                            height: 32px;
+                        " title="Mostrar/Ocultar senha">👁️</button>
+                    </div>
                 </div>
 
                 <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
@@ -82,6 +99,23 @@ if (!function_exists('esc')) {
             </form>
 
             <script>
+                // Toggle mostrar/ocultar senha
+                document.addEventListener('DOMContentLoaded', function() {
+                    const senhaInput = document.getElementById('senha');
+                    const toggleBtn = document.getElementById('toggle-senha');
+
+                    toggleBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        if (senhaInput.type === 'password') {
+                            senhaInput.type = 'text';
+                            toggleBtn.textContent = '🙈';
+                        } else {
+                            senhaInput.type = 'password';
+                            toggleBtn.textContent = '👁️';
+                        }
+                    });
+                });
+
                 // Restaurar e-mail do cookie ao carregar a página
                 document.addEventListener('DOMContentLoaded', function() {
                     const emailInput = document.getElementById('email');
