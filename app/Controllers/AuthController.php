@@ -108,9 +108,22 @@ class AuthController
         $email = trim((string) ($_POST['email'] ?? ''));
         $senha = (string) ($_POST['senha'] ?? '');
 
-        // Validação básica de campos
-        if ($email === '' || $senha === '') {
-            Sessao::setFlashErro('Preencha o e-mail e a senha.');
+        // Validação de campos obrigatórios
+        if ($email === '') {
+            Sessao::setFlashErro('Por favor, insira seu e-mail.');
+            header('Location: index.php?acao=login');
+            exit;
+        }
+
+        if ($senha === '') {
+            Sessao::setFlashErro('Por favor, insira sua senha.');
+            header('Location: index.php?acao=login');
+            exit;
+        }
+
+        // Validação de formato de e-mail
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Sessao::setFlashErro('O e-mail informado é inválido.');
             header('Location: index.php?acao=login');
             exit;
         }
