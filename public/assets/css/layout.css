@@ -547,7 +547,7 @@ html[data-theme="dark"] .theme-toggle [data-theme-icon="dark"] {
         box-shadow: none;
         border-right: 1px solid rgba(255, 255, 255, 0.06);
         z-index: 40;
-        transition: width 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
+        transition: width 0.2s ease, padding 0.2s ease;
     }
 
     .menu-toggle,
@@ -560,66 +560,66 @@ html[data-theme="dark"] .theme-toggle [data-theme-icon="dark"] {
         display: flex;
     }
 
-    /* Conteúdo tem margem CONSTANTE (= trilho): nunca muda de tamanho */
+    /* Conteúdo acompanha a largura atual da sidebar. */
     .app-main {
-        margin-left: var(--rail-width);
+        margin-left: var(--sidebar-width);
         width: auto;
+        transition: margin-left 0.2s ease;
     }
 
     .topbar {
         padding-left: 32px;
     }
 
-    /* Estado expandido: menu flutua por cima do conteúdo */
-    html.nav-expanded .sidebar {
-        box-shadow: 18px 0 44px rgba(2, 6, 23, 0.28);
-    }
-
-    html.nav-expanded .rail-toggle .icon {
-        transform: rotate(180deg);
-    }
-
-    /* Estado de repouso (trilho fino, só ícones) */
-    html:not(.nav-expanded) .sidebar {
+    /* Estado recolhido: trilho fino, só ícones. */
+    html.sidebar-collapsed .sidebar {
         width: var(--rail-width);
         padding-left: 12px;
         padding-right: 12px;
     }
 
-    html:not(.nav-expanded) .sidebar .brand-text,
-    html:not(.nav-expanded) .sidebar .nav-link span:not(.nav-icon),
-    html:not(.nav-expanded) .sidebar .nav-section-title,
-    html:not(.nav-expanded) .sidebar .sidebar-user-info,
-    html:not(.nav-expanded) .sidebar .inline-form,
-    html:not(.nav-expanded) .sidebar .rail-toggle-label {
+    html.sidebar-collapsed .app-main {
+        margin-left: var(--rail-width);
+    }
+
+    html.sidebar-collapsed .sidebar .brand-text,
+    html.sidebar-collapsed .sidebar .nav-link span:not(.nav-icon),
+    html.sidebar-collapsed .sidebar .nav-section-title,
+    html.sidebar-collapsed .sidebar .sidebar-user-info,
+    html.sidebar-collapsed .sidebar .inline-form,
+    html.sidebar-collapsed .sidebar .rail-toggle-label {
         display: none;
     }
 
-    html:not(.nav-expanded) .sidebar-user {
+    html.sidebar-collapsed .sidebar-user {
         justify-content: center;
     }
 
-    html:not(.nav-expanded) .sidebar-brand {
+    html.sidebar-collapsed .sidebar-brand {
         justify-content: center;
         padding: 8px 0 20px;
     }
 
-    html:not(.nav-expanded) .rail-toggle {
+    html.sidebar-collapsed .rail-toggle {
         justify-content: center;
         margin-top: 10px;
     }
 
-    html:not(.nav-expanded) .nav-link {
+    html.sidebar-collapsed .rail-toggle .icon {
+        transform: rotate(180deg);
+    }
+
+    html.sidebar-collapsed .nav-link {
         justify-content: center;
         padding: 11px 0;
     }
 
-    html:not(.nav-expanded) .sidebar-footer {
+    html.sidebar-collapsed .sidebar-footer {
         justify-content: center;
         padding: 12px;
     }
 
-    html:not(.nav-expanded) .btn-logout {
+    html.sidebar-collapsed .btn-logout {
         padding: 9px;
     }
 }
