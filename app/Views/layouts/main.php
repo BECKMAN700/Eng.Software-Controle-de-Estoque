@@ -3,7 +3,7 @@ $pageTitle = $pageTitle ?? 'Controle de Estoque';
 $pageSubtitle = $pageSubtitle ?? 'Gerencie produtos, entradas, saídas e alertas de estoque.';
 $content = $content ?? '';
 $currentAction = $_GET['acao'] ?? 'listar';
-$assetVersion = '20260617-dash';
+$assetVersion = '20260623-sidebar';
 ?>
 
 <!DOCTYPE html>
@@ -22,6 +22,10 @@ $assetVersion = '20260617-dash';
                 var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
                 var theme = savedTheme || (prefersDark ? 'dark' : 'light');
                 document.documentElement.setAttribute('data-theme', theme);
+
+                if (localStorage.getItem('ce-sidebar') === 'collapsed') {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
             } catch (error) {
                 document.documentElement.setAttribute('data-theme', 'light');
             }
@@ -121,10 +125,32 @@ $assetVersion = '20260617-dash';
             setTheme(document.documentElement.getAttribute('data-theme') || 'light');
 
             var docEl = document.documentElement;
+            var railButtons = document.querySelectorAll('[data-rail-toggle]');
 
-            function setNavExpanded(expanded) {
-                docEl.classList.toggle('nav-expanded', expanded);
+            function setSidebarCollapsed(collapsed, persist) {
+                docEl.classList.toggle('sidebar-collapsed', collapsed);
+
+                railButtons.forEach(function (button) {
+                    var label = button.querySelector('[data-rail-toggle-label]');
+                    button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                    button.setAttribute('aria-label', collapsed ? 'Expandir menu' : 'Recolher menu');
+                    button.setAttribute('title', collapsed ? 'Expandir menu' : 'Recolher menu');
+
+                    if (label) {
+                        label.textContent = collapsed ? 'Expandir menu' : 'Recolher menu';
+                    }
+                });
+
+                if (persist) {
+                    try {
+                        localStorage.setItem('ce-sidebar', collapsed ? 'collapsed' : 'expanded');
+                    } catch (error) {
+                        // Sidebar still works without localStorage; it just will not persist.
+                    }
+                }
             }
+
+            setSidebarCollapsed(docEl.classList.contains('sidebar-collapsed'), false);
 
             document.addEventListener('click', function (event) {
                 var themeTarget = event.target.closest('[data-theme-toggle]');
@@ -139,8 +165,7 @@ $assetVersion = '20260617-dash';
                 }
 
                 if (railTarget) {
-                    // Expande/recolhe o trilho no desktop (sobreposto, transitório)
-                    setNavExpanded(!docEl.classList.contains('nav-expanded'));
+                    setSidebarCollapsed(!docEl.classList.contains('sidebar-collapsed'), true);
                     return;
                 }
 
@@ -151,20 +176,13 @@ $assetVersion = '20260617-dash';
 
                 if (closeTarget) {
                     setMenuState(false);
-                    setNavExpanded(false);
                     return;
-                }
-
-                // Clique fora do menu expandido recolhe o trilho
-                if (docEl.classList.contains('nav-expanded') && !event.target.closest('.sidebar')) {
-                    setNavExpanded(false);
                 }
             });
 
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape') {
                     setMenuState(false);
-                    setNavExpanded(false);
                 }
             });
         }());
