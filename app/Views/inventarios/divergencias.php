@@ -135,14 +135,13 @@ ob_start();
                 <?php endif; ?>
             </div>
             <div class="p-3">
-                <form action="index.php?acao=inventario_aprovar" method="POST">
+                <form action="index.php?acao=inventario_aprovar" method="POST" data-confirm="Tem certeza que deseja aprovar este inventário e atualizar o estoque?" data-confirm-ok="Aprovar">
                     <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
                     <input type="hidden" name="inventario_id" value="<?= (int) ($inventario['id'] ?? 0) ?>">
                     <button
                         type="submit"
                         class="btn btn-success btn-lg"
                         <?= $totalPendentes > 0 ? 'disabled' : '' ?>
-                        onclick="return confirm('Tem certeza que deseja aprovar este inventario e atualizar o estoque?')"
                     >
                         Aprovar Ajustes e Finalizar Inventario
                     </button>

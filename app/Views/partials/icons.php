@@ -32,3 +32,31 @@ if (!function_exists('uiIcon')) {
         return '<span class="' . $safeClass . '" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">' . $body . '</svg></span>';
     }
 }
+
+if (!function_exists('uiEmptyState')) {
+    /**
+     * Estado vazio padronizado: ícone + título + descrição + ação opcional.
+     */
+    function uiEmptyState(string $icone, string $titulo, string $descricao = '', string $acaoLabel = '', string $acaoUrl = ''): string
+    {
+        $e = static function (string $v): string {
+            return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+        };
+
+        $html = '<div class="empty-state">';
+        $html .= '<span class="empty-state-icon">' . uiIcon($icone, 'icon') . '</span>';
+        $html .= '<p class="empty-state-title">' . $e($titulo) . '</p>';
+
+        if ($descricao !== '') {
+            $html .= '<p class="empty-state-desc">' . $e($descricao) . '</p>';
+        }
+
+        if ($acaoLabel !== '' && $acaoUrl !== '') {
+            $html .= '<a class="btn btn-primary" href="' . $e($acaoUrl) . '">' . $e($acaoLabel) . '</a>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
+    }
+}

@@ -334,9 +334,45 @@
     background: var(--bg-card);
     border: 1px dashed var(--border);
     border-radius: var(--radius-lg);
-    padding: 32px;
+    padding: 36px 32px;
     text-align: center;
     color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.empty-state-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 6px;
+    border-radius: 50%;
+    background: var(--bg-muted);
+    color: var(--text-muted);
+}
+
+.empty-state-icon .icon {
+    width: 26px;
+    height: 26px;
+}
+
+.empty-state-title {
+    font-size: var(--text-h2);
+    font-weight: var(--weight-bold);
+    color: var(--text-main);
+}
+
+.empty-state-desc {
+    max-width: 46ch;
+    color: var(--text-muted);
+}
+
+.empty-state .btn {
+    margin-top: 12px;
 }
 
 .metric-value-sm {
@@ -710,5 +746,207 @@ body.search-open {
 @keyframes btn-spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+/* ── Toasts (notificações flutuantes) ─────────────────────────────────── */
+.toast-stack {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: calc(100vw - 36px);
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 260px;
+    max-width: 380px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    color: var(--text-main);
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(16px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+}
+
+.toast-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+}
+
+.toast-success .toast-icon {
+    color: var(--success);
+}
+
+.toast-danger .toast-icon {
+    color: var(--danger);
+}
+
+.toast-warning .toast-icon {
+    color: var(--warning);
+}
+
+.toast-info .toast-icon {
+    color: var(--primary);
+}
+
+.toast-msg {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: var(--weight-medium);
+}
+
+.toast-close {
+    flex: 0 0 auto;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.toast-close:hover {
+    color: var(--text-main);
+}
+
+/* ── Modal de confirmação ─────────────────────────────────────────────── */
+.confirm-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.confirm-modal[hidden] {
+    display: none;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+.confirm-backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-overlay);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.confirm-modal.is-open .confirm-backdrop {
+    opacity: 1;
+}
+
+.confirm-dialog {
+    position: relative;
+    width: min(420px, 100%);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+    transform: scale(0.96);
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.confirm-modal.is-open .confirm-dialog {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.confirm-titulo {
+    font-size: var(--text-h2);
+    font-weight: var(--weight-bold);
+    margin-bottom: 8px;
+}
+
+.confirm-msg {
+    color: var(--text-muted);
+    margin-bottom: 22px;
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* ── Skeleton (carregando) ────────────────────────────────────────────── */
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-muted);
+    border-radius: var(--radius-sm);
+}
+
+.skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    animation: skeleton-shimmer 1.3s infinite;
+}
+
+.skeleton-line {
+    height: 12px;
+    margin: 8px 0;
+}
+
+.skeleton-row {
+    height: 44px;
+    margin: 8px;
+}
+
+.chart-skeleton {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+}
+
+@keyframes skeleton-shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        transition: none;
+    }
+
+    .skeleton::after {
+        animation: none;
     }
 }

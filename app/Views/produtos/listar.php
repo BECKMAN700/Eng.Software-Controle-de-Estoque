@@ -197,9 +197,7 @@ ob_start();
         </div>
 
         <?php if (empty($produtosAbaixoDoMinimo) && empty($produtosNoMinimo) && empty($produtosAcimaDoMaximo)): ?>
-            <div class="empty-state">
-                Nenhum alerta de estoque encontrado no momento.
-            </div>
+            <?= uiEmptyState('alert', 'Tudo sob controle', 'Nenhum produto abaixo do mínimo, no limite ou acima do máximo.') ?>
         <?php endif; ?>
 
         <?php if (!empty($produtosAbaixoDoMinimo)): ?>
@@ -498,9 +496,13 @@ ob_start();
         </div>
 
         <?php if (empty($produtos)): ?>
-            <div class="empty-state">
-                <?= !empty($erros) ? 'Corrija os filtros de data para visualizar os produtos.' : 'Nenhum produto encontrado com os filtros informados.' ?>
-            </div>
+            <?php if (!empty($erros)): ?>
+                <?= uiEmptyState('alert', 'Filtros de data inválidos', 'Corrija os filtros de data para visualizar os produtos.') ?>
+            <?php elseif ($filtrosAtivos): ?>
+                <?= uiEmptyState('search', 'Nenhum produto encontrado', 'Nenhum produto corresponde aos filtros aplicados. Tente limpar a busca.', 'Limpar filtros', 'index.php?acao=listar') ?>
+            <?php else: ?>
+                <?= uiEmptyState('box', 'Nenhum produto cadastrado', 'Comece adicionando seu primeiro produto ao estoque.', Auth::isAdmin() ? 'Cadastrar produto' : '', Auth::isAdmin() ? 'index.php?acao=criar' : '') ?>
+            <?php endif; ?>
         <?php else: ?>
             <div class="table-wrapper">
                 <table class="table table--cards" id="tabela-produtos" data-table-enhanced data-page-size="10">
@@ -593,7 +595,8 @@ ob_start();
                                                     class="inline-form"
                                                     action="index.php?acao=excluir"
                                                     method="POST"
-                                                    onsubmit="return confirm('Tem certeza que deseja excluir este produto?')"
+                                                    data-confirm="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
+                                                    data-confirm-ok="Excluir"
                                                 >
                                                     <input type="hidden" name="csrf_token" value="<?= esc(Sessao::getCsrfToken()) ?>">
                                                     <input type="hidden" name="id" value="<?= $idProduto ?>">

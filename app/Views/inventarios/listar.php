@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../partials/icons.php';
 $pageTitle = 'Inventários';
 $pageSubtitle = 'Acompanhe as contagens, aberturas, conferências e auditorias de estoque.';
 $inventarios = $inventarios ?? [];
@@ -52,9 +53,7 @@ ob_start();
         </div>
 
         <?php if (empty($inventarios)): ?>
-            <div class="empty-state">
-                Nenhum inventário aberto ou cadastrado no momento.
-            </div>
+            <?= uiEmptyState('inventory', 'Nenhum inventário ainda', 'Abra um inventário para iniciar a contagem física do estoque.', 'Abrir novo inventário', 'index.php?acao=inventario_criar') ?>
         <?php else: ?>
             <div class="table-wrapper">
                 <table class="table">
