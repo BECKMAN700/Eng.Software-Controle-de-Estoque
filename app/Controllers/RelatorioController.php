@@ -26,6 +26,50 @@
         }
 
         /**
+         * Desenha o cabeçalho de marca (logo + wordmark) no topo do PDF.
+         * Reproduz em vetor o símbolo de camadas empilhadas da identidade visual,
+         * já que o FPDF não renderiza SVG. Usado por todas as exportações em PDF.
+         *
+         * @param FPDF     $pdf
+         * @param string   $titulo   Título do relatório, exibido dentro da banda.
+         * @param string[] $infos    Linhas informativas (período, geração, etc.).
+         */
+        private function brandHeader(FPDF $pdf, string $titulo, array $infos = []): void
+        {
+            // Banda da marca (azul institucional)
+            $pdf->SetFillColor(37, 99, 235);
+            $pdf->Rect(0, 0, $pdf->GetPageWidth(), 30, 'F');
+
+            // Símbolo: camadas empilhadas (a do meio na cor de destaque teal)
+            $pdf->SetFillColor(219, 234, 254);
+            $pdf->Rect(14, 7, 16, 4.5, 'F');
+            $pdf->SetFillColor(94, 234, 212);
+            $pdf->Rect(14, 13, 16, 4.5, 'F');
+            $pdf->SetFillColor(255, 255, 255);
+            $pdf->Rect(14, 19, 16, 4.5, 'F');
+
+            // Wordmark + título do relatório
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->SetFont('Arial', 'B', 17);
+            $pdf->SetXY(38, 8);
+            $pdf->Cell(0, 8, $this->conv('Controle de Estoque'), 0, 2, 'L');
+            $pdf->SetFont('Arial', '', 11);
+            $pdf->SetX(38);
+            $pdf->Cell(0, 6, $this->conv($titulo), 0, 1, 'L');
+
+            // Retorna ao corpo do documento
+            $pdf->SetY(36);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->SetFont('Arial', '', 10);
+            foreach ($infos as $linha) {
+                $pdf->Cell(0, 6, $this->conv($linha), 0, 1, 'L');
+            }
+            if ($infos !== []) {
+                $pdf->Ln(3);
+            }
+        }
+
+        /**
          * Classifica o giro de um produto a partir do total movimentado.
          * Centraliza a regra usada na tela e nas exportacoes (PDF e CSV).
          */
@@ -375,11 +419,9 @@
 
                 $pdf = new FPDF();
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 16);
-                $pdf->Cell(0, 10, $this->conv('Relatório de Giro de Estoque'), 0, 1, 'C');
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(0, 8, $this->conv('Gerado em: ' . date('d/m/Y H:i')), 0, 1, 'C');
-                $pdf->Ln(5);
+                $this->brandHeader($pdf, 'Relatório de Giro de Estoque', [
+                    'Gerado em: ' . date('d/m/Y H:i'),
+                ]);
 
                 // Table Headers
                 $pdf->SetFont('Arial', 'B', 10);
@@ -412,14 +454,12 @@
 
                 $pdf = new FPDF();
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 16);
-                $pdf->Cell(0, 10, $this->conv('Relatório de Valorização do Estoque'), 0, 1, 'C');
-                $pdf->SetFont('Arial', '', 10);
+                $infosValorizacao = [];
                 if (!empty($categoria)) {
-                    $pdf->Cell(0, 6, $this->conv('Categoria: ' . $categoria), 0, 1, 'C');
+                    $infosValorizacao[] = 'Categoria: ' . $categoria;
                 }
-                $pdf->Cell(0, 6, $this->conv('Gerado em: ' . date('d/m/Y H:i')), 0, 1, 'C');
-                $pdf->Ln(5);
+                $infosValorizacao[] = 'Gerado em: ' . date('d/m/Y H:i');
+                $this->brandHeader($pdf, 'Relatório de Valorização do Estoque', $infosValorizacao);
 
                 // Table Headers
                 $pdf->SetFont('Arial', 'B', 10);
@@ -472,13 +512,11 @@
 
                 $pdf = new FPDF();
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 14);
-                $pdf->Cell(0, 10, $this->conv('Relatório de Movimentações por Período'), 0, 1, 'C');
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(0, 6, $this->conv('Período: ' . date('d/m/Y', strtotime($dataInicial)) . ' a ' . date('d/m/Y', strtotime($dataFinal))), 0, 1, 'C');
-                $pdf->Cell(0, 6, $this->conv('Tipo: ' . ($tipo === 'entrada' ? 'Entradas' : ($tipo === 'saida' ? 'Saídas' : 'Todas'))), 0, 1, 'C');
-                $pdf->Cell(0, 6, $this->conv('Gerado em: ' . date('d/m/Y H:i')), 0, 1, 'C');
-                $pdf->Ln(5);
+                $this->brandHeader($pdf, 'Relatório de Movimentações por Período', [
+                    'Período: ' . date('d/m/Y', strtotime($dataInicial)) . ' a ' . date('d/m/Y', strtotime($dataFinal)),
+                    'Tipo: ' . ($tipo === 'entrada' ? 'Entradas' : ($tipo === 'saida' ? 'Saídas' : 'Todas')),
+                    'Gerado em: ' . date('d/m/Y H:i'),
+                ]);
 
                 // Table Headers
                 $pdf->SetFont('Arial', 'B', 9);

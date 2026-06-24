@@ -13,7 +13,7 @@ require_once __DIR__ . '/../app/Controllers/AuthController.php';
 
 Sessao::iniciar();
 
-$acao = trim($_GET['acao'] ?? 'login');
+$acao = trim($_GET['acao'] ?? ($_GET['rota'] ?? 'login'));
 
 // Interceptar caminhos sugeridos para exportação de relatórios
 $requestUri = $_SERVER['REQUEST_URI'] ?? '';
@@ -68,6 +68,17 @@ if ($acao === 'logout') {
     exit;
 }
 
+// Rotas públicas para cadastro
+if ($acao === 'cadastro') {
+    $authController->cadastro();
+    exit;
+}
+
+if ($acao === 'cadastro_salvar') {
+    $authController->registrarCadastro();
+    exit;
+}
+
 // ─── Proteção de sessão: redireciona para login se não estiver autenticado ───
 
 if (!$ehApi) {
@@ -82,12 +93,14 @@ require_once __DIR__ . '/../app/Controllers/UsuarioController.php';
 require_once __DIR__ . '/../app/Controllers/InventarioController.php';
 require_once __DIR__ . '/../app/Controllers/RelatorioController.php';
 require_once __DIR__ . '/../app/Controllers/DashboardController.php';
+require_once __DIR__ . '/../app/Controllers/BuscaController.php';
 
 $controller = new ProdutoController();
 $usuarioController = new UsuarioController();
 $inventarioController = new InventarioController();
 $relatorioController = new RelatorioController();
-$dashboardController = new DashboardController();   
+$dashboardController = new DashboardController();
+$buscaController = new BuscaController();
 
 switch ($acao) {
     // ====================== ROTAS DE INVENTÁRIO ======================
@@ -257,6 +270,10 @@ switch ($acao) {
 
     case 'api_movimentacoes':
         $controller->apiMovimentacoes();
+        break;
+
+    case 'busca_global':
+        $buscaController->global();
         break;
 
     default:

@@ -15,6 +15,7 @@ class DashboardController
     {
         $resumo = $this->model->buscarResumoGeral();
         $entradasSaidas = $this->model->buscarEntradasSaidasPeriodo(30);
+        $comparativo = $this->model->buscarComparativoMovimentacoes(30);
         $produtosCriticos = $this->model->buscarProdutosCriticos(5);
         $maisMovimentados = $this->model->buscarMaisMovimentados(5);
         $tendenciaMovimentacoes = $this->model->buscarTendenciaMovimentacoes(7);

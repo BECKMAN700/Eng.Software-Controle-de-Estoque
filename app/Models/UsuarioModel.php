@@ -125,4 +125,33 @@ class UsuarioModel
             return false;
         }
     }
+
+    public function cadastrar(string $nome, string $email, string $senhaHash): bool
+    {
+        $nome = trim((string) $nome);
+        $email = trim((string) $email);
+        $senhaHash = (string) $senhaHash;
+
+        if ($nome === '' || $email === '' || $senhaHash === '') {
+            return false;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        try {
+            $sql = "INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)";
+            $stmt = $this->conn->prepare($sql);
+
+            return $stmt->execute([
+                ':nome' => $nome,
+                ':email' => $email,
+                ':senha' => $senhaHash
+            ]);
+        } catch (PDOException $e) {
+            error_log('Erro ao cadastrar usuario: ' . $e->getMessage());
+            return false;
+        }
+    }
 }

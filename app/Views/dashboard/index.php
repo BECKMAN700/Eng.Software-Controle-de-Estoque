@@ -4,7 +4,10 @@ $pageTitle = 'Dashboard Gerencial';
 $pageSubtitle = 'Indicadores estratégicos do estoque em tempo real.';
 
 $resumo = $resumo ?? [];
-$entradasSaidas = $entradasSaidas ?? [];
+$comparativo = $comparativo ?? ['atual' => ['entrada' => 0, 'saida' => 0], 'anterior' => ['entrada' => 0, 'saida' => 0]];
+$produtosCriticos = $produtosCriticos ?? [];
+$maisMovimentados = $maisMovimentados ?? [];
+$tendenciaMovimentacoes = $tendenciaMovimentacoes ?? [];
 
 if (!function_exists('formatarDinheiro')) {
     function formatarDinheiro($valor): string
@@ -13,321 +16,276 @@ if (!function_exists('formatarDinheiro')) {
     }
 }
 
+if (!function_exists('esc')) {
+    function esc($valor): string
+    {
+        return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+/**
+ * Calcula a variação percentual do período atual vs. o anterior.
+ * @return array{dir: string, pct: int}
+ */
+if (!function_exists('tendenciaKpi')) {
+    function tendenciaKpi(int $atual, int $anterior): array
+    {
+        if ($anterior <= 0) {
+            return ['dir' => $atual > 0 ? 'up' : 'flat', 'pct' => $atual > 0 ? 100 : 0];
+        }
+        $pct = (int) round((($atual - $anterior) / $anterior) * 100);
+        return ['dir' => $pct > 0 ? 'up' : ($pct < 0 ? 'down' : 'flat'), 'pct' => abs($pct)];
+    }
+}
+
+$entradas = (int) ($comparativo['atual']['entrada'] ?? 0);
+$saidas = (int) ($comparativo['atual']['saida'] ?? 0);
+$entradasAnt = (int) ($comparativo['anterior']['entrada'] ?? 0);
+$saidasAnt = (int) ($comparativo['anterior']['saida'] ?? 0);
+
+$tEntradas = tendenciaKpi($entradas, $entradasAnt);
+$tSaidas = tendenciaKpi($saidas, $saidasAnt);
+
+$setas = ['up' => '▲', 'down' => '▼', 'flat' => '–'];
+$criticos = (int) ($resumo['produtos_criticos'] ?? 0);
+
 ob_start();
 ?>
 
+<!-- KPIs: hierarquia com destaque para o valor do estoque e itens críticos -->
 <section class="page-section">
-    <div class="grid grid-4">
-
-        <article class="metric-card">
-            <p class="metric-label">Produtos cadastrados</p>
-            <strong class="metric-value">
-                <?= (int) ($resumo['total_produtos'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Total de produtos registrados.
+    <div class="dashboard-kpis">
+        <article class="card kpi-card kpi-hero">
+            <p class="kpi-label">Valor do estoque</p>
+            <strong class="kpi-value"><?= formatarDinheiro($resumo['valor_total_estoque'] ?? 0) ?></strong>
+            <p class="kpi-sub">
+                <?= (int) ($resumo['total_produtos'] ?? 0) ?> produtos ·
+                <?= number_format((int) ($resumo['total_unidades'] ?? 0), 0, ',', '.') ?> unidades
             </p>
         </article>
 
-        <article class="metric-card summary-card-info">
-            <p class="metric-label">Unidades em estoque</p>
-            <strong class="metric-value">
-                <?= (int) ($resumo['total_unidades'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Soma das quantidades disponíveis.
-            </p>
+        <article class="card kpi-card <?= $criticos > 0 ? 'kpi-danger' : '' ?>">
+            <p class="kpi-label">Produtos críticos</p>
+            <strong class="kpi-value"><?= $criticos ?></strong>
+            <p class="kpi-sub">Abaixo do estoque mínimo</p>
         </article>
 
-        <article class="metric-card summary-card-success">
-            <p class="metric-label">Valor do estoque</p>
-            <strong class="metric-value metric-money">
-                <?= formatarDinheiro($resumo['valor_total_estoque'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Valor estimado dos produtos.
-            </p>
+        <article class="card kpi-card">
+            <p class="kpi-label">Entradas (30 dias)</p>
+            <strong class="kpi-value"><?= number_format($entradas, 0, ',', '.') ?></strong>
+            <span class="kpi-trend kpi-trend-<?= $tEntradas['dir'] ?>">
+                <?= $setas[$tEntradas['dir']] ?> <?= $tEntradas['pct'] ?>%
+                <small>vs. 30 dias anteriores</small>
+            </span>
         </article>
 
-        <article class="metric-card summary-card-danger">
-            <p class="metric-label">Produtos críticos</p>
-            <strong class="metric-value">
-                <?= (int) ($resumo['produtos_criticos'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Abaixo do estoque mínimo.
-            </p>
+        <article class="card kpi-card">
+            <p class="kpi-label">Saídas (30 dias)</p>
+            <strong class="kpi-value"><?= number_format($saidas, 0, ',', '.') ?></strong>
+            <span class="kpi-trend kpi-trend-neutral">
+                <?= $setas[$tSaidas['dir']] ?> <?= $tSaidas['pct'] ?>%
+                <small>vs. 30 dias anteriores</small>
+            </span>
         </article>
-
     </div>
 </section>
 
+<!-- Gráfico de tendência + lista do que precisa de atenção -->
 <section class="page-section">
-    <div class="grid grid-4">
-
-        <article class="metric-card summary-card-success">
-            <p class="metric-label">Entradas nos últimos 30 dias</p>
-            <strong class="metric-value">
-                <?= (int) ($entradasSaidas['entrada'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Total de unidades adicionadas ao estoque.
-            </p>
-        </article>
-
-        <article class="metric-card summary-card-danger">
-            <p class="metric-label">Saídas nos últimos 30 dias</p>
-            <strong class="metric-value">
-                <?= (int) ($entradasSaidas['saida'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Total de unidades retiradas do estoque.
-            </p>
-        </article>
-
-        <article class="metric-card">
-            <p class="metric-label">Produtos monitorados</p>
-            <strong class="metric-value">
-                <?= (int) ($resumo['total_produtos'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Produtos considerados nos indicadores.
-            </p>
-        </article>
-
-        <article class="metric-card summary-card-warning">
-            <p class="metric-label">Itens críticos</p>
-            <strong class="metric-value">
-                <?= (int) ($resumo['produtos_criticos'] ?? 0) ?>
-            </strong>
-            <p class="metric-description">
-                Produtos abaixo do mínimo configurado.
-            </p>
-        </article>
-
-    </div>
-</section>
-
-
-<section class="page-section">
-    <div class="card">
-        <div class="card-header">
-            <div>
-                <h2>Entradas x Saídas</h2>
-                <p>Comparativo das movimentações registradas nos últimos 30 dias.</p>
+    <div class="dashboard-grid-2">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2>Tendência de movimentações</h2>
+                    <p>Entradas e saídas dos últimos 7 dias.</p>
+                </div>
+            </div>
+            <div class="chart-box">
+                <div class="skeleton chart-skeleton" data-chart-skeleton></div>
+                <canvas id="graficoTendencia" role="img" aria-label="Tendência de movimentações nos últimos 7 dias"></canvas>
             </div>
         </div>
 
-        <canvas
-            id="graficoEntradasSaidas"
-            height="110"
-            aria-label="Gráfico de entradas e saídas dos últimos 30 dias"
-            role="img"
-        ></canvas>
-    </div>
-</section>
-
-<section class="page-section">
-    <div class="card">
-        <div class="card-header">
-            <div>
-                <h2>Produtos Mais Movimentados</h2>
-                <p>Produtos com maior volume de movimentação registrado.</p>
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2>Produtos críticos</h2>
+                    <p>Itens abaixo do mínimo.</p>
+                </div>
             </div>
-        </div>
 
-
-        <canvas
-            id="graficoMaisMovimentados"
-            height="120"
-        ></canvas>
-    </div>
-</section>
-
-<section class="page-section">
-    <div class="card">
-        <div class="card-header">
-            <div>
-                <h2>Tendência de Movimentações</h2>
-                <p>Evolução de entradas e saídas nos últimos 7 dias.</p>
-            </div>
-        </div>
-
-        <canvas
-            id="graficoTendenciaMovimentacoes"
-            height="120"
-        ></canvas>
-    </div>
-    
-</section>
-
-<section class="page-section">
-    <div class="card">
-        <div class="card-header">
-            <div>
-                <h2>Produtos Críticos</h2>
-                <p>Itens abaixo do estoque mínimo que exigem atenção.</p>
-            </div>
-        </div>
-
-        <?php if (empty($produtosCriticos)): ?>
-            <div class="empty-state">
-                <p>Nenhum produto crítico encontrado.</p>
-            </div>
-        <?php else: ?>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Atual</th>
-                            <th>Mínimo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($produtosCriticos as $produto): ?>
+            <?php if (empty($produtosCriticos)): ?>
+                <div class="empty-state">Nenhum produto crítico no momento. 👍</div>
+            <?php else: ?>
+                <div class="table-wrapper">
+                    <table class="table table-slim">
+                        <thead>
                             <tr>
-                                <td><?= htmlspecialchars((string) ($produto['nome'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= (int) $produto['quantidade'] ?></td>
-                                <td><?= (int) $produto['estoque_minimo'] ?></td>
+                                <th>Produto</th>
+                                <th class="numeric">Atual</th>
+                                <th class="numeric">Mín.</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($produtosCriticos as $produto): ?>
+                                <tr>
+                                    <td>
+                                        <a href="index.php?acao=entrada&id=<?= (int) ($produto['id'] ?? 0) ?>" class="critico-nome">
+                                            <?= esc($produto['nome'] ?? '') ?>
+                                        </a>
+                                    </td>
+                                    <td class="numeric">
+                                        <span class="stock-pill situacao-critico"><?= (int) $produto['quantidade'] ?></span>
+                                    </td>
+                                    <td class="numeric"><?= (int) $produto['estoque_minimo'] ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 </section>
 
+<!-- Produtos mais movimentados -->
+<section class="page-section">
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Produtos mais movimentados</h2>
+                <p>Maior volume de movimentação registrado.</p>
+            </div>
+        </div>
+        <div class="chart-box chart-box-lg">
+            <div class="skeleton chart-skeleton" data-chart-skeleton></div>
+            <canvas id="graficoMaisMovimentados" role="img" aria-label="Produtos mais movimentados"></canvas>
+        </div>
+    </div>
+</section>
 
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 <script>
-const tendenciaBruta = <?= json_encode($tendenciaMovimentacoes ?? []) ?>;
+    (function () {
+        var dadosTendencia = <?= json_encode($tendenciaMovimentacoes ?? [], JSON_UNESCAPED_UNICODE) ?>;
+        var maisMovimentados = <?= json_encode(array_map(function ($p) {
+            return ['nome' => $p['nome'] ?? '', 'total' => (int) ($p['total_movimentado'] ?? 0)];
+        }, $maisMovimentados ?? []), JSON_UNESCAPED_UNICODE) ?>;
 
-const datasTendencia = [...new Set(tendenciaBruta.map(item => item.data))];
-
-const entradasTendencia = datasTendencia.map(data => {
-    const item = tendenciaBruta.find(linha => linha.data === data && linha.tipo === 'entrada');
-    return item ? parseInt(item.total) : 0;
-});
-
-const saidasTendencia = datasTendencia.map(data => {
-    const item = tendenciaBruta.find(linha => linha.data === data && linha.tipo === 'saida');
-    return item ? parseInt(item.total) : 0;
-});
-
-const graficoTendenciaMovimentacoes =
-    document.getElementById('graficoTendenciaMovimentacoes');
-
-if (graficoTendenciaMovimentacoes && typeof Chart !== 'undefined') {
-    new Chart(graficoTendenciaMovimentacoes, {
-        type: 'line',
-        data: {
-            labels: datasTendencia,
-            datasets: [
-                {
-                    label: 'Entradas',
-                    data: entradasTendencia,
-                    tension: 0.3
-                },
-                {
-                    label: 'Saídas',
-                    data: saidasTendencia,
-                    tension: 0.3
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0
-                    }
-                }
+        function iniciar() {
+            if (typeof Chart === 'undefined') {
+                return window.setTimeout(iniciar, 120);
             }
-        }
-    });
-}
-</script>
 
+            document.querySelectorAll('[data-chart-skeleton]').forEach(function (s) { s.remove(); });
 
+            var css = getComputedStyle(document.documentElement);
+            function cor(nome, alt) { return (css.getPropertyValue(nome) || '').trim() || alt; }
 
-<script>
-    const entradasSaidasDashboard = {
-        entradas: <?= (int) ($entradasSaidas['entrada'] ?? 0) ?>,
-        saidas: <?= (int) ($entradasSaidas['saida'] ?? 0) ?>
-    };
+            var corTexto = cor('--text-muted', '#667085');
+            var corGrade = cor('--border', '#e5e7eb');
+            var MARCA = '#2563eb';
+            var DESTAQUE = '#14b8a6';
+            var nf = new Intl.NumberFormat('pt-BR');
 
-    const graficoEntradasSaidas = document.getElementById('graficoEntradasSaidas');
+            Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+            Chart.defaults.color = corTexto;
 
-    if (graficoEntradasSaidas && typeof Chart !== 'undefined') {
-        new Chart(graficoEntradasSaidas, {
-            type: 'bar',
-            data: {
-                labels: ['Entradas', 'Saídas'],
-                datasets: [{
-                    label: 'Quantidade movimentada',
-                    data: [
-                        entradasSaidasDashboard.entradas,
-                        entradasSaidasDashboard.saidas
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
+            function eixo(extra) {
+                return Object.assign({
+                    grid: { color: corGrade, drawBorder: false },
+                    border: { display: false },
+                    ticks: { color: corTexto, precision: 0, callback: function (v) { return nf.format(v); } }
+                }, extra || {});
+            }
+
+            function tooltip() {
+                return {
+                    backgroundColor: 'rgba(16,24,40,.92)',
+                    titleColor: '#fff', bodyColor: '#fff',
+                    padding: 10, cornerRadius: 8, usePointStyle: true,
+                    callbacks: {
+                        label: function (ctx) {
+                            var val = ctx.parsed.y;
+                            if (val === undefined || val === null) { val = ctx.parsed.x; }
+                            return ' ' + (ctx.dataset.label || '') + ': ' + nf.format(val);
                         }
                     }
+                };
+            }
+
+            function vazio(id, mensagem) {
+                var canvas = document.getElementById(id);
+                if (canvas) {
+                    var box = canvas.closest('.chart-box') || canvas.parentNode;
+                    box.innerHTML = '<div class="empty-state">' + mensagem + '</div>';
                 }
             }
-        });
-    }
-const produtosMovimentados = <?= json_encode(
-    array_map(
-        fn($produto) => $produto['nome'],
-        $maisMovimentados ?? []
-    )
-) ?>;
 
-const valoresMovimentados = <?= json_encode(
-    array_map(
-        fn($produto) => (int) $produto['total_movimentado'],
-        $maisMovimentados ?? []
-    )
-) ?>;
+            // ── Tendência (linha, 7 dias) ────────────────────────────────
+            var datas = dadosTendencia.map(function (i) { return i.data; }).filter(function (v, idx, arr) { return arr.indexOf(v) === idx; });
+            if (datas.length === 0) {
+                vazio('graficoTendencia', 'Sem movimentações no período.');
+            } else {
+                function serie(tipo) {
+                    return datas.map(function (d) {
+                        var item = dadosTendencia.find(function (l) { return l.data === d && l.tipo === tipo; });
+                        return item ? parseInt(item.total, 10) : 0;
+                    });
+                }
+                var rotulos = datas.map(function (d) {
+                    var p = String(d).split('-');
+                    return p.length === 3 ? p[2] + '/' + p[1] : d;
+                });
 
-const graficoMaisMovimentados =
-    document.getElementById('graficoMaisMovimentados');
+                new Chart(document.getElementById('graficoTendencia'), {
+                    type: 'line',
+                    data: {
+                        labels: rotulos,
+                        datasets: [
+                            { label: 'Entradas', data: serie('entrada'), borderColor: MARCA, backgroundColor: 'rgba(37,99,235,.12)', fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: MARCA, borderWidth: 2 },
+                            { label: 'Saídas', data: serie('saida'), borderColor: DESTAQUE, backgroundColor: 'rgba(20,184,166,.12)', fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: DESTAQUE, borderWidth: 2 }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { labels: { color: corTexto, usePointStyle: true, boxWidth: 8, padding: 16 } },
+                            tooltip: tooltip()
+                        },
+                        scales: { x: eixo(), y: eixo({ beginAtZero: true }) }
+                    }
+                });
+            }
 
-if (graficoMaisMovimentados && typeof Chart !== 'undefined') {
-
-    new Chart(graficoMaisMovimentados, {
-        type: 'bar',
-        data: {
-            labels: produtosMovimentados,
-            datasets: [{
-                label: 'Movimentações',
-                data: valoresMovimentados
-            }]
-        },
-        options: {
-            responsive: true,
-            indexAxis: 'y'
+            // ── Mais movimentados (barra horizontal) ─────────────────────
+            if (!maisMovimentados.length || maisMovimentados.every(function (p) { return p.total === 0; })) {
+                vazio('graficoMaisMovimentados', 'Sem movimentações registradas ainda.');
+            } else {
+                new Chart(document.getElementById('graficoMaisMovimentados'), {
+                    type: 'bar',
+                    data: {
+                        labels: maisMovimentados.map(function (p) { return p.nome; }),
+                        datasets: [{
+                            label: 'Movimentações',
+                            data: maisMovimentados.map(function (p) { return p.total; }),
+                            backgroundColor: MARCA, hoverBackgroundColor: DESTAQUE,
+                            borderRadius: 8, borderSkipped: false, maxBarThickness: 26
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: tooltip() },
+                        scales: { x: eixo({ beginAtZero: true }), y: eixo() }
+                    }
+                });
+            }
         }
-    });
-}
+
+        iniciar();
+    }());
 </script>
 <?php
 $content = ob_get_clean();

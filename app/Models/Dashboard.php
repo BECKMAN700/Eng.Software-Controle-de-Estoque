@@ -86,6 +86,49 @@ class Dashboard
         }
     }
 
+    /**
+     * Compara as movimentações do período atual (últimos $dias) com o
+     * período imediatamente anterior, para calcular tendências (▲▼).
+     *
+     * @return array{atual: array{entrada:int,saida:int}, anterior: array{entrada:int,saida:int}}
+     */
+    public function buscarComparativoMovimentacoes(int $dias = 30): array
+    {
+        $base = ['entrada' => 0, 'saida' => 0];
+        $resultado = ['atual' => $base, 'anterior' => $base];
+
+        try {
+            $sql = "SELECT
+                        CASE
+                            WHEN data_hora >= DATE_SUB(NOW(), INTERVAL :dias_atual DAY)
+                            THEN 'atual' ELSE 'anterior'
+                        END AS periodo,
+                        tipo,
+                        COALESCE(SUM(quantidade), 0) AS total
+                    FROM movimentacoes
+                    WHERE data_hora >= DATE_SUB(NOW(), INTERVAL :dias_total DAY)
+                    GROUP BY periodo, tipo";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(':dias_atual', $dias, PDO::PARAM_INT);
+            $stmt->bindValue(':dias_total', $dias * 2, PDO::PARAM_INT);
+            $stmt->execute();
+
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $linha) {
+                $periodo = $linha['periodo'] ?? '';
+                $tipo = $linha['tipo'] ?? '';
+                if (isset($resultado[$periodo][$tipo])) {
+                    $resultado[$periodo][$tipo] = (int) $linha['total'];
+                }
+            }
+
+            return $resultado;
+        } catch (PDOException $e) {
+            error_log('Erro ao buscar comparativo de movimentações: ' . $e->getMessage());
+            return $resultado;
+        }
+    }
+
     public function buscarProdutosCriticos(int $limite = 5): array
     {
         try {
