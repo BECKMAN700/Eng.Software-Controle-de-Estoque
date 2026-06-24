@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Cadastro';
-$assetVersion = '20260617-design';
+$assetVersion = '20260623-integracao';
 $flashErro = Sessao::getFlashErro();
 
 if (!function_exists('esc')) {
@@ -75,7 +75,7 @@ if (!function_exists('esc')) {
                 <button type="submit" class="btn btn-primary login-submit">Cadastrar</button>
             </form>
 
-            <p style="margin-top:12px; text-align:center;">Já tem conta? <a href="index.php?acao=login">Voltar ao login</a></p>
+            <p class="auth-alt">Já tem conta? <a href="index.php?acao=login">Voltar ao login</a></p>
         </section>
     </main>
 </body>

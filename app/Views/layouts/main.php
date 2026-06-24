@@ -3,7 +3,7 @@ $pageTitle = $pageTitle ?? 'Controle de Estoque';
 $pageSubtitle = $pageSubtitle ?? 'Gerencie produtos, entradas, saídas e alertas de estoque.';
 $content = $content ?? '';
 $currentAction = $_GET['acao'] ?? 'listar';
-$assetVersion = '20260623-sidebar';
+$assetVersion = '20260623-estados';
 ?>
 
 <!DOCTYPE html>
@@ -22,10 +22,6 @@ $assetVersion = '20260623-sidebar';
                 var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
                 var theme = savedTheme || (prefersDark ? 'dark' : 'light');
                 document.documentElement.setAttribute('data-theme', theme);
-
-                if (localStorage.getItem('ce-sidebar') === 'collapsed') {
-                    document.documentElement.classList.add('sidebar-collapsed');
-                }
             } catch (error) {
                 document.documentElement.setAttribute('data-theme', 'light');
             }
@@ -125,32 +121,10 @@ $assetVersion = '20260623-sidebar';
             setTheme(document.documentElement.getAttribute('data-theme') || 'light');
 
             var docEl = document.documentElement;
-            var railButtons = document.querySelectorAll('[data-rail-toggle]');
 
-            function setSidebarCollapsed(collapsed, persist) {
-                docEl.classList.toggle('sidebar-collapsed', collapsed);
-
-                railButtons.forEach(function (button) {
-                    var label = button.querySelector('[data-rail-toggle-label]');
-                    button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-                    button.setAttribute('aria-label', collapsed ? 'Expandir menu' : 'Recolher menu');
-                    button.setAttribute('title', collapsed ? 'Expandir menu' : 'Recolher menu');
-
-                    if (label) {
-                        label.textContent = collapsed ? 'Expandir menu' : 'Recolher menu';
-                    }
-                });
-
-                if (persist) {
-                    try {
-                        localStorage.setItem('ce-sidebar', collapsed ? 'collapsed' : 'expanded');
-                    } catch (error) {
-                        // Sidebar still works without localStorage; it just will not persist.
-                    }
-                }
+            function setNavExpanded(expanded) {
+                docEl.classList.toggle('nav-expanded', expanded);
             }
-
-            setSidebarCollapsed(docEl.classList.contains('sidebar-collapsed'), false);
 
             document.addEventListener('click', function (event) {
                 var themeTarget = event.target.closest('[data-theme-toggle]');
@@ -165,7 +139,8 @@ $assetVersion = '20260623-sidebar';
                 }
 
                 if (railTarget) {
-                    setSidebarCollapsed(!docEl.classList.contains('sidebar-collapsed'), true);
+                    // Expande/recolhe o trilho no desktop (sobreposto, transitório)
+                    setNavExpanded(!docEl.classList.contains('nav-expanded'));
                     return;
                 }
 
@@ -176,13 +151,20 @@ $assetVersion = '20260623-sidebar';
 
                 if (closeTarget) {
                     setMenuState(false);
+                    setNavExpanded(false);
                     return;
+                }
+
+                // Clique fora do menu expandido recolhe o trilho
+                if (docEl.classList.contains('nav-expanded') && !event.target.closest('.sidebar')) {
+                    setNavExpanded(false);
                 }
             });
 
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape') {
                     setMenuState(false);
+                    setNavExpanded(false);
                 }
             });
         }());
@@ -225,6 +207,15 @@ $assetVersion = '20260623-sidebar';
 
             function renderHint(texto) {
                 results.innerHTML = '<p class="search-palette-hint">' + escapeHtml(texto) + '</p>';
+            }
+
+            function renderSkeleton() {
+                var html = '<div class="search-palette-group">';
+                for (var i = 0; i < 4; i++) {
+                    html += '<div class="skeleton skeleton-row"></div>';
+                }
+                html += '</div>';
+                results.innerHTML = html;
             }
 
             function renderGrupos(grupos) {
@@ -276,7 +267,7 @@ $assetVersion = '20260623-sidebar';
                     return;
                 }
 
-                renderHint('Buscando…');
+                renderSkeleton();
                 debounce = window.setTimeout(function () { buscar(termo); }, 220);
             });
 
@@ -315,5 +306,7 @@ $assetVersion = '20260623-sidebar';
         }());
     </script>
     <script src="assets/js/tables.js?v=<?= $assetVersion ?>" defer></script>
+    <script src="assets/js/forms.js?v=<?= $assetVersion ?>" defer></script>
+    <script src="assets/js/ui.js?v=<?= $assetVersion ?>" defer></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../partials/icons.php';
 $pageTitle = 'Catálogo de produtos';
 $pageSubtitle = 'Visualize os produtos cadastrados em formato de cards.';
 
@@ -178,9 +179,7 @@ ob_start();
 
 <section class="page-section">
     <?php if (empty($produtos)): ?>
-        <div class="empty-state">
-            Nenhum produto encontrado no catálogo.
-        </div>
+        <?= uiEmptyState('catalog', 'Catálogo vazio', 'Nenhum produto encontrado no catálogo no momento.', Auth::isAdmin() ? 'Cadastrar produto' : '', Auth::isAdmin() ? 'index.php?acao=criar' : '') ?>
     <?php else: ?>
         <div class="product-card-grid">
             <?php foreach ($produtos as $produto): ?>

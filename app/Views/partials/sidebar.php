@@ -40,9 +40,9 @@ $iniciais = mb_strtoupper($iniciais !== '' ? $iniciais : 'U');
         </button>
     </div>
 
-    <button type="button" class="rail-toggle" data-rail-toggle aria-expanded="true" aria-label="Recolher menu" title="Recolher menu">
+    <button type="button" class="rail-toggle" data-rail-toggle aria-label="Expandir ou recolher o menu" title="Expandir ou recolher o menu">
         <?= uiIcon('chevron-right', 'icon') ?>
-        <span class="rail-toggle-label" data-rail-toggle-label>Recolher menu</span>
+        <span class="rail-toggle-label">Recolher menu</span>
     </button>
 
     <nav class="sidebar-nav">

@@ -1,8 +1,10 @@
 <?php
+require_once __DIR__ . '/../partials/icons.php';
+
 $pageTitle = 'Login';
 $flashErro = Sessao::getFlashErro();
 $flashSucesso = Sessao::getFlashSucesso();
-$assetVersion = '20260617-design';
+$assetVersion = '20260623-integracao';
 
 if (!function_exists('esc')) {
     function esc($valor): string
@@ -61,36 +63,23 @@ if (!function_exists('esc')) {
 
                 <div class="form-group">
                     <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" placeholder="email@exemplo.com" autocomplete="email"
-                        required>
+                    <input type="email" id="email" name="email" placeholder="email@exemplo.com" autocomplete="email" required>
                 </div>
 
                 <div class="form-group">
                     <label for="senha">Senha</label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <input type="password" id="senha" name="senha" placeholder="Digite sua senha"
-                            autocomplete="current-password" required style="padding-right: 40px; width: 100%;">
-                        <button type="button" id="toggle-senha" style="
-                            position: absolute;
-                            right: 12px;
-                            background: none;
-                            border: none;
-                            cursor: pointer;
-                            font-size: 18px;
-                            color: #666;
-                            padding: 4px 8px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            width: 32px;
-                            height: 32px;
-                        " title="Mostrar/Ocultar senha">👁️</button>
+                    <div class="password-field">
+                        <input type="password" id="senha" name="senha" placeholder="Digite sua senha" autocomplete="current-password" required>
+                        <button type="button" class="password-toggle" id="toggle-senha" aria-label="Mostrar senha" title="Mostrar/ocultar senha">
+                            <span class="icon-eye"><?= uiIcon('eye', 'icon') ?></span>
+                            <span class="icon-eye-off"><?= uiIcon('eye-off', 'icon') ?></span>
+                        </button>
                     </div>
                 </div>
 
-                <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                <div class="form-check">
                     <input type="checkbox" id="lembrar_email" name="lembrar_email" value="1">
-                    <label for="lembrar_email" style="margin: 0; font-size: 14px; cursor: pointer;">Lembrar e-mail</label>
+                    <label for="lembrar_email">Lembrar e-mail</label>
                 </div>
 
                 <button type="submit" class="btn btn-primary login-submit">
@@ -98,78 +87,63 @@ if (!function_exists('esc')) {
                 </button>
             </form>
 
-            <script>
-                // Toggle mostrar/ocultar senha
-                document.addEventListener('DOMContentLoaded', function() {
-                    const senhaInput = document.getElementById('senha');
-                    const toggleBtn = document.getElementById('toggle-senha');
-
-                    toggleBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        if (senhaInput.type === 'password') {
-                            senhaInput.type = 'text';
-                            toggleBtn.textContent = '🙈';
-                        } else {
-                            senhaInput.type = 'password';
-                            toggleBtn.textContent = '👁️';
-                        }
-                    });
-                });
-
-                // Restaurar e-mail do cookie ao carregar a página
-                document.addEventListener('DOMContentLoaded', function() {
-                    const emailInput = document.getElementById('email');
-                    const lembrarCheckbox = document.getElementById('lembrar_email');
-                    const emailCookie = getCookie('controle_estoque_email');
-
-                    if (emailCookie) {
-                        emailInput.value = emailCookie;
-                        lembrarCheckbox.checked = true;
-                    }
-
-                    // Salvar ou remover cookie ao submeter o formulário
-                    document.querySelector('.login-form').addEventListener('submit', function() {
-                        if (lembrarCheckbox.checked && emailInput.value) {
-                            setCookie('controle_estoque_email', emailInput.value, 30);
-                        } else {
-                            deleteCookie('controle_estoque_email');
-                        }
-                    });
-
-                    // Atualizar checkbox quando desmarcar
-                    lembrarCheckbox.addEventListener('change', function() {
-                        if (!this.checked) {
-                            deleteCookie('controle_estoque_email');
-                        }
-                    });
-                });
-
-                function getCookie(name) {
-                    const nameEQ = name + "=";
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.indexOf(nameEQ) === 0) {
-                            return decodeURIComponent(cookie.substring(nameEQ.length));
-                        }
-                    }
-                    return null;
-                }
-
-                function setCookie(name, value, days) {
-                    const d = new Date();
-                    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-                    const expires = "expires=" + d.toUTCString();
-                    document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
-                }
-
-                function deleteCookie(name) {
-                    setCookie(name, "", -1);
-                }
-            </script>
-            <p style="margin-top:12px; text-align:center;">Ainda não tem conta? <a href="index.php?acao=cadastro">Cadastre-se</a></p>
+            <p class="auth-alt">Ainda não tem conta? <a href="index.php?acao=cadastro">Cadastre-se</a></p>
         </section>
     </main>
+
+    <script>
+        (function () {
+            var senha = document.getElementById('senha');
+            var toggle = document.getElementById('toggle-senha');
+
+            if (toggle && senha) {
+                toggle.addEventListener('click', function () {
+                    var mostrar = senha.type === 'password';
+                    senha.type = mostrar ? 'text' : 'password';
+                    toggle.classList.toggle('is-visible', mostrar);
+                    toggle.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+                });
+            }
+
+            // Lembrar e-mail (cookie de conveniência, 30 dias)
+            var email = document.getElementById('email');
+            var lembrar = document.getElementById('lembrar_email');
+            var form = document.querySelector('.login-form');
+            var CHAVE = 'controle_estoque_email';
+
+            function lerCookie(nome) {
+                return document.cookie.split(';').map(function (c) { return c.trim(); })
+                    .filter(function (c) { return c.indexOf(nome + '=') === 0; })
+                    .map(function (c) { return decodeURIComponent(c.substring(nome.length + 1)); })[0] || null;
+            }
+            function gravarCookie(nome, valor, dias) {
+                var d = new Date();
+                d.setTime(d.getTime() + (dias * 864e5));
+                document.cookie = nome + '=' + encodeURIComponent(valor) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+            }
+            function apagarCookie(nome) { gravarCookie(nome, '', -1); }
+
+            if (email && lembrar) {
+                var salvo = lerCookie(CHAVE);
+                if (salvo) {
+                    email.value = salvo;
+                    lembrar.checked = true;
+                }
+                if (form) {
+                    form.addEventListener('submit', function () {
+                        if (lembrar.checked && email.value) {
+                            gravarCookie(CHAVE, email.value, 30);
+                        } else {
+                            apagarCookie(CHAVE);
+                        }
+                    });
+                }
+                lembrar.addEventListener('change', function () {
+                    if (!lembrar.checked) { apagarCookie(CHAVE); }
+                });
+            }
+        }());
+    </script>
 </body>
 
 </html>

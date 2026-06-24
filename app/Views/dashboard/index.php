@@ -101,6 +101,7 @@ ob_start();
                 </div>
             </div>
             <div class="chart-box">
+                <div class="skeleton chart-skeleton" data-chart-skeleton></div>
                 <canvas id="graficoTendencia" role="img" aria-label="Tendência de movimentações nos últimos 7 dias"></canvas>
             </div>
         </div>
@@ -157,6 +158,7 @@ ob_start();
             </div>
         </div>
         <div class="chart-box chart-box-lg">
+            <div class="skeleton chart-skeleton" data-chart-skeleton></div>
             <canvas id="graficoMaisMovimentados" role="img" aria-label="Produtos mais movimentados"></canvas>
         </div>
     </div>
@@ -174,6 +176,8 @@ ob_start();
             if (typeof Chart === 'undefined') {
                 return window.setTimeout(iniciar, 120);
             }
+
+            document.querySelectorAll('[data-chart-skeleton]').forEach(function (s) { s.remove(); });
 
             var css = getComputedStyle(document.documentElement);
             function cor(nome, alt) { return (css.getPropertyValue(nome) || '').trim() || alt; }

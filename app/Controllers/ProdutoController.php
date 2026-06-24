@@ -40,6 +40,31 @@ class ProdutoController
         return array_merge($_GET, $_POST, $this->lerPayloadJson());
     }
 
+    /**
+     * Converte um preço informado (number "1234.56" do JS ou "R$ 1.234,56"
+     * digitado sem JS) para float. Garante robustez da máscara de moeda.
+     */
+    private function precoParaFloat($valor): float
+    {
+        $limpo = preg_replace('/[^0-9,.]/', '', (string) $valor);
+        if ($limpo === '' || $limpo === null) {
+            return 0.0;
+        }
+
+        $temVirgula = strpos($limpo, ',') !== false;
+        $temPonto = strpos($limpo, '.') !== false;
+
+        if ($temVirgula && $temPonto) {
+            // Formato pt-BR: ponto = milhar, vírgula = decimal
+            $limpo = str_replace('.', '', $limpo);
+            $limpo = str_replace(',', '.', $limpo);
+        } elseif ($temVirgula) {
+            $limpo = str_replace(',', '.', $limpo);
+        }
+
+        return (float) $limpo;
+    }
+
     private function dadosProdutoNormalizados(array $origem): array
     {
         $estoqueMinimo = (int) ($origem['estoque_minimo'] ?? 0);
@@ -55,7 +80,7 @@ class ProdutoController
             'quantidade' => (int) ($origem['quantidade'] ?? 0),
             'estoque_minimo' => $estoqueMinimo,
             'estoque_maximo' => $estoqueMaximoBruto === '' ? null : (int) $estoqueMaximoBruto,
-            'preco' => (float) ($origem['preco'] ?? 0),
+            'preco' => $this->precoParaFloat($origem['preco'] ?? 0),
         ];
     }
 
@@ -101,7 +126,7 @@ class ProdutoController
         }
 
         if (array_key_exists('preco', $origem)) {
-            $dados['preco'] = (float) $origem['preco'];
+            $dados['preco'] = $this->precoParaFloat($origem['preco']);
         }
 
         return $dados;
